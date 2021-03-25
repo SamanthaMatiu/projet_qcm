@@ -1,11 +1,11 @@
 from app import api
 
-from app.resources.helloworld import HelloWorldResource, HelloWorldResourceNameToken, HelloWorldResourceNameURL, HelloWorldResourceNames
+from app.resources.login import LoginResource
+from app.resources.helloworld import HelloWorldResource
 
+# login
+api.add_resource(LoginResource, '/login')
 
-# Hello World
-api.add_resource(HelloWorldResource, '/api/helloworld')
-api.add_resource(HelloWorldResourceNameToken, '/api/hello')
-api.add_resource(HelloWorldResourceNameURL, '/api/hello/<string:name>')
-api.add_resource(HelloWorldResourceNames, '/api/hello/<int:count>')
+#tests
+api.add_resource(HelloWorldResource,'/test')
 

@@ -1,8 +1,9 @@
 from flask import request
 from flask_restful import Resource, abort
+from app.resources.login import token_verif
 
 class HelloWorldResource(Resource):
-
+    @token_verif
     def get(self):
         return {'data':'Hello World !'}, 200
 
