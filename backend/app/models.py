@@ -18,7 +18,7 @@ class Utilisateurs(db.Model):
     qcm = db.relationship('Qcm', backref='utilisateurs', lazy=True)
     reponseleve = db.relationship('ReponseEleve', backref='utilisateurs', lazy=True)
     qcmeleve = db.relationship('QcmEleve', backref='utilisateurs', lazy=True)
-    id_groupe = db.Column("id_groupe",db.Integer,db.ForeignKey('groupe.id'),nullable=False)
+    id_groupe = db.Column("id_groupe",db.Integer,db.ForeignKey('groupe.id'),nullable=True)
     
 
 class Qcm(db.Model):
