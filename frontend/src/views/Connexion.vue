@@ -9,8 +9,8 @@
             </mdb-row>
           </div>
           <mdb-card-body class="mx-4 mt-4">
-            <mdb-input label="Mail" type="text"/>
-            <mdb-input label="Mot de passe" type="password" containerClass="mb-0"/>
+            <mdb-input icon="envelope" label="Mail" type="text"/>
+            <mdb-input icon="lock" label="Mot de passe" type="password" containerClass="mb-0"/>
             <div class="text-center mb-4 mt-5">
               <mdb-btn color="danger" type="button" class="btn-block z-depth-2">Se connecter</mdb-btn>
             </div>
