@@ -10,11 +10,11 @@ from app import db,app,models
 class LoginResource(Resource):
     def post(self):
         body_parser = reqparse.RequestParser()
-        body_parser.add_argument('utilisateurs', type=str, required=True, help="Pas de login.")
+        body_parser.add_argument('utilisateur', type=str, required=True, help="Pas de login.")
         body_parser.add_argument('mdp', type=str, required=True, help="Pas de mot de passe.")
         args = body_parser.parse_args(strict=True)
         try:
-            utilisateurs = args['utilisateurs']
+            utilisateurs = args['utilisateur']
             mdp = args['mdp']
             return login(utilisateurs, mdp)
         except:

@@ -7,6 +7,8 @@ Flask-RESTful==0.3.8
 Flask-SQLAlchemy==2.5.1
 flask-swagger==0.2.14
 flask-swagger-ui==3.36.0
+Flask-Cors==3.0.10
+Flask-JWT==0.3.2
 greenlet==1.0.0
 importlib-metadata==3.7.3
 itsdangerous==1.1.0
