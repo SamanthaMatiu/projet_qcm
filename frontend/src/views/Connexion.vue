@@ -10,8 +10,8 @@
           </div>
           <mdb-card-body class="mx-4 mt-4">
           <form v-on:submit.prevent="onSubmit">
-            <mdb-input v-model="loginForm.mail" icon="envelope" label="Mail" type="text" required/>
-            <mdb-input v-model="loginForm.mdp" icon="lock" label="Mot de passe" type="password" containerClass="mb-0" required/>
+            <mdb-input v-model="loginForm.mail" label="Mail" type="text" required/>
+            <mdb-input v-model="loginForm.mdp" label="Mot de passe" type="password" containerClass="mb-0" required/>
             <div class="text-center mb-4 mt-5">
               <mdb-btn color="danger" type="submit" class="btn-block z-depth-2">Se connecter</mdb-btn>
             </div>
