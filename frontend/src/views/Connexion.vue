@@ -9,11 +9,13 @@
             </mdb-row>
           </div>
           <mdb-card-body class="mx-4 mt-4">
-            <mdb-input icon="envelope" label="Mail" type="text"/>
-            <mdb-input icon="lock" label="Mot de passe" type="password" containerClass="mb-0"/>
+          <form v-on:submit.prevent="onSubmit">
+            <mdb-input v-model="loginForm.mail" icon="envelope" label="Mail" type="text" required/>
+            <mdb-input v-model="loginForm.mdp" icon="lock" label="Mot de passe" type="password" containerClass="mb-0" required/>
             <div class="text-center mb-4 mt-5">
-              <mdb-btn color="danger" type="button" class="btn-block z-depth-2">Se connecter</mdb-btn>
+              <mdb-btn color="danger" type="submit" class="btn-block z-depth-2">Se connecter</mdb-btn>
             </div>
+          </form>
             <p class="font-small grey-text d-flex justify-content-center">Tu n'as pas de compte ? <router-link to="/inscription"><a class="dark-grey-text font-weight-bold ml-1"> S'inscrire</a></router-link></p>
           </mdb-card-body>
         </mdb-card>
@@ -23,6 +25,9 @@
 </template>
 
 <script>
+  import axios from 'axios';
+  //import router from '../router';
+
   import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbIcon } from 'mdbvue';
   export default { 
     name: 'FormsPage',
@@ -35,7 +40,45 @@
       mdbBtn,
       // eslint-disable-next-line vue/no-unused-components
       mdbIcon
-    }
+    },
+    data() {
+      return {
+        loginForm: {
+          mail: '',
+          mdp: '',
+        },
+      };
+    },
+    methods: {
+      checkUser(user) {
+        const path = `http://localhost:5000/api/login`;
+        axios.post(path, user)
+          .then((res) => {
+            console.log(res.data.message);
+            if (res.data.token){
+              localStorage.setItem('token', res.data.token);
+              this.initForm();
+              //router.push({ name: "Listes", params: {}});
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      },
+      initForm() {
+        this.loginForm.mail = '';
+        this.loginForm.mdp = '';
+      },
+      onSubmit(evt) {
+        evt.preventDefault();
+        const user = {
+          utilisateur: this.loginForm.mail,
+          mdp: this.loginForm.mdp,
+        };
+        console.log(user);
+        this.checkUser(user);
+      },
+    },
   }
 </script>
 
