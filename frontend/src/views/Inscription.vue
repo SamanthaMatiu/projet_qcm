@@ -148,7 +148,7 @@
   }
 
   .btn-block {
-    background-color: #626dc3;
+    background-color: #d5deff;
   }
 
   .radio-btn {
