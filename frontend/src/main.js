@@ -3,9 +3,12 @@ import 'mdbvue/lib/css/mdb.min.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router'
-
+import router from './router';
+import axios from 'axios';
+  
 Vue.config.productionTip = false
+
+axios.defaults.withCredentials = false;
 
 new Vue({
   router,
