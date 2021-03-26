@@ -17,14 +17,14 @@ class RegisterResource(Resource):
             #Valide à mettre à false dès le départ, pour l'instant à true le temps de valider les comptes côté front
             #Groupe à renseigner plus tard par l'admin
             args = body_parser.parse_args(strict=True) # Accepté seulement si tous les paramètres sont strictement déclarés dans le body sinon lève une exception
-            try:   
+            try:
                 if(abort_if_mail_is_not_unique(args['mailauth'])):
                     return {'status':404,'message':'Adresse mail déjà utilisée, merci d\'en saisir une autre.'}
                 else:
                     #Hash le mot de passe
                     hashed_mdp = generate_password_hash(args['mdpauth'], method='sha256')
                     #Crée l'utilisateur
-                    user = Utilisateurs(nom = args['nomauth'], prenom = args['prenomauth'], mail = args['mailauth'], mdp = hashed_mdp, droit = args['droitauth'], valide = True)
+                    user = Utilisateurs(nom = args['nomauth'], prenom = args['prenomauth'], mail = args['mailauth'], mdp = hashed_mdp, droit = args['droitauth'], valide = False)
                     #L'ajoute à la bdd
                     db.session.add(user)
                     db.session.commit()
