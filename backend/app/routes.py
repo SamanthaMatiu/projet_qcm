@@ -5,12 +5,16 @@ from app.resources.helloworld import HelloWorldResource
 from app.resources.register import RegisterResource
 from app.resources.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.gestiongroupe import GestionGroupeResource
+from app.resources.qcm import QCMRessources
+
+#tests
+api.add_resource(HelloWorldResource,'/test')
 
 # login
 api.add_resource(LoginResource, '/api/login')
 
-#tests
-api.add_resource(HelloWorldResource,'/test')
+#qcms
+api.add_resource(QCMRessources,'/api/qcm')
 
 # Create an account
 api.add_resource(RegisterResource,'/api/register')
