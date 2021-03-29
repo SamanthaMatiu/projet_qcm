@@ -1,12 +1,11 @@
 from app import api
 
-from app.resources.helloworld import HelloWorldResource, HelloWorldResourceNameToken, HelloWorldResourceNameURL, HelloWorldResourceNames
 from app.resources.Authentification.register import RegisterResource
 from app.resources.Admin.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, UtilsateursValidesResource
-
+from app.resources.qcm import QCMRessources
+from app.resources.Authentification.login import LoginResource
 #tests
-api.add_resource(HelloWorldResource,'/test')
 
 # login
 api.add_resource(LoginResource, '/api/login')
