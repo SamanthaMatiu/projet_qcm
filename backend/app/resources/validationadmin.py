@@ -22,13 +22,14 @@ class ValidationAdminResource(Resource):
         if result.count() == 0:
             return {'status':404, 'message':'Il n\'y a aucun compte à valider.'}
         else:
-            print(result)
+            #print(result)
             users = []
             for row in result:
                 user = {}
                 user['nom'] = row.nom
                 user['prenom'] = row.prenom
                 user['mail'] = row.mail
+                user['droit'] = row.droit
                 user['groupe'] = row.id_groupe
                 user['id_utilisateur'] = row.id
                 users.append(user)

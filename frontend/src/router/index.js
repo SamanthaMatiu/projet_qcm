@@ -2,6 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
+
+
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -21,6 +24,11 @@ const routes = [
     name: 'Connexion',
     
     component: () => import('../views/Connexion.vue')
+  },
+  {
+    path: '/admin',
+    name: 'Amin',
+    component: () => import('../views/Dashboard/Admin.vue')
   }
 ]
 
