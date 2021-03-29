@@ -2,7 +2,7 @@ from flask import request,jsonify
 from flask_restful import Resource, reqparse, abort
 from datetime import datetime
 from app import db,app
-from app.models import Qcm,Utilisateurs,Question,Choix
+from app.models import Qcm,Utilisateurs,Question,Choix,QcmEleve,Groupe
 
 class QCMRessources(Resource):
     def get(self):
@@ -11,8 +11,7 @@ class QCMRessources(Resource):
         args=body_parser.parse_args(strict=True)
         try :
             qcm=Qcm.query.filter_by(id=args['id']).first()
-            get_qcm(qcm)
-            return 1
+            return get_qcm(qcm)
         except:
             abort(400)
 
@@ -23,6 +22,8 @@ class QCMRessources(Resource):
             debut=datetime.strptime(datas['date_debut'],"%d/%m/%Y %H:%M")
             fin=datetime.strptime(datas['date_fin'],"%d/%m/%Y %H:%M")
             id=datas['id_prof']
+            groupe_id=datas['droit']['groupe']
+            eleve_id=datas['droit']['utilisateur']
             
             ## Si le qcm existe déjà on ne le recréer pas.
             if(exist_qcm(titre,debut,fin,id)):
@@ -35,6 +36,13 @@ class QCMRessources(Resource):
             QCM=Qcm(titre=titre,date_debut=debut,date_fin=fin,utilisateurs=prof)
             creation_question(datas['questions'],QCM)
 
+            ## On ajoute les élèves d'un groupe ou un élève seulement
+            if groupe_id !="":
+                add_groupe_to_qcm(groupe_id,QCM)
+            else :
+                eleve=Utilisateurs.query.filter_by(id=eleve_id).first()
+                add_eleve_to_qcm(eleve,QCM)
+            
             db.session.add(QCM)
             db.session.commit()
             return {'status':201,'message':'QCM créé avec succès !'}
@@ -62,6 +70,25 @@ def creation_question(data,QCM):
                     db.session.commit()
     
 def get_qcm(qcm):
-    
+    questions=[]
     for question in qcm.questions:
-        print(question)
+        Listchoix=[]
+        for choix in question.choix:
+            Listchoix.append({'choix':choix.intitule,'true':choix.estcorrect})
+        temp={'titre':question.intitule,'ouverte':question.ouverte,'choix':Listchoix}
+        questions.append(temp)
+    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M')
+    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M')
+    jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_prof':qcm.id_professeur,'questions':questions}
+    return jsonqcm
+
+def add_eleve_to_qcm(eleve,QCM):
+    qcmEleve=QcmEleve(statut='A faire',utilisateurs=eleve,qcm=QCM)
+    db.session.add(qcmEleve)
+    db.session.commit()
+
+def add_groupe_to_qcm(groupe_id,QCM):
+    groupe=Groupe.query.filter_by(id=groupe_id).first()
+    for eleve in groupe.utilisateurs :
+        add_eleve_to_qcm(eleve,QCM)
+
