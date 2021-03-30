@@ -20,13 +20,19 @@ class QCMRessources(Resource):
         body_parser.add_argument('id',type=int,required=True,help="Pas d'identifiants renseigné.")
         args=body_parser.parse_args(strict=True)
         try :
+            ## On récupère le qcm concerné.
             qcm=db.session.query(Qcm).filter_by(id=args['id']).first()
+
+            ## On delete tout les liens entre ce qcm et les élèves.
             qcmEleve=db.session.query(QcmEleve).filter_by(id_qcm=args['id']).delete()
+            ## Pour chaque questions du QCM
             for question in qcm.questions:
+                ## on delete les choix 
                 for choi in question.choix :
-                    print(choi)
                     db.session.query(Choix).filter_by(id=choi.id).delete()
+                ## puis on delete la question
                 db.session.query(Question).filter_by(id=question.id).delete()
+            ## enfin on delete le QCM
             db.session.query(Qcm).filter_by(id=args['id']).delete()
             db.session.commit()
             return {'status':200,'message':'Le qcm a bien été supprimé.'}
@@ -44,11 +50,12 @@ class QCMRessources(Resource):
             questions=datas['questions']
             choix=datas['choix']
             qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
-
+            
+            ## changement du titre
             if titre != "":
                 qcm.titre=titre
                 db.session.commit()
-
+            ## changement des horraires/dates
             if datas['date_debut'] != "":
                 qcm.date_debut=datetime.strptime(datas['date_debut'],"%d/%m/%Y %H:%M")
                 db.session.commit()
@@ -57,38 +64,51 @@ class QCMRessources(Resource):
                 qcm.date_fin=datetime.strptime(datas['date_fin'],"%d/%m/%Y %H:%M")
                 db.session.commit()
 
+            ## changement du groupe 
             if groupe_id != "":
                 db.session.query(QcmEleve).filter_by(id_qcm=qcm.id).delete()
                 add_groupe_to_qcm(groupe_id,qcm)
 
+            ## changement de l'élève concerné par le QCM
             if eleve_id != "":
                 db.session.query(QcmEleve).filter_by(id_qcm=qcm.id).delete()
                 eleve=db.session.query(Utilisateurs).filter_by(id=eleve_id).first()
                 add_eleve_to_qcm(eleve,qcm)
 
+            ## si on souhaite changer les questions.
             if questions != "":
                 for question in questions:
+                    ## pour chaque question qu'on souhaite changer on recupere son homologue
                     quest=db.session.query(Question).filter_by(id=question['id']).first()
+                    ## on change son titre si désiré
                     if question['titre'] != "":
                         quest.intitule=question['titre']
-
+                    ## si on souhaite changer le type de question.
                     if question['ouverte'] != "":
+                        ## si on passe d'une question ouverte a fermé
                         if question['ouverte'] == 0:
                             if quest.ouverte !=0:
                                 quest.ouverte=0
+                                ## On ajoute les choix a la question
                                 for choose in question['choix']: 
                                     choixQuestion=Choix(intitule=choose['titre'],estcorrect=choose['estcorrect'],question=quest)
                                     db.session.add(choixQuestion)
                                     db.session.commit()
                                 db.session.commit()
                         else:
+                            ## si on passe d'une question fermée a une question ouverte
                             quest.ouverte=1
+                            ## on supprime les choix liées
                             db.session.query(Choix).filter_by(id_question=question['id']).delete()
                         db.session.commit()
             
+            ## si on veut modifier un choix 
             if choix != "":
+                ## Pour chaque choix renseigné 
                 for choi in choix :
+                    ## on recupère le choix concerné en BDD 
                     value=db.session.query(Choix).filter_by(id=choi['id']).first()
+                    ## on change ses attributs
                     if choi['intitule'] != "" :
                         value.intitule=choi['intitule']
                     if choi['estcorrect'] != "":
@@ -107,20 +127,17 @@ class QCMRessources(Resource):
             id=datas['id_prof']
             groupe_id=datas['droit']['groupe']
             eleve_id=datas['droit']['utilisateur']
-            
             ## Si le qcm existe déjà on ne le recréer pas.
             if(exist_qcm(titre,debut,fin,id)):
                 return {'status':404,'message':'Le QCM existe déjà.'}
 
             ## On cherche le prof pour établir le lien foreign key
             prof=db.session.query(Utilisateurs).filter_by(id=id).first()
-
             ##création du QCM
             QCM=Qcm(titre=titre,date_debut=debut,date_fin=fin,utilisateurs=prof)
             creation_question(datas['questions'],QCM)
-
             ## On ajoute les élèves d'un groupe ou un élève seulement
-            if groupe_id !="":
+            if groupe_id != "":
                 add_groupe_to_qcm(groupe_id,QCM)
             else :
                 eleve=db.session.query(Utilisateurs).filter_by(id=eleve_id).first()
