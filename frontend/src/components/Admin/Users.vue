@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <!--button type="button" class="btn btn-dark btn-sm" @click="logout()">Deconnexion</button-->
     <br><br>
     <div class="row">
       <div class="col-sm-10">
@@ -23,7 +22,7 @@
               <td>{{ user.prenom }}</td>
               <td>{{ user.mail }}</td>
               <td>{{ user.droit }}</td>
-              <td>{{ user.groupe }}</td>
+              <td>{{ user.nom_groupe }}</td>
               <td>
                 <div class="btn-group" role="group">
                   <button type="button" class="btn btn-warning btn-sm">Modifier groupe</button>
@@ -55,16 +54,6 @@ export default {
       axios.get(path)
         .then((res) => {
           this.usersAValider = res.data['data'];
-          console.log(res.data['message']);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    getNomGroupe(id_groupe) {
-      const path = `http://localhost:5000/api/groupes/${id_groupe}`;
-      axios.get(path)
-        .then((res) => {
           console.log(res.data['message']);
         })
         .catch((error) => {

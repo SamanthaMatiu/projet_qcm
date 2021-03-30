@@ -28,7 +28,7 @@
                 <!-- Pop up Utilisateur créé -->
                 <mdb-modal :show="modalOk" @close="modalOk = false">
                   <mdb-modal-header>
-                    <mdb-modal-title>Utilisateur créer !</mdb-modal-title>
+                    <mdb-modal-title>Utilisateur créé !</mdb-modal-title>
                   </mdb-modal-header>
                   <mdb-modal-body>Vous devez attendre que votre compte soit validé.</mdb-modal-body>
                   <mdb-modal-footer>

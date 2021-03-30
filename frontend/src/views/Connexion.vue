@@ -26,9 +26,9 @@
 
 <script>
   import axios from 'axios';
-  //import router from '../router';
+  import router from '../router';
 
-  import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbIcon } from 'mdbvue';
+  import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn} from 'mdbvue';
   export default { 
     name: 'FormsPage',
     components: {
@@ -37,9 +37,7 @@
       mdbCard,
       mdbCardBody,
       mdbInput,
-      mdbBtn,
-      // eslint-disable-next-line vue/no-unused-components
-      mdbIcon
+      mdbBtn
     },
     data() {
       return {
@@ -58,7 +56,13 @@
             if (res.data.token){
               localStorage.setItem('token', res.data.token);
               this.initForm();
-              //router.push({ name: "Listes", params: {}});
+              if(res.data.statut==='Admin'){
+                router.push({ name: "Admin", params: {}});
+              } else if(res.data.statut==='Professeur'){
+                router.push({ name: "Prof", params: {}});
+              } else {
+                router.push({ name: "Eleve", params: {}});
+              }
             }
           })
           .catch((error) => {
@@ -75,7 +79,6 @@
           utilisateur: this.loginForm.mail,
           mdp: this.loginForm.mdp,
         };
-        console.log(user);
         this.checkUser(user);
       },
     },

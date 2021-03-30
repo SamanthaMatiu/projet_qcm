@@ -39,7 +39,7 @@
     <p class="my-4"><b>Mail :</b> {{ infosUser.mail}} </p>
     <p class="my-4"><b>Statut :</b> {{ infosUser.droit}} </p>
     <b-form @submit="onSubmitValidationEleve" class="w-100">
-    <b-form-select v-if="infosUser.droit === 'élève'" v-model="infosUser.groupe" class="mb-2">
+    <b-form-select v-if="infosUser.droit === 'Élève'" v-model="infosUser.groupe" class="mb-2">
       <b-form-select-option :value="null">Choisir un groupe</b-form-select-option>
       <b-form-select-option v-for="(option, index) in groupes" :key="index" v-bind:value="option.id_groupe">{{option.nom}}</b-form-select-option>
     </b-form-select>

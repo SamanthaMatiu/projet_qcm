@@ -21,9 +21,12 @@ const routes = [
     name: 'Connexion',
     component: () => import('../views/Connexion.vue')
   },
+
+  /** Admin **/
+
   {
-    path: '/admin',
-    name: 'Amin',
+    path: '/dashboardAdmin',
+    name: 'Admin',
     component: () => import('../views/Dashboard/Admin.vue')
   },
 
@@ -56,7 +59,14 @@ const routes = [
         component : () => import('../components/Prof/Correction.vue')
       }
     ]
-  }
+  },
+    /** Admin **/
+
+    {
+      path: '/dashboardEleve',
+      name: 'Eleve',
+      component: () => import('../views/Dashboard/Eleve.vue')
+    }
 ]
 
 const router = new VueRouter({
