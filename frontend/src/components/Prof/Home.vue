@@ -89,3 +89,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.view img, .view video {
+    max-height: 250px;
+}
+</style>
