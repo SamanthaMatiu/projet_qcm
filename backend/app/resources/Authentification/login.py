@@ -22,11 +22,11 @@ class LoginResource(Resource):
 
 def login(login, mdp):
     util=db.session.query(models.Utilisateurs).filter_by(mail=login).first()
-    if util and check_password_hash(util.mdp,mdp):
-        heure=datetime.datetime.utcnow()+datetime.timedelta(hours=2)
+    if util and check_password_hash(util.mdp,mdp) and util.valide==1:
+        heure=datetime.datetime.utcnow()+datetime.timedelta(weeks=1)
         token=jwt.encode({'utilisateur':util.mail,'exp':heure},app.config['SECRET_KEY'])
         return {'statut':util.droit,'message':'Bienvenue '+util.prenom+' '+util.nom+' !','token':token.decode('UTF-8')},200
-    return {'message':'Identifiant et/ou mot de passe incorrect.'},400
+    return {'message':'Identifiant et/ou mot de passe incorrect. Ou compte non valide'},400
 
 def token_verif(f):
     @wraps(f)
@@ -41,10 +41,10 @@ def token_verif(f):
             data=jwt.decode(token,app.config['SECRET_KEY'])
             user=db.session.query(models.Utilisateurs).filter_by(mail=data['utilisateur'])
             if (user):
-              valid=1
+                return f(user,*args,**kwargs)
         except :
             return {'message': 'Token invalide.'},400
 
-        return f(*args,**kwargs)
+        
     return decorated
 
