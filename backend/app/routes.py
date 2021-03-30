@@ -4,6 +4,7 @@ from app.resources.Authentification.register import RegisterResource
 from app.resources.Admin.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, UtilsateursValidesResource
 from app.resources.qcm import QCMRessources
+from app.resources.Prof.gestionqcmprof import QCMProfRessources
 from app.resources.Authentification.login import LoginResource
 #tests
 
@@ -12,6 +13,7 @@ api.add_resource(LoginResource, '/api/login')
 
 #qcms
 api.add_resource(QCMRessources,'/api/qcm')
+api.add_resource(QCMProfRessources,'/api/qcmProf')
 
 # Create an account
 api.add_resource(RegisterResource,'/api/register')
