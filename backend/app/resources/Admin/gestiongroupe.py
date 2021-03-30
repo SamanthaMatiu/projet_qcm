@@ -162,6 +162,29 @@ class GestionGroupeById(Resource):
             return {"status":200, "message": "Vous avez bien supprimé le groupe"}
 
 
+    """
+        Get tous les groupes existants dans la bdd
+        ---
+        tags:
+            - Flask API
+        responses:
+            200:
+                description: JSON représentant tous les groupes
+            404:
+                description: S'il n'y a aucun groupe dans la bdd
+        """
+    def get(self,id_groupe) -> List:
+
+        if(not check_group_exists(id_groupe)):
+            return {'status':404, 'message': 'Le groupe que vous tentez de récupérer n\'existe pas.'}
+    
+        else:
+            result = Groupe.query.filter(Groupe.id == id_groupe).first()
+            groupe = {}
+            groupe['nom_groupe'] = result.nom
+            return {'data':groupe,'status':200, 'message':'Vous avez récupéré le groupe'}
+
+
 class GestionGroupeByEleveId(Resource):
 
     """
