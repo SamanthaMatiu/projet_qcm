@@ -13,6 +13,7 @@
               <th scope="col">Prénom</th>
               <th scope="col">Mail</th>
               <th scope="col">Statut</th>
+              <th scope="col">Groupe</th>
               <th></th>
             </tr>
           </thead>
@@ -22,6 +23,7 @@
               <td>{{ user.prenom }}</td>
               <td>{{ user.mail }}</td>
               <td>{{ user.droit }}</td>
+              <td>{{ user.groupe }}</td>
               <td>
                 <div class="btn-group" role="group">
                   <button type="button" class="btn btn-warning btn-sm">Modifier groupe</button>
@@ -49,7 +51,7 @@ export default {
   },
   methods: {
     getUsers() {
-      const path = `http://localhost:5000/api/validation`;
+      const path = `http://localhost:5000/api/utilisateursvalides`;
       axios.get(path)
         .then((res) => {
           this.usersAValider = res.data['data'];
