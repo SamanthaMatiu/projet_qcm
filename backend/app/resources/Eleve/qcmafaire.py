@@ -7,7 +7,9 @@ from app.resources.Authentification.login import token_verif
 
 class QCMaFaireResources(Resource):
     @token_verif
-    def get(user,self,id_eleve):
+    def get(user,self):
+        print(user.id)
+
 
 
 
