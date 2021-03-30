@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 
 
 
@@ -10,25 +9,53 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: '/connexion',
   },
   {
     path: '/inscription',
     name: 'Inscription',
-    
     component: () => import('../views/Inscription.vue')
   },
   {
     path: '/connexion',
     name: 'Connexion',
-    
     component: () => import('../views/Connexion.vue')
   },
   {
     path: '/admin',
     name: 'Amin',
     component: () => import('../views/Dashboard/Admin.vue')
+  },
+
+  /** Prof **/
+
+  {
+    path: '/dashboardProf',
+    name: 'Prof',
+    component: () => import('../views/Dashboard/Prof.vue'),
+    redirect: '/dashboardProf/home',
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component : () => import('../components/Prof/Home.vue')
+      },
+      {
+        path: 'creation',
+        name: 'CreationQcm',
+        component : () => import('../components/Prof/CreerQcm.vue')
+      },
+      {
+        path: 'consultation',
+        name: 'Consultation',
+        component : () => import('../components/Prof/Consultation.vue')
+      },
+      {
+        path: 'correction',
+        name: 'Correction',
+        component : () => import('../components/Prof/Correction.vue')
+      }
+    ]
   }
 ]
 
