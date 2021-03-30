@@ -4,7 +4,7 @@
     <br><br>
     <div class="row">
       <div class="col-sm-10">
-        <h2>A valider</h2>
+        <h2>Tous les utilisateurs</h2>
         <hr><br><br>
         <table class="table table-hover">
           <thead>
@@ -27,7 +27,7 @@
               <td>
                 <div class="btn-group" role="group">
                   <button type="button" class="btn btn-warning btn-sm">Modifier groupe</button>
-                  <button type="button" class="btn btn-danger btn-sm">Supprimer</button>
+                  <button type="button" class="btn btn-danger btn-sm" @click="onDeleteUser(user)">Supprimer</button>
                 </div>
               </td>
             </tr>
@@ -60,6 +60,30 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    getNomGroupe(id_groupe) {
+      const path = `http://localhost:5000/api/groupes/${id_groupe}`;
+      axios.get(path)
+        .then((res) => {
+          console.log(res.data['message']);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    removeUser(user_id) {
+      const path = `http://localhost:5000/api/validation/${user_id}`;
+      axios.delete(path)
+        .then(() => {
+          this.getUsers();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.getUsers();
+        });
+    },
+    onDeleteUser(user) {
+      this.removeUser(user.id_utilisateur);
     },
   },
   created() {
