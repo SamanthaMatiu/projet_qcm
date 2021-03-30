@@ -85,10 +85,18 @@ class ValidationAdminResourceById(Resource):
         body_parser.add_argument('id_groupeutilisateur', type=str, required=False, help="Missing the user group")
         args = body_parser.parse_args(strict=True) # Accepté seulement si tous les paramètres sont strictement déclarés dans le body sinon lève une exception
         print(args['id_groupeutilisateur'])
+        #récupère le user 
+        user = Utilisateurs.query.filter(Utilisateurs.id == id_user).first()
+        print(user.nom)
+
         try:
-            id_groupe = args['id_groupeutilisateur']
-            db.session.query(Utilisateurs).filter(Utilisateurs.id == id_user).update({Utilisateurs.id_groupe: id_groupe, Utilisateurs.valide : True}, synchronize_session=False)
-            db.session.commit()
+            if(user.droit == "Professeur"):
+                db.session.query(Utilisateurs).filter(Utilisateurs.id == id_user).update({Utilisateurs.valide : True}, synchronize_session=False)
+                db.session.commit()
+            else:
+                id_groupe = args['id_groupeutilisateur']
+                db.session.query(Utilisateurs).filter(Utilisateurs.id == id_user).update({Utilisateurs.id_groupe: id_groupe, Utilisateurs.valide : True}, synchronize_session=False)
+                db.session.commit()
             return {'status':200, 'message': 'Vous avez bien validé l\'utilisateur !'}
 
         except:
