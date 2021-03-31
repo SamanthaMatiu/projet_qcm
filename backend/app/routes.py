@@ -5,7 +5,7 @@ from app.resources.Admin.validationadmin import ValidationAdminResource, Validat
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, UtilsateursValidesResource
 from app.resources.qcm import QCMRessources
 from app.resources.Prof.gestionqcmprof import QCMProfRessources
-from app.resources.Eleve.qcmafaire import QCMaFaireResources
+from app.resources.Eleve.qcmafaire import QCMaFaireResources, QMCaFaireQuestionsResources
 from app.resources.Authentification.login import LoginResource
 #tests
 
@@ -31,4 +31,5 @@ api.add_resource(ValidationAdminResourceById,'/api/validation/<int:id_user>')
 
 
 #qcms élèves
-api.add_resource(QCMaFaireResources,'/api/qcmaFaire')
+api.add_resource(QCMaFaireResources,'/api/qcmaFaireInfos')
+api.add_resource(QMCaFaireQuestionsResources,'/api/qcmaFaire/<int:id_qcm_a_faire>')
