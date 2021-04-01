@@ -5,7 +5,7 @@ from typing import Dict, List, Any
 from app import db, models
 from app.models import Utilisateurs, Groupe, Qcm, QcmEleve
 
-class UtilsateursValidesResource(Resource):
+class ElevesValidesResource(Resource):
     """
     Get tous les utilisateurs dont le compte a déjà été validé
     ---
@@ -19,7 +19,39 @@ class UtilsateursValidesResource(Resource):
     """
         
     def get(self) -> List:
-        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True)
+        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True, Utilisateurs.droit == "Élève")
+        if result.count() == 0:
+            return {'status':404, 'message':'Il n\'y a aucun utilisateur déjà validé.'}
+        else:
+            print(result)
+            users = []
+            for row in result:
+                user = {}
+                user['nom'] = row.nom
+                user['prenom'] = row.prenom
+                user['mail'] = row.mail
+                user['droit'] = row.droit
+                user['groupe'] = row.id_groupe
+                user['id_utilisateur'] = row.id
+                user['nom_groupe'] = get_nom_groupe(row.id_groupe)
+                users.append(user)
+            return {'data':users,'status':200, 'message':'Vous avez récupéré les utilisateurs déjà validés'}
+
+class ProfesseursValidesResource(Resource):
+    """
+    Get tous les utilisateurs dont le compte a déjà été validé
+    ---
+    tags:
+        - Flask API
+    responses:
+        200:
+            description: JSON représentant tous les utilisateurs
+        404:
+            description: Il n'y a aucun utilisateur déjà validé
+    """
+        
+    def get(self) -> List:
+        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True, Utilisateurs.droit == "Professeur")
         if result.count() == 0:
             return {'status':404, 'message':'Il n\'y a aucun utilisateur déjà validé.'}
         else:
