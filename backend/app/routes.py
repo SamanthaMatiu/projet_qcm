@@ -3,8 +3,8 @@ from app import api
 from app.resources.Authentification.register import RegisterResource
 from app.resources.Admin.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, UtilsateursValidesResource
-from app.resources.qcm import QCMRessources
-from app.resources.Prof.gestionqcmprof import QCMProfRessources
+from app.resources.qcm import QCMRessources,QCMRessourcesById
+from app.resources.Prof.gestionqcmprof import QCMProf,ListQCMaCorriger,ListQCMaCorrigerById,ListACorriger
 from app.resources.Authentification.login import LoginResource
 #tests
 
@@ -13,7 +13,11 @@ api.add_resource(LoginResource, '/api/login')
 
 #qcms
 api.add_resource(QCMRessources,'/api/qcm')
-api.add_resource(QCMProfRessources,'/api/qcmProf')
+api.add_resource(QCMRessourcesById,'/api/qcm/<int:id_qcm>')
+api.add_resource(QCMProf,'/api/qcmProf')
+api.add_resource(ListQCMaCorriger,'/api/qcmAcorriger')
+api.add_resource(ListQCMaCorrigerById,'/api/qcmAcorriger/<int:id_qcm>')
+api.add_resource(ListACorriger,'/api/correction')
 
 # Create an account
 api.add_resource(RegisterResource,'/api/register')
