@@ -49,6 +49,7 @@
 
               </div>
             </form>
+            <p class="font-small grey-text d-flex justify-content-center">Tu as un compte ? <router-link to="/connexion"><a class="dark-grey-text font-weight-bold ml-1"> Connexion</a></router-link></p>
           </mdb-card-body>
         </mdb-card>
       </mdb-col>

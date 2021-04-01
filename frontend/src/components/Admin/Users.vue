@@ -3,8 +3,9 @@
     <br><br>
     <div class="row">
       <div class="col-sm-10">
-        <h2>Tous les utilisateurs</h2>
+        <h3>Elèves</h3>
         <hr><br><br>
+        <button type="button" class="btn btn-success btn-sm" v-b-modal.select-modal>Modifier groupe de la sélection</button>
         <table class="table table-hover">
           <thead>
             <tr>
@@ -12,33 +13,60 @@
               <th scope="col">Nom</th>
               <th scope="col">Prénom</th>
               <th scope="col">Mail</th>
-              <th scope="col">Statut</th>
               <th scope="col">Groupe</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(user, index) in users" :key="index">
+            <tr v-for="(user, index) in eleves" :key="index">
               <td><input type="checkbox" :id="user.id_utilisateur" :value="user.id_utilisateur" v-model="selected"></td>
               <td>{{ user.nom }}</td>
               <td>{{ user.prenom }}</td>
               <td>{{ user.mail }}</td>
-              <td>{{ user.droit }}</td>
               <td>{{ user.nom_groupe }}</td>
               <td>
                 <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-warning btn-sm" v-b-modal.modif-groupe-modal @click="getInfosEleve(user)">Modifier groupe</button>
+                  <button type="button" class="btn btn-warning btn-sm" v-b-modal.modif-nomGroupe-modal @click="getInfosEleve(user)">Modifier groupe</button>
                   <button type="button" class="btn btn-danger btn-sm" @click="onDeleteUser(user)">Supprimer</button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.select-modal>Modifier groupe de la sélection</button>
       </div>
     </div>
 
-    <b-modal ref="modifGroupeModal" id="modif-groupe-modal" title="Modification du groupe" hide-footer>
+
+    <div class="row">
+      <div class="col-sm-10">
+        <h3>Professeurs</h3>
+        <hr><br><br>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Nom</th>
+              <th scope="col">Prénom</th>
+              <th scope="col">Mail</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(user, index) in profs" :key="index">
+              <td>{{ user.nom }}</td>
+              <td>{{ user.prenom }}</td>
+              <td>{{ user.mail }}</td>
+              <td>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-danger btn-sm" @click="onDeleteUser(user)">Supprimer</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <b-modal ref="modifGroupeModal" id="modif-nomGroupe-modal" title="Modification du groupe" hide-footer>
       <p class="my-4"><b>Nom :</b> {{ infosUser.nom}} </p>
       <p class="my-4"><b>Prénom :</b> {{ infosUser.prenom}} </p>
       <p class="my-4"><b>Mail :</b> {{ infosUser.mail}} </p>
@@ -69,7 +97,8 @@ export default {
   data() {
     return {
       selected: [],
-      users: [],
+      profs: [],
+      eleves: [],
       groupes: [],
       infosUser : {
         nom: '',
@@ -82,11 +111,22 @@ export default {
     };
   },
   methods: {
-    getUsers() {
-      const path = `http://localhost:5000/api/utilisateursvalides`;
+    getEleves() {
+      const path = `http://localhost:5000/api/elevesvalides`;
       axios.get(path)
         .then((res) => {
-          this.users = res.data['data'];
+          this.eleves = res.data['data'];
+          console.log(res.data['message']);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    getProfs() {
+      const path = `http://localhost:5000/api/professeursvalides`;
+      axios.get(path)
+        .then((res) => {
+          this.profs = res.data['data'];
           console.log(res.data['message']);
         })
         .catch((error) => {
@@ -107,11 +147,11 @@ export default {
       const path = `http://localhost:5000/api/validation/${user_id}`;
       axios.delete(path)
         .then(() => {
-          this.getUsers();
+          this.getEleves();
+          this.getProfs();
         })
         .catch((error) => {
           console.error(error);
-          this.getUsers();
         });
     },
     onDeleteUser(user) {
@@ -124,7 +164,7 @@ export default {
       const path = `http://localhost:5000/api/groupesutilisateurs/${user_id}`;
       axios.patch(path, payload)
         .then(() => {
-          this.getUsers();
+          this.getEleves();
         })
         .catch((error) => {
           console.error(error);
@@ -143,7 +183,8 @@ export default {
     //if (!(localStorage.getItem('token'))){
     //  router.push({ name: "Connexion", params: {}});
     //}
-    this.getUsers();
+    this.getEleves();
+    this.getProfs();
     this.getGroups();
   },
 };
