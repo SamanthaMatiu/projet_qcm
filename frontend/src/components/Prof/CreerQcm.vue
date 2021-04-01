@@ -5,14 +5,27 @@
         <mdb-card>
           <div class="header pt-3 grey lighten-2">
             <mdb-row class="d-flex justify-content-start">
-              <h3 class="deep-grey-text mt-3 mb-4 pb-1 mx-5">Inscription</h3>
+              <h3 class="deep-grey-text mt-3 mb-4 pb-1 mx-5">Création de Qcm</h3>
             </mdb-row>
           </div>
           <mdb-card-body class="mx-4 mt-4">
             <form v-on:submit.prevent="onSubmit">
-              <mdb-input label="Nom" type="text" v-model="userForm.nomauth" required/>
-              <mdb-input label="Prénom" type="text" v-model="userForm.prenomauth" required/>
-              <mdb-input label="Mail" type="email" v-model="userForm.mailauth" required/>
+              <mdb-input label="Titre" type="text" v-model="userForm.nomauth" required/>
+              <mdb-input label="Date de début" type="date" v-model="userForm.prenomauth" required/>
+              <mdb-input label="Date de fin" type="date" v-model="userForm.prenomauth" required/>
+              
+              <mdb-input basic class="mb-3" ariaLabel="Example text with button addon" ariaDescribedBy="button-addon1">
+                <mdb-dropdown slot="prepend">
+                  <mdb-dropdown-toggle color="primary" size="md" slot="toggle" class="z-depth-0">Droits</mdb-dropdown-toggle>
+                  <mdb-dropdown-menu>
+                    <mdb-dropdown-item>Action</mdb-dropdown-item>
+                    <mdb-dropdown-item>Another action</mdb-dropdown-item>
+                    <mdb-dropdown-item>Something else here</mdb-dropdown-item>
+                    <div class="dropdown-divider"></div>
+                    <mdb-dropdown-item>Separated link</mdb-dropdown-item>
+                  </mdb-dropdown-menu>
+                </mdb-dropdown>
+              </mdb-input>
               <mdb-input label="Mot de passe" type="password" v-model="userForm.mdpauth" required/>
               <mdb-input label="Confirmez mot de passe" type="password" v-model="userForm.mdpverif" required/>
               <div v-if="mdpEstIncorrecte">
@@ -58,14 +71,15 @@
 
 <script>
   import axios from 'axios';
-  import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbIcon, mdbModal,
+  import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbModal,
       mdbModalHeader,
       mdbModalTitle,
       mdbModalBody,
-      mdbModalFooter } from 'mdbvue';
+      mdbModalFooter,
+      mdbDropdown, mdbDropdownToggle, mdbDropdownMenu, mdbDropdownItem } from 'mdbvue';
 
   export default { 
-    name: 'FormsPage',
+    name: 'CreationQcm',
     components: {
       mdbModal,
       mdbModalHeader,
@@ -78,8 +92,10 @@
       mdbCardBody,
       mdbInput,
       mdbBtn,
-      // eslint-disable-next-line vue/no-unused-components
-      mdbIcon
+      mdbDropdown,
+      mdbDropdownToggle,
+      mdbDropdownMenu,
+      mdbDropdownItem
     },
     data() {
       return {
@@ -181,4 +197,10 @@
 
   .form-simple input[type=password]:focus:not([readonly]) + label {
     color: #4f4f4f; }
+
+  section.preview {
+      border: 1px solid #e0e0e0;
+      padding: 15px;
+  }
+
 </style>
