@@ -33,7 +33,6 @@
       </div>
     </div> 
   <b-modal ref="validationModal" id="validation-modal" title="Validation compte" hide-footer>
-    <p class="my-4"><b>Nom :</b> {{ infosUser.id_utilisateur}} </p>
     <p class="my-4"><b>Nom :</b> {{ infosUser.nom}} </p>
     <p class="my-4"><b>Prénom :</b> {{ infosUser.prenom}} </p>
     <p class="my-4"><b>Mail :</b> {{ infosUser.mail}} </p>

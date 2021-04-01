@@ -216,12 +216,14 @@ class GestionGroupeByEleveId(Resource):
             return {'status':404, 'message': 'L\'utilisateur que vous tentez de modifier n\'existe pas.'}
         try:
             new_groupe= args['groupe_id']
+            print(new_groupe)
             #Créer la/les liaisons qcm_eleve que va impliquer ce changement de groupe
             #Récupère un élève qui est déjà dans le groupe
             eleve_deja_dans_groupe = Utilisateurs.query.filter(Utilisateurs.id_groupe == new_groupe).first()
+            print(eleve_deja_dans_groupe.nom)
             #Récupère l'élève dont on veut modifier le groupe
             eleve = db.session.query(Utilisateurs).filter_by(id=id_eleve).first()
-
+            print(eleve.nom)
             for qcm in eleve_deja_dans_groupe.qcmeleve:
                 qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
                 add_eleve_to_qcm(eleve,qcm_du_groupe)
