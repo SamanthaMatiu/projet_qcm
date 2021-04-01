@@ -3,7 +3,7 @@ from app import api
 from app.resources.Authentification.register import RegisterResource
 from app.resources.Admin.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.qcm import QCMRessources,QCMRessourcesById
-from app.resources.Prof.gestionqcmprof import QCMProf,ListQCMaCorriger,ListQCMaCorrigerById,ListACorriger
+from app.resources.Prof.gestionqcmprof import QCMProf,ListACorriger,ListACorrigerDetails
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, ElevesValidesResource, ProfesseursValidesResource
 from app.resources.Eleve.qcmafaire import QCMaFaireResources, QMCaFaireQuestionsResources
 from app.resources.Authentification.login import LoginResource
@@ -16,9 +16,8 @@ api.add_resource(LoginResource, '/api/login')
 api.add_resource(QCMRessources,'/api/qcm')
 api.add_resource(QCMRessourcesById,'/api/qcm/<int:id_qcm>')
 api.add_resource(QCMProf,'/api/qcmProf')
-api.add_resource(ListQCMaCorriger,'/api/qcmAcorriger')
-api.add_resource(ListQCMaCorrigerById,'/api/qcmAcorriger/<int:id_qcm>')
-api.add_resource(ListACorriger,'/api/correction')
+api.add_resource(ListACorriger,'/api/consultation')
+api.add_resource(ListACorrigerDetails,'/api/consultation/<int:id_qcm>/<int:id_eleve>')
 
 # Create an account
 api.add_resource(RegisterResource,'/api/register')
