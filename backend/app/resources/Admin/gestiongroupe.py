@@ -266,10 +266,95 @@ class GestionGroupeByEleveId(Resource):
             abort(400)
 
 
+
+
+class GestionGroupeManyEleves(Resource):
+
+    """
+        PATCH pour modifier le groupe de plusieurs élèves en même temps
+        ---
+        tags:
+            - Flask API
+        parameters:
+            - in: body
+              name: eleves qui est un tableau 
+              description: id des utilisateurs dont il faut modifier le groupe
+              required: true
+              type: string
+        responses:
+            200:
+                description: JSON avec un message validant la modification 
+            404:
+                description: Si le groupe n'a pas pu être modifié
+        """
+
+        #Je cherche quelqu'un de ce groupe et ensuite je check tous ses qcm et les ajoute à la nouvelle personne du groupe'
+    def patch(self):
+        datas = request.get_json()
+        try:
+            eleves = datas['eleves']
+            print(eleves)
+            new_groupe= datas['groupe_id']
+            #Créer la/les liaisons qcm_eleve que va impliquer ce changement de groupe
+            #Récupère un élève qui est déjà dans le groupe
+            #eleve_deja_dans_groupe = Utilisateurs.query.filter(Utilisateurs.id_groupe == new_groupe).first()
+            #Récupère l'élève dont on veut modifier le groupe
+            #eleve_a_modifier = db.session.query(Utilisateurs).filter_by(id=eleve.id).first()
+            #print(check_if_group_already_has_eleve_with_qcm(new_groupe))
+            #Si le groupe contient déjà des élèves
+            if(check_if_group_already_has_eleve_with_qcm(new_groupe) != []):
+
+                #Récupère un élève qui est déjà dans le groupe
+                eleve_deja_dans_groupe = Utilisateurs.query.filter(Utilisateurs.id_groupe == new_groupe).first()
+                print(eleve_deja_dans_groupe.nom)
+
+                for eleve in eleves:
+                    print(eleve['id'])
+
+                    #Récupère l'élève dont on veut modifier le groupe
+                    eleve_a_modifier = db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve['id']).first()
+                    print(eleve_a_modifier.nom)
+                    #On met les qcm du groupe à ce nouvelle élève
+                    print(eleve_deja_dans_groupe.qcmeleve)
+                    for qcm in eleve_deja_dans_groupe.qcmeleve:
+                        print(qcm.id_qcm)
+                        qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
+                        add_eleve_to_qcm(eleve_a_modifier,qcm_du_groupe)
+                    #On met le nouveau groupe à l'élève
+                    db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve).update({Utilisateurs.id_groupe: new_groupe}, synchronize_session=False)
+                    db.session.commit()
+            else:
+                for eleve in eleves:
+                  
+           
+                    #On met le nouveau groupe à l'élève
+                    db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve).update({Utilisateurs.id_groupe: new_groupe}, synchronize_session=False)
+                    db.session.commit()
+
+            #for qcm in eleve_deja_dans_groupe.qcmeleve:
+            #    qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
+            #    add_eleve_to_qcm(eleve,qcm_du_groupe)
+             
+           
+            return {'status':200, 'message': 'Vous avez bien modifié le groupe des utilisateurs !'}
+
+        except:
+            abort(400)
+
+
 def abort_if_groupe_is_not_unique(nom_groupe: str):
     already_exists = db.session.query(db.exists().where(Groupe.nom == nom_groupe)).scalar()
     return already_exists
 
+def check_if_group_already_has_eleve_with_qcm(id_groupe:int):
+    print('toto')
+    q = db.session.query(Utilisateurs,QcmEleve).filter(QcmEleve.id_eleve == Utilisateurs.id).filter(Utilisateurs.id_groupe == id_groupe).first()
+    res = db.session.query(db.exists().where(Utilisateurs.id_groupe == id_groupe, )).scalar()
+    return q
+
+def check_if_group_already_has_qcm(id_groupe:int):
+    res = db.session.query(db.exists().where(Utilisateurs.id_groupe == id_groupe)).scalar()
+    return res
 
 def check_group_exists(id_groupe:int):
     groupe_exists = db.session.query(db.exists().where(Groupe.id == id_groupe)).scalar() 
