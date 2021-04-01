@@ -227,6 +227,7 @@ def creation_question(data,QCM):
             question=Question(intitule=questionChoix[x]['titre'],ouverte=ouverte,qcm=QCM)
             db.session.add(question)
             db.session.commit()
+           
             if not (ouverte):
                 for y in questionChoix[x]['choix']:
                     choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)

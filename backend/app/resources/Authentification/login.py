@@ -40,8 +40,10 @@ def token_verif(f):
         try:
             data=jwt.decode(token,app.config['SECRET_KEY'])
             user=db.session.query(models.Utilisateurs).filter_by(mail=data['utilisateur']).first()
+             
         except :
             return {'message': 'Token invalide.'},400
+
         return f(user,*args,**kwargs)
         
     return decorated

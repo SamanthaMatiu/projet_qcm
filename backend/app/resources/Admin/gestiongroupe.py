@@ -3,9 +3,9 @@ from flask_restful import Resource, reqparse, abort
 from typing import Dict, List, Any
 
 from app import db, models
-from app.models import Utilisateurs, Groupe
+from app.models import Utilisateurs, Groupe, Qcm, QcmEleve
 
-class UtilsateursValidesResource(Resource):
+class ElevesValidesResource(Resource):
     """
     Get tous les utilisateurs dont le compte a déjà été validé
     ---
@@ -19,7 +19,7 @@ class UtilsateursValidesResource(Resource):
     """
         
     def get(self) -> List:
-        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True)
+        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True, Utilisateurs.droit == "Élève")
         if result.count() == 0:
             return {'status':404, 'message':'Il n\'y a aucun utilisateur déjà validé.'}
         else:
@@ -33,6 +33,39 @@ class UtilsateursValidesResource(Resource):
                 user['droit'] = row.droit
                 user['groupe'] = row.id_groupe
                 user['id_utilisateur'] = row.id
+                user['nom_groupe'] = get_nom_groupe(row.id_groupe)
+                users.append(user)
+            return {'data':users,'status':200, 'message':'Vous avez récupéré les utilisateurs déjà validés'}
+
+class ProfesseursValidesResource(Resource):
+    """
+    Get tous les utilisateurs dont le compte a déjà été validé
+    ---
+    tags:
+        - Flask API
+    responses:
+        200:
+            description: JSON représentant tous les utilisateurs
+        404:
+            description: Il n'y a aucun utilisateur déjà validé
+    """
+        
+    def get(self) -> List:
+        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True, Utilisateurs.droit == "Professeur")
+        if result.count() == 0:
+            return {'status':404, 'message':'Il n\'y a aucun utilisateur déjà validé.'}
+        else:
+            print(result)
+            users = []
+            for row in result:
+                user = {}
+                user['nom'] = row.nom
+                user['prenom'] = row.prenom
+                user['mail'] = row.mail
+                user['droit'] = row.droit
+                user['groupe'] = row.id_groupe
+                user['id_utilisateur'] = row.id
+                user['nom_groupe'] = get_nom_groupe(row.id_groupe)
                 users.append(user)
             return {'data':users,'status':200, 'message':'Vous avez récupéré les utilisateurs déjà validés'}
 
@@ -156,10 +189,34 @@ class GestionGroupeById(Resource):
             #supprime les groupes des utilisateurs ayant le groupe
             Utilisateurs.query.filter(Utilisateurs.id_groupe == id_groupe).update({Utilisateurs.id_groupe: None}, synchronize_session=False)
             db.session.commit()
+           
             #supprime le groupe
             Groupe.query.filter(Groupe.id == id_groupe).delete()
             db.session.commit()
             return {"status":200, "message": "Vous avez bien supprimé le groupe"}
+
+
+    """
+        Get tous les groupes existants dans la bdd
+        ---
+        tags:
+            - Flask API
+        responses:
+            200:
+                description: JSON représentant tous les groupes
+            404:
+                description: S'il n'y a aucun groupe dans la bdd
+        """
+    def get(self,id_groupe) -> List:
+
+        if(not check_group_exists(id_groupe)):
+            return {'status':404, 'message': 'Le groupe que vous tentez de récupérer n\'existe pas.'}
+    
+        else:
+            result = Groupe.query.filter(Groupe.id == id_groupe).first()
+            groupe = {}
+            groupe['nom_groupe'] = result.nom
+            return {'data':groupe,'status':200, 'message':'Vous avez récupéré le groupe'}
 
 
 class GestionGroupeByEleveId(Resource):
@@ -181,6 +238,8 @@ class GestionGroupeByEleveId(Resource):
             404:
                 description: Si le groupe n'a pas pu être modifié
         """
+
+        #Je cherche quelqu'un de ce groupe et ensuite je check tous ses qcm et les ajoute à la nouvelle personne du groupe'
     def patch(self,id_eleve):
         body_parser = reqparse.RequestParser()
         body_parser.add_argument('groupe_id', type=str, required=False, help="Missing the group name")
@@ -189,6 +248,16 @@ class GestionGroupeByEleveId(Resource):
             return {'status':404, 'message': 'L\'utilisateur que vous tentez de modifier n\'existe pas.'}
         try:
             new_groupe= args['groupe_id']
+            #Créer la/les liaisons qcm_eleve que va impliquer ce changement de groupe
+            #Récupère un élève qui est déjà dans le groupe
+            eleve_deja_dans_groupe = Utilisateurs.query.filter(Utilisateurs.id_groupe == new_groupe).first()
+            #Récupère l'élève dont on veut modifier le groupe
+            eleve = db.session.query(Utilisateurs).filter_by(id=id_eleve).first()
+
+            for qcm in eleve_deja_dans_groupe.qcmeleve:
+                qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
+                add_eleve_to_qcm(eleve,qcm_du_groupe)
+             
             db.session.query(Utilisateurs).filter(Utilisateurs.id == id_eleve).update({Utilisateurs.id_groupe: new_groupe}, synchronize_session=False)
             db.session.commit()
             return {'status':200, 'message': 'Vous avez bien modifié le groupe de l\'utilisateur !'}
@@ -211,5 +280,16 @@ def check_user_exists(id_user: str):
     already_exists = db.session.query(db.exists().where(Utilisateurs.id == id_user)).scalar()
     return already_exists
 
+def add_eleve_to_qcm(eleve,QCM):
+    qcmEleve=QcmEleve(statut='A faire',utilisateurs=eleve,qcm=QCM)
+    db.session.add(qcmEleve)
+    db.session.commit()
 
+
+def get_nom_groupe(id_groupe):
+    groupe = ""
+    if(id_groupe is not None):
+        groupe = Groupe.query.filter(Groupe.id == id_groupe).first().nom
+    print(groupe)
+    return groupe
 
