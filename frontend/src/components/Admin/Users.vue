@@ -177,7 +177,7 @@ export default {
         groupe_id: this.infosUser.groupe,
       };
       this.setGroupe(user, this.infosUser.id_utilisateur);
-    }
+    },
   },
   created() {
     //if (!(localStorage.getItem('token'))){
