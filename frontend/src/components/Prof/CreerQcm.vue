@@ -56,13 +56,16 @@
                       <td>{{ question.titre }}</td>
                       <td v-if="question.ouverte === 0">Choix multiples</td>
                       <td v-if="question.ouverte === 1">Ouverte</td>
+                      <td v-if="question.ouverte === 2"> / </td>
                       <td>
-                        <i class="fas fa-edit" v-on:click="prepModifQuest(question.id)"></i>
                         <i class="fas fa-trash" v-on:click="prepSupprQuest(question.id)"></i>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+              </div>
+              <div v-if="verification.question">
+                <p> Un Qcm est composé d'au moins une question </p><br>
               </div>
 
               <div class="text-center mb-4 mt-5">
@@ -86,15 +89,14 @@
                     <mdb-modal-title>Ajout d'une question</mdb-modal-title>
                   </mdb-modal-header>
                   <mdb-modal-body>
-
                     <mdb-input type="textarea" label="Ecrire votre question" outline :rows="3" v-model="questForm.titre" />
                     
                     <div class="radio-btn">
                       <div>
-                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" radioValue="1" v-model="questForm.radioBtn" label="Question ouverte" required/>
+                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" radioValue="1" v-model="questForm.radioBtn" label="Question ouverte"/>
                       </div>
                       <div>
-                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" radioValue="0" v-model="questForm.radioBtn" label="Question à choix multiples" required/>
+                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" radioValue="0" v-model="questForm.radioBtn" label="Question à choix multiples"/>
                       </div>
                     </div>
 
@@ -122,6 +124,9 @@
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                      <div v-if="verification.choix">
+                        <p> Une question à choix multiple est composé d'au moins deux réponses </p><br>
                       </div>
                     </div>
 
@@ -151,18 +156,6 @@
                   <mdb-modal-footer>
                     <mdb-btn color="success" @click.native="supprimerQuestion">Oui</mdb-btn>
                     <mdb-btn color="blue-grey" @click.native="modal.supprQuestion = false">Non</mdb-btn>
-                  </mdb-modal-footer>
-                </mdb-modal>
-
-                <!-- Pop up modifier question -->
-                <mdb-modal :show="modal.modifQuestion" @close="annulerAjout">
-                  <mdb-modal-header>
-                    <mdb-modal-title>Modification d'une question</mdb-modal-title>
-                  </mdb-modal-header>
-                  <mdb-modal-body>TODO</mdb-modal-body>
-                  <mdb-modal-footer>
-                    <mdb-btn color="success" @click.native="modifierQuestion">Modifier</mdb-btn>
-                    <mdb-btn color="blue-grey" @click.native="annulerAjout">Annuler</mdb-btn>
                   </mdb-modal-footer>
                 </mdb-modal>
 
@@ -206,7 +199,6 @@
           ok: false,
           choix: false,
           supprQuestion: false,
-          modifQuestion: false,
           index: '',
           indexChoix: ''
         },
@@ -228,7 +220,11 @@
         },
         idChoix: 0,
         idQuestion: 0,
-        choix:''
+        choix:'',
+        verification : {
+          question: false,
+          choix: false
+        }
       };
     },
     methods: {
@@ -239,27 +235,39 @@
           .then((res) => {
             this.initForm()
           })
+          .catch((error) => {
+            console.log(error);
+          });
       },
       addQuestion() {
-
         let estOuverte = -1;
         if (this.questForm.radioBtn == "0") {
           estOuverte = 0
         } else if (this.questForm.radioBtn == "1"){
           estOuverte = 1
+        } else {
+          estOuverte = 2
         }
 
-        const q = {
-          id: this.idQuestion,
-          titre: this.questForm.titre,
-          ouverte: estOuverte,
-          choix: this.questForm.choix,
-        }
+        if ((this.questForm.radioBtn == "0") && (this.questForm.choix.length < 2)){
+          this.verification.choix = true
+        } else {
+          const q = {
+            id: this.idQuestion,
+            titre: this.questForm.titre,
+            ouverte: estOuverte,
+            choix: this.questForm.choix,
+          }
 
-        this.qcmForm.questions.push(q)
-        this.idQuestion++
-        this.modal.question = false
-        this.initQuestForm()
+          this.qcmForm.questions.push(q)
+          this.idQuestion++
+          this.modal.question = false
+          this.initQuestForm()
+
+          if(this.verification.question){
+            this.verification.question = false
+          }
+        }
       },
       addChoix() {
         const c = 
@@ -273,6 +281,10 @@
         this.idChoix++
         this.modal.choix = false
         this.choix = ''
+
+        if (this.questForm.choix.length >= 2){
+          this.verification.choix = false
+        }
       },
       initForm() {
         this.qcmForm.titre = '',
@@ -298,21 +310,27 @@
           utilisateur: this.qcmForm.utilisateur,
           questions: this.qcmForm.questions
         };
-        
-        this.addQcm(newQcm);
+        console.log(newQcm)
+        console.log(this.qcmForm)
+
+        if (this.qcmForm.questions.length < 1) {
+          this.verification.question = true
+        } else {
+          this.verification.question = false
+          //this.addQcm(newQcm);
+        }
+
       },
       getDateDebut(){
-        //TODO
+        let date = this.qcmForm.date + " " + this.qcmForm.time.debut
+        return date
       },
       getDateFin(){
-        //TODO
+        let date = this.qcmForm.date + " " + this.qcmForm.time.fin
+        return date
       },
       prepSupprQuest(id) {
         this.modal.supprQuestion = true
-        this.modal.index = id
-      },
-      prepModifQuest(id) {
-        this.modal.modifQuestion = true
         this.modal.index = id
       },
       prepAjoutChoix(id) {
@@ -329,11 +347,6 @@
         const index = this.questForm.choix.findIndex((element) => element == id)
         this.questForm.choix.splice(index, 1)
       },
-      modifierQuestion() {
-        this.supprimerQuestion()
-        this.addQuestion()
-        this.modal.modifQuestion = false
-      },
       annulerAjout() {
         this.initQuestForm()
         this.modal.question = false
@@ -349,6 +362,10 @@
 </script>
 
 <style>
+  p {
+    color: red;
+  }
+
   .btn-ajout-choix {
     margin-top: 20px;
   }
