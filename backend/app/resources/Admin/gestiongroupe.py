@@ -307,7 +307,7 @@ class GestionGroupeManyEleves(Resource):
             for eleve in eleves:
                 eleve_a_check = db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve['id']).first()
                 if(user_already_in_the_group(new_groupe,eleve['id']) is not None):
-                    return {"message": "L\'utilisateur "+eleve_a_check.prenom+" "+eleve_a_check.nom+" est déjà dans le groupe que vous venez de choisir"}
+                    return {"status":404,"message": "L\'utilisateur "+eleve_a_check.prenom+" "+eleve_a_check.nom+" est déjà dans le groupe que vous venez de choisir"}
         
             #Si le groupe contient déjà des élèves avec des qcm
             if(check_if_group_already_has_eleve_with_qcm(new_groupe) is not None):
