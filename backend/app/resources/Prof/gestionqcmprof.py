@@ -57,15 +57,15 @@ def get_qcm(qcm):
     return jsonqcm
 
 def get_qcm_eleve(Qcmeleve):
-    id_qcm=QcmEleve.id_qcm
+    id_qcm=Qcmeleve.id_qcm
     id_eleve=Qcmeleve.utilisateurs
-    questionreponse=[]
+    questionreponses=[]
     for reponse in id_eleve.reponseleve:
-        if reponse.question.id_qcm==id_qcm :
-            if reponse.reponseouverte != none :
-                questionreponse={'question':reponse.question.intitule,'reponse':reponse.reponseouverte}
+        if reponse.question.id_qcm == id_qcm :
+            if (reponse.reponseouverte == None) :
+                questionreponse={'question':reponse.question.intitule,'reponse':reponse.choix.intitule,'estCorrect':reponse.choix.estcorrect}
             else :
-                questionreponse={'question':reponse.question.intitule,'reponse':reponse.id_choix,'estCorrect':reponse.choix.estcorrect}
-            qcmEleve.append(questionreponse)
-    return questionreponse
+                questionreponse={'question':reponse.question.intitule,'reponse':reponse.reponseouverte}
+            questionreponses.append(questionreponse)
+    return questionreponses
 

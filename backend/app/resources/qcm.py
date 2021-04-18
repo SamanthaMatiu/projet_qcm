@@ -107,11 +107,11 @@ class QCMRessources(Resource):
                 db.session.commit()
             ## changement des horraires/dates
             if datas['date_debut'] != "":
-                qcm.date_debut=datetime.strptime(datas['date_debut'],"%d/%m/%Y %H:%M")
+                qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
                 db.session.commit()
 
             if datas['date_fin'] != "":
-                qcm.date_fin=datetime.strptime(datas['date_fin'],"%d/%m/%Y %H:%M")
+                qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
                 db.session.commit()
 
                 ## changement du groupe 
@@ -174,8 +174,8 @@ class QCMRessources(Resource):
         datas=request.get_json()
         try:
             titre=datas['titre']
-            debut=datetime.strptime(datas['date_debut'],"%d/%m/%Y %H:%M")
-            fin=datetime.strptime(datas['date_fin'],"%d/%m/%Y %H:%M")
+            debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
+            fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
             id=user.id
             groupe_id=datas['droit']['groupe']
             eleve_id=datas['droit']['utilisateur']
@@ -231,8 +231,8 @@ def get_qcm(qcm):
             Listchoix.append({'id':choix.id,'choix':choix.intitule,'true':choix.estcorrect})
         temp={'id': question.id ,'titre':question.intitule,'ouverte':question.ouverte,'choix':Listchoix}
         questions.append(temp)
-    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M')
-    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M')
+    date_debut=qcm.date_debut.strftime('%Y-%m-%d %H:%M')
+    date_fin=qcm.date_fin.strftime('%Y-%m-%d %H:%M')
     Listusers=[]
     for eleve in qcm.eleve:
         Listusers.append({'id':eleve.utilisateurs.id})
