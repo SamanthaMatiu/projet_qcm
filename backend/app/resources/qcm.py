@@ -107,11 +107,11 @@ class QCMRessources(Resource):
                 db.session.commit()
             ## changement des horraires/dates
             if datas['date_debut'] != "":
-                qcm.date_debut=datetime.strptime(datas['date_debut'],"%d/%m/%Y %H:%M")
+                qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
                 db.session.commit()
 
             if datas['date_fin'] != "":
-                qcm.date_fin=datetime.strptime(datas['date_fin'],"%d/%m/%Y %H:%M")
+                qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
                 db.session.commit()
 
                 ## changement du groupe 
@@ -135,6 +135,8 @@ class QCMRessources(Resource):
                     ## on change son titre si désiré
                     if question['titre'] != "":
                         quest.intitule=question['titre']
+                    if question['bareme'] != "":
+                        quest.bareme=question['bareme']
                     ## si on souhaite changer le type de question.
                     if question['ouverte'] != "":
                         ## si on passe d'une question ouverte a fermé
@@ -169,13 +171,14 @@ class QCMRessources(Resource):
             return {'status':200,'message': 'Les changements ont été effectués.'}
         except:
             abort(400)
+    
     @token_verif
     def post(user,self):
         datas=request.get_json()
-        try:
+        try: 
             titre=datas['titre']
-            debut=datetime.strptime(datas['date_debut'],"%d/%m/%Y %H:%M")
-            fin=datetime.strptime(datas['date_fin'],"%d/%m/%Y %H:%M")
+            debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
+            fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
             id=user.id
             groupe_id=datas['droit']['groupe']
             eleve_id=datas['droit']['utilisateur']
@@ -195,7 +198,6 @@ class QCMRessources(Resource):
                 for eleves in eleve_id:
                     eleve=db.session.query(Utilisateurs).filter_by(id=eleves['id']).first()
                     add_eleve_to_qcm(eleve,QCM)
-            
             db.session.add(QCM)
             db.session.commit()
             return {'status':201,'message':'QCM créé avec succès !'}
@@ -213,7 +215,7 @@ def creation_question(data,QCM):
                 ouverte=False
             else :
                 ouverte=True
-            question=Question(intitule=questionChoix[x]['titre'],ouverte=ouverte,qcm=QCM)
+            question=Question(intitule=questionChoix[x]['titre'],ouverte=ouverte,bareme=questionChoix[x]['bareme'],qcm=QCM)
             db.session.add(question)
             db.session.commit()
            
@@ -229,10 +231,10 @@ def get_qcm(qcm):
         Listchoix=[]
         for choix in question.choix:
             Listchoix.append({'id':choix.id,'choix':choix.intitule,'true':choix.estcorrect})
-        temp={'id': question.id ,'titre':question.intitule,'ouverte':question.ouverte,'choix':Listchoix}
+        temp={'id': question.id ,'titre':question.intitule,'ouverte':question.ouverte,'bareme': question.bareme,'choix':Listchoix}
         questions.append(temp)
-    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M')
-    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M')
+    date_debut=qcm.date_debut.strftime('%Y-%m-%d %H:%M')
+    date_fin=qcm.date_fin.strftime('%Y-%m-%d %H:%M')
     Listusers=[]
     for eleve in qcm.eleve:
         Listusers.append({'id':eleve.utilisateurs.id})
