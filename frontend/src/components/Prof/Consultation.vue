@@ -13,7 +13,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-on:click="getQcm()">
+            <tr>
               <th scope="row">1</th>
               <td>Mark</td>
               <td>Otto</td>
@@ -67,6 +67,9 @@ export default {
           console.error(error);
         });
     }
+  },
+  created() {
+    this.getQcm()
   }
 }
 </script>
