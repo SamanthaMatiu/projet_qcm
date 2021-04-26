@@ -5,7 +5,6 @@
         <mdb-card>
           <div class="header pt-3 grey lighten-2">
             <mdb-row class="d-flex justify-content-start">
-                <h1> {{ id_qcm }} </h1>
               <h3 class="deep-grey-text mt-3 mb-4 pb-1 mx-5">{{ qcm.titre}}</h3>
             </mdb-row>
           </div>
