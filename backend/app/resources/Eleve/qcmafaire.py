@@ -50,9 +50,10 @@ class QMCaFaireQuestionsResources(Resource):
         """
     @token_verif
     def get(user,self,id_qcm_a_faire):
+        print('toto')
         try:
             if(check_qcm_a_faire_exists(id_qcm_a_faire)):
-        
+                print('toto')
                 qcm_a_faire=Qcm.query.filter(Qcm.id == id_qcm_a_faire).first()
                 print(qcm_a_faire)
                 res = get_qcm_a_faire(qcm_a_faire,user.id)

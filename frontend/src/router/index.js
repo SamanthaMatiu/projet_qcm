@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-
-
-
 Vue.use(VueRouter)
 
 const routes = [
@@ -65,13 +62,31 @@ const routes = [
       }
     ]
   },
-    /** Admin 
+    /** Eleve **/
 
     {
       path: '/dashboardEleve',
       name: 'Eleve',
-      component: () => import('../views/Dashboard/Eleve.vue')
-    }**/
+      component: () => import('../views/Dashboard/Eleve.vue'),
+      redirect: '/dashboardEleve/home',
+      children: [
+        {
+          path: 'home',
+          name: 'HomeEleve',
+          component : () => import('../components/Eleve/Home.vue')
+        },
+        {
+          path: 'afaire',
+          name: 'QcmsAFaire',
+          component : () => import('../components/Eleve/QCMsAFaire.vue')
+        },
+        {
+          path: 'afaire/:id',
+          name: 'RepondreQCM',
+          component : () => import('../components/Eleve/RepondreQCM.vue')
+        }
+      ]
+    }
 ]
 
 const router = new VueRouter({
