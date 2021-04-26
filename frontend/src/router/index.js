@@ -54,19 +54,24 @@ const routes = [
         component : () => import('../components/Prof/Consultation.vue')
       },
       {
+        path: 'detailQcm/:id',
+        name: 'DetailQcm',
+        component : () => import('../components/Prof/DetailQcm.vue')
+      },
+      {
         path: 'correction',
         name: 'Correction',
         component : () => import('../components/Prof/Correction.vue')
       }
     ]
   },
-    /** Admin **/
+    /** Admin 
 
     {
       path: '/dashboardEleve',
       name: 'Eleve',
       component: () => import('../views/Dashboard/Eleve.vue')
-    }
+    }**/
 ]
 
 const router = new VueRouter({

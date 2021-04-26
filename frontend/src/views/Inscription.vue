@@ -144,6 +144,12 @@
 </script>
 
 <style>
+
+  .card .md-form label {
+    font-weight: 300;
+    left: 0;
+  }
+
   p {
     color: red;
   }

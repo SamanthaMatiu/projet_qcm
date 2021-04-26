@@ -4,7 +4,6 @@ import 'mdbvue/build/css/mdb.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import Vue from 'vue'
 import App from './App.vue'
-import { BootstrapVue } from 'bootstrap-vue'
 import router from './router'
 import axios from 'axios'
 

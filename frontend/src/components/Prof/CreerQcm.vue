@@ -1,7 +1,5 @@
 <template>
   <section class="form-simple">
-    <mdb-row>
-      <mdb-col md="5 mx-auto">
         <mdb-card>
           <div class="header pt-3 grey lighten-2">
             <mdb-row class="d-flex justify-content-start">
@@ -10,18 +8,25 @@
           </div>
           <mdb-card-body class="mx-4 mt-4">
             <form v-on:submit.prevent="onSubmit">
-              
               <mdb-input label="Titre" type="text" v-model="qcmForm.titre" required/>
-              <mdb-input label="" type="date" v-model="qcmForm.date" required/>
-              <!--<label class="grey-text">hh:mm AM/PM</label>-->
+
               <mdb-row>
-                <mdb-col col="6 lg-8">
-                  <label class="grey-text heure">Heure de début</label>
-                  <mdb-input label="" type="time" class="time" v-model="qcmForm.time.debut" required/>
+                <mdb-col col="6">
+                  <mdb-input label="" type="date" v-model="qcmForm.date" required/>
                 </mdb-col>
-                <mdb-col col="6 lg-4">
-                  <label class="grey-text heure">Heure de fin</label>
-                  <mdb-input label="" type="time" class="time" v-model="qcmForm.time.fin" required/>
+                <mdb-col col="6">
+
+                  <!--<label class="grey-text">hh:mm AM/PM</label>-->
+                  <mdb-row>
+                    <mdb-col col="6 lg-8">
+                      <label class="grey-text heure">Heure de début</label>
+                      <mdb-input label="" type="time" class="time" v-model="qcmForm.time.debut" required/>
+                    </mdb-col>
+                    <mdb-col col="6 lg-4">
+                      <label class="grey-text heure">Heure de fin</label>
+                      <mdb-input label="" type="time" class="time" v-model="qcmForm.time.fin" required/>
+                    </mdb-col>
+                  </mdb-row>
                 </mdb-col>
               </mdb-row>
               
@@ -66,11 +71,11 @@
                 </table>
               </div>
               <div v-if="verification.question">
-                <p> Un Qcm est composé d'au moins une question </p><br>
+                <p class="unequest"> Un Qcm est composé d'au moins une question </p><br>
               </div>
 
               <div class="text-center mb-4 mt-5">
-                <mdb-btn color="#97adff" type="submit" class="btn-block z-depth-2">Submit</mdb-btn>
+                <mdb-btn color="#97adff" type="submit" v-on:click="submit = true" class="btn-block z-depth-2">Submit</mdb-btn>
               </div>
 
                 <!-- Pop up Utilisateur créé -->
@@ -91,19 +96,19 @@
                   </mdb-modal-header>
                   <mdb-modal-body>
                     <mdb-input type="textarea" label="Ecrire votre question" outline :rows="3" v-model="questForm.titre" />
-                    
+                    <mdb-input label="Barème" type="number" v-model="questForm.bareme" />
                     <div class="radio-btn">
                       <div>
                         Question : 
                       </div>
                       <div>
-                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" v-on:click="verification.typeQuestion = false" radioValue="1" v-model="questForm.radioBtn" label="ouverte"/>
+                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" radioValue="1" v-model="questForm.radioBtn" label="ouverte"/>
                       </div>
                       <div>
-                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" v-on:click="verification.typeQuestion = false" radioValue="0" v-model="questForm.radioBtn" label="à choix multiples"/>
+                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" radioValue="0" v-model="questForm.radioBtn" label="à choix multiples"/>
                       </div>
                     </div>
-                    <div v-if="verification.typeQuestion">
+                    <div v-if="questForm.radioBtn === '3'">
                       <br><p> Choisissez le type de votre question </p>
                     </div>
 
@@ -117,6 +122,7 @@
                           <thead>
                             <tr>
                               <th scope="col">Choix</th>
+                              <th scope="col">Bonne réponse ?</th>
                               <th scope="col">#</th>
                             </tr>
                           </thead>
@@ -124,6 +130,12 @@
                             <tr v-for="choix in questForm.choix" :key="choix.id">
                               <td>
                                 {{ choix.choix }}
+                              </td>
+                              <td v-if="choix.true == 1">
+                                Oui
+                              </td>
+                              <td v-if="choix.true == 0">
+                                Non
                               </td>
                               <td>
                                 <i class="fas fa-trash" v-on:click="supprimerChoix(choix.id)"></i>
@@ -150,16 +162,17 @@
                     <mdb-modal-title>Ajout d'un choix</mdb-modal-title>
                   </mdb-modal-header>
                   <mdb-modal-body>
-                    <mdb-input type="textarea" label="Ecrire votre choix" outline :rows="3" v-model="choix" />
+                    <mdb-input type="textarea" label="Ecrire votre choix" outline :rows="3" v-model="choixForm.choix" />
                     <div class="form-check">
                       <input
                         class="form-check-input"
                         type="checkbox"
-                        value=""
+                        value="oui"
                         id="form2Example3"
-                        checked
+                        v-model="choixForm.estBonneReponse"
                       />
-                      <label class="form-check-label" for="form2Example3">Est-ce la bonne réponse ?</label>
+                      <label class="form-check-label" for="form2Example3">Est-ce une bonne réponse ?</label>
+                     
                     </div>
                   </mdb-modal-body>
                   <mdb-modal-footer>
@@ -187,7 +200,7 @@
                         <thead>
                           <tr>
                             <th scope="col">Choix</th>
-                            <th scope="col">Réponse</th>
+                            <th scope="col">Bonne réponse ?</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -195,7 +208,11 @@
                             <td>
                               {{ choix.choix }}
                             </td>
-                            <td>
+                            <td v-if="choix.true == 1">
+                              Oui
+                            </td>
+                            <td v-if="choix.true == 0">
+                              Non
                             </td>
                           </tr>
                         </tbody>
@@ -208,8 +225,6 @@
             </form>
           </mdb-card-body>
         </mdb-card>
-      </mdb-col>
-    </mdb-row>
   </section>
 </template>
 
@@ -262,22 +277,26 @@
         },
         questForm: {
           titre: '',
+          bareme: '',
           choix: [],
           radioBtn: ''
         },
         idChoix: 0,
         idQuestion: 0,
-        choix:'',
+        choixForm:{
+          choix: '',
+          estBonneReponse: ''
+        },
         verification : {
           question: false,
-          choix: false,
-          typeQuestion: false
+          choix: false
         },
         question: {
           titre: '',
           choix: [],
           radioBtn: ''
-        }
+        },
+        submit: false
       };
     },
     methods: {
@@ -299,18 +318,19 @@
         } else if (this.questForm.radioBtn == "1"){
           estOuverte = 1
         } else {
-          estOuverte = 2
+          estOuverte = 3
         }
 
         if ((estOuverte == 0) && (this.questForm.choix.length < 2)){
           this.verification.choix = true
-        }  else if (estOuverte == 2) {
-          this.verification.typeQuestion = true
+        }  else if (estOuverte == 3) {
+          this.questForm.radioBtn = "3"
         } else {
           const q = {
             id: this.idQuestion,
             titre: this.questForm.titre,
             ouverte: estOuverte,
+            bareme: this.questForm.bareme,
             choix: this.questForm.choix,
           }
 
@@ -325,17 +345,24 @@
         }
       },
       addChoix() {
+        let estBonneReponse
+        if(this.choixForm.estBonneReponse) {
+          estBonneReponse = 1
+        } else {
+          estBonneReponse = 0
+        }
+
         const c = 
         {
           id: this.idChoix,
-          choix: this.choix,
-          true:0
+          choix: this.choixForm.choix,
+          true: estBonneReponse
         }
-
+        
         this.questForm.choix.push(c)
         this.idChoix++
         this.modal.choix = false
-        this.choix = ''
+        this.initChoixForm()
 
         if (this.questForm.choix.length >= 2){
           this.verification.choix = false
@@ -348,32 +375,46 @@
         this.qcmForm.time.fin = '',
         this.qcmForm.groupe = '',
         this.qcmForm.utilisateur = '',
-        this.qcmForm.questions = ''
+        this.qcmForm.questions = '',
+        this.submit = false
       },
       initQuestForm() {
+        this.questForm.titre = '',
+        this.questForm.bareme = '',
+        this.questForm.choix = [],
+        this.questForm.radioBtn = ''
+      },
+      initChoixForm() {
+        this.choixForm.choix = '',
+        this.choixForm.estBonneReponse = ''
+      },
+      choixQuestForm() {
         this.questForm.titre = '',
         this.questForm.choix = [],
         this.questForm.radioBtn = ''
       },
       onSubmit(evt) {
-        evt.preventDefault();
-        const q = JSON.parse(JSON.stringify(this.qcmForm.questions))
-        const newQcm = {
-          titre: this.qcmForm.titre,
-          date_debut: this.getDateDebut(),
-          date_fin: this.getDateFin(),
-          groupe: this.qcmForm.groupe,
-          utilisateur: this.qcmForm.utilisateur,
-          questions: q
-        };
+        if (this.submit) {
+          evt.preventDefault();
+          const q = JSON.parse(JSON.stringify(this.qcmForm.questions))
+          const newQcm = {
+            titre: this.qcmForm.titre,
+            date_debut: this.getDateDebut(),
+            date_fin: this.getDateFin(),
+            groupe: this.qcmForm.groupe,
+            utilisateur: this.qcmForm.utilisateur,
+            questions: q
+          };
 
-        if (this.qcmForm.questions.length < 1) {
-          this.verification.question = true
-        } else {
-          this.verification.question = false
-          console.log(newQcm)
-          this.addQcm(newQcm);
+          if (this.qcmForm.questions.length < 1) {
+            this.verification.question = true
+          } else {
+            this.verification.question = false
+            console.log(newQcm)
+            this.addQcm(newQcm);
+          }
         }
+        
 
       },
       getDateDebut(){
@@ -410,16 +451,13 @@
         this.questForm.choix.splice(index, 1)
       },
       annulerAjout() {
-        if(this.verification.typeQuestion){
-          this.verification.typeQuestion = false
-        }
         this.initQuestForm()
         this.modal.question = false
         this.modal.modifQuestion = false
       },
       annulerAjoutChoix() {
         this.modal.indexChoix = ''
-        this.choix = ''
+        this.initChoixForm()
         this.modal.choix = false
       }
     }
@@ -427,6 +465,25 @@
 </script>
 
 <style>
+
+  .unequest {
+    margin-top: 50px;
+  } 
+
+  .mb-3.input-group {
+    margin-bottom: 2rem !important;
+    margin-top: 1rem;
+  }
+
+  .card {
+    max-width: 50%;
+    left: 25%;
+  }
+
+  .card .md-form label {
+    font-weight: 300;
+    left: 0;
+  }
 
   p {
     color: red;
