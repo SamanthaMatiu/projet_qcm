@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-
-
-
 Vue.use(VueRouter)
 
 const routes = [
@@ -70,13 +67,18 @@ const routes = [
       children: [
         {
           path: 'home',
-          name: 'Home',
+          name: 'HomeEleve',
           component : () => import('../components/Eleve/Home.vue')
         },
         {
           path: 'afaire',
           name: 'QcmsAFaire',
           component : () => import('../components/Eleve/QCMsAFaire.vue')
+        },
+        {
+          path: 'afaire/:id',
+          name: 'RepondreQCM',
+          component : () => import('../components/Eleve/RepondreQCM.vue')
         }
       ]
     }

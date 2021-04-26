@@ -14,7 +14,7 @@ import Navbar from '@/components/Eleve/NavBar.vue'
 import Home from '@/components/Eleve/Home.vue'
 
 export default {
-  name: 'Prof',
+  name: 'Eleve',
   components: {
     Navbar,
     Home
