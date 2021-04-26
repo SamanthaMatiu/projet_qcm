@@ -60,12 +60,25 @@ const routes = [
       }
     ]
   },
-    /** Admin **/
+    /** Eleve **/
 
     {
       path: '/dashboardEleve',
       name: 'Eleve',
-      component: () => import('../views/Dashboard/Eleve.vue')
+      component: () => import('../views/Dashboard/Eleve.vue'),
+      redirect: '/dashboardEleve/home',
+      children: [
+        {
+          path: 'home',
+          name: 'Home',
+          component : () => import('../components/Eleve/Home.vue')
+        },
+        {
+          path: 'afaire',
+          name: 'QcmsAFaire',
+          component : () => import('../components/Eleve/QCMsAFaire.vue')
+        }
+      ]
     }
 ]
 
