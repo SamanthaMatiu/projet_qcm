@@ -21,13 +21,22 @@ class ReponsesQCM(Resource):
     def post(user,self):
         datas=request.get_json()
         try:
-            # Récupère les réponses de l'élève
-            reponses = datas['réponses']
 
             # Récupère l'id de l'élève 
             id=user.id
 
-            if(already_answer_qcm(id,reponses[1]['id_question'])):
+            # Récupère les réponses de l'élève
+            reponses = datas['réponses']
+
+            #Récupère l'id du qcm
+            id_qcm = datas['id']
+        
+            #Récupère le statut du qcm
+            qcm = db.session.query(QcmEleve).filter(QcmEleve.id_qcm == id_qcm, QcmEleve.id_eleve == id).first()
+            statut_qcm = qcm.statut
+        
+
+            if(statut_qcm == "Fait"):
                 return {'status':404,'message':'Vous avez déjà répondu à ce QCM !'}
         
             else:
@@ -52,10 +61,13 @@ class ReponsesQCM(Resource):
                     reponseEleve = ReponseEleve(reponseouverte=reponseouv,choix=choix_eleve,utilisateurs=eleve,question=q)
                     db.session.add(reponseEleve)
                     db.session.commit()
-            
+                
+                db.session.query(QcmEleve).filter(QcmEleve.id_eleve == id, QcmEleve.id_qcm == id_qcm ).update({QcmEleve.statut: "Fait"}, synchronize_session=False)
+                db.session.commit()
+
                 return {'status':200,'message':'Vos réponses ont été enregistrées !'}
         except:
             abort(400)
 
-def already_answer_qcm(eleve_id,question_id):
-    return db.session.query(db.exists().where(ReponseEleve.id_eleve == eleve_id and ReponseEleve.id_question == question_id)).scalar()
+#def already_answer_qcm(eleve_id,question_id):
+#    return db.session.query(db.exists().where(ReponseEleve.id_eleve == eleve_id and ReponseEleve.id_question == question_id)).scalar()
