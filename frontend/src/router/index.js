@@ -66,6 +66,14 @@ const routes = [
       path: '/dashboardEleve',
       name: 'Eleve',
       component: () => import('../views/Dashboard/Eleve.vue')
+    },
+
+    /** Répondre qcm élève **/ 
+    {
+      path: '/repondre/:id',
+      name: 'RepondreQCM',
+      props: true,
+      component: () => import('../components/Eleve/RepondreQcm.vue')
     }
 ]
 
