@@ -6,6 +6,7 @@ from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroup
 from app.resources.qcm import QCMRessources,QCMRessourcesById
 from app.resources.Prof.gestionqcmprof import QCMProf,ListACorriger,ListACorrigerDetails
 from app.resources.Eleve.qcmafaire import QCMaFaireResources, QMCaFaireQuestionsResources
+from app.resources.Eleve.qcmfait import QCMFaitResources, QCMFaitQuestionsResources
 from app.resources.Eleve.postqcmeleve import ReponsesQCM
 from app.resources.Authentification.login import LoginResource
 #tests
@@ -42,3 +43,7 @@ api.add_resource(QMCaFaireQuestionsResources,'/api/qcmaFaire/<int:id_qcm_a_faire
 
 #réponses à un qcm
 api.add_resource(ReponsesQCM,'/api/qcmReponses')
+
+#qcms fait élèves
+api.add_resource(QCMFaitResources,'/api/qcmFaitInfos')
+api.add_resource(QCMFaitQuestionsResources,'/api/qcmFait/<int:id_qcm_fait>')

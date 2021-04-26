@@ -347,7 +347,7 @@ def abort_if_groupe_is_not_unique(nom_groupe: str):
 
 def check_if_group_already_has_eleve_with_qcm(id_groupe:int):
     q = db.session.query(Utilisateurs,QcmEleve).filter(QcmEleve.id_eleve == Utilisateurs.id).filter(Utilisateurs.id_groupe == id_groupe).first()
-    res = db.session.query(db.exists().where(Utilisateurs.id_groupe == id_groupe, )).scalar()
+    res = db.session.query(db.exists().where(Utilisateurs.id_groupe == id_groupe )).scalar()
     return q
 
 def user_already_in_the_group(groupe_id,eleve_id):

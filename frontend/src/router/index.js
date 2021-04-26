@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+
+
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -17,6 +20,14 @@ const routes = [
     path: '/connexion',
     name: 'Connexion',
     component: () => import('../views/Connexion.vue')
+  },
+
+  /** Admin **/
+
+  {
+    path: '/dashboardAdmin',
+    name: 'Admin',
+    component: () => import('../views/Dashboard/Admin.vue')
   },
 
   /** Prof **/
@@ -48,7 +59,14 @@ const routes = [
         component : () => import('../components/Prof/Correction.vue')
       }
     ]
-  }
+  },
+    /** Admin **/
+
+    {
+      path: '/dashboardEleve',
+      name: 'Eleve',
+      component: () => import('../views/Dashboard/Eleve.vue')
+    }
 ]
 
 const router = new VueRouter({
