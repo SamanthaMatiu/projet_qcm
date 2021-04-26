@@ -1,13 +1,13 @@
 <template>
   <div>
     <mdb-navbar position="top" dark color="indigo" scrolling>
-      <mdb-navbar-brand to="/dashboardProf/home">QCM - Bolamano</mdb-navbar-brand>
+      <mdb-navbar-brand to="/dashboardEleve/home">QCM - Bolamano</mdb-navbar-brand>
       <mdb-navbar-toggler>
         <mdb-navbar-nav>
-          <mdb-nav-item to="/dashboardProf/home" waves-fixed>Home</mdb-nav-item>
-          <mdb-nav-item to="/dashboardProf/creation" waves-fixed>QCM à faire</mdb-nav-item>
-          <mdb-nav-item to="/dashboardProf/consultation" waves-fixed>Mes QCMs fait</mdb-nav-item>
-          <mdb-nav-item to="/dashboardProf/correction" waves-fixed>Mes QCMs corrigés</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>Home</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/afaire" waves-fixed>A faire</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>En cours de correction</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>Corrigés</mdb-nav-item>
         </mdb-navbar-nav>
       </mdb-navbar-toggler>
     </mdb-navbar>

@@ -9,7 +9,7 @@ import axios from 'axios'
 
 axios.interceptors.request.use(req => {
   console.log(`${req.method} ${req.url}`);
-  req.headers.common['x-access-tokens'] = localStorage.getItem('token');
+  req.headers.common['x-access-token'] = localStorage.getItem('token');
   return req;
 })
 
