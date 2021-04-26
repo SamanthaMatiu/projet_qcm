@@ -2,7 +2,7 @@ from flask import request,jsonify
 from flask_restful import Resource, reqparse, abort
 from datetime import datetime
 from app import db,app
-from app.models import Qcm,Utilisateurs,Question,Choix,QcmEleve,Groupe
+from app.models import Qcm,Utilisateurs,Question,Choix,QcmEleve,Groupe, ReponseEleve
 from app.resources.Authentification.login import token_verif
 
 
@@ -26,7 +26,7 @@ class ListACorriger(Resource):
             ListeQcmEleve=[]
             for qcm in user.qcm:
                 for qcmeEleve in qcm.eleve :
-                    ListeQcmEleve.append({'id':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
+                    ListeQcmEleve.append({'id qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
             return ListeQcmEleve
         except :
             abort(400)
@@ -57,15 +57,15 @@ def get_qcm(qcm):
     return jsonqcm
 
 def get_qcm_eleve(Qcmeleve):
-    id_qcm=Qcmeleve.id_qcm
+    id_qcm=Qcmeleve.qcm.id
     id_eleve=Qcmeleve.utilisateurs
     questionreponses=[]
     for reponse in id_eleve.reponseleve:
         if reponse.question.id_qcm == id_qcm :
             if (reponse.reponseouverte == None) :
-                questionreponse={'question':reponse.question.intitule,'reponse':reponse.choix.intitule,'estCorrect':reponse.choix.estcorrect}
+                questionreponse={'question':reponse.question.intitule,'reponse':reponse.choix.intitule,'estCorrect':reponse.choix.estcorrect,'bareme':reponse.question.bareme}
             else :
-                questionreponse={'question':reponse.question.intitule,'reponse':reponse.reponseouverte}
+                questionreponse={'question':reponse.question.intitule,'reponse':reponse.reponseouverte,'bareme':reponse.question.bareme}
             questionreponses.append(questionreponse)
     return questionreponses
 
