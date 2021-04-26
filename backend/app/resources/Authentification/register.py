@@ -24,7 +24,7 @@ class RegisterResource(Resource):
                     #Hash le mot de passe
                     hashed_mdp = generate_password_hash(args['mdpauth'], method='sha256')
                     #Crée l'utilisateur
-                    user = Utilisateurs(nom = args['nomauth'], prenom = args['prenomauth'], mail = args['mailauth'], mdp = hashed_mdp, droit = args['droitauth'], valide = False)
+                    user = Utilisateurs(nom = args['nomauth'], prenom = args['prenomauth'], mail = args['mailauth'], mdp = hashed_mdp, droit = args['droitauth'], valide = False, id_groupe = None)
                     #L'ajoute à la bdd
                     db.session.add(user)
                     db.session.commit()
