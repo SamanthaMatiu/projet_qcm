@@ -58,6 +58,7 @@
                       <td v-if="question.ouverte === 1">Ouverte</td>
                       <td v-if="question.ouverte === 2"> / </td>
                       <td>
+                        <i v-if="question.ouverte === 0" class="fas fa-eye" v-on:click="getQuestChoixMult(question)"></i>
                         <i class="fas fa-trash" v-on:click="prepSupprQuest(question.id)"></i>
                       </td>
                     </tr>
@@ -93,11 +94,17 @@
                     
                     <div class="radio-btn">
                       <div>
-                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" radioValue="1" v-model="questForm.radioBtn" label="Question ouverte"/>
+                        Question : 
                       </div>
                       <div>
-                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" radioValue="0" v-model="questForm.radioBtn" label="Question à choix multiples"/>
+                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" v-on:click="verification.typeQuestion = false" radioValue="1" v-model="questForm.radioBtn" label="ouverte"/>
                       </div>
+                      <div>
+                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" v-on:click="verification.typeQuestion = false" radioValue="0" v-model="questForm.radioBtn" label="à choix multiples"/>
+                      </div>
+                    </div>
+                    <div v-if="verification.typeQuestion">
+                      <br><p> Choisissez le type de votre question </p>
                     </div>
 
                     <!-- si c'est une question à choix multiple -->
@@ -137,13 +144,23 @@
                   </mdb-modal-footer>
                 </mdb-modal>
 
-                 <!-- Pop up créer choix -->
+                <!-- Pop up créer choix -->
                 <mdb-modal :show="modal.choix" @close="annulerAjoutChoix">
                   <mdb-modal-header>
                     <mdb-modal-title>Ajout d'un choix</mdb-modal-title>
                   </mdb-modal-header>
                   <mdb-modal-body>
                     <mdb-input type="textarea" label="Ecrire votre choix" outline :rows="3" v-model="choix" />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        value=""
+                        id="form2Example3"
+                        checked
+                      />
+                      <label class="form-check-label" for="form2Example3">Est-ce la bonne réponse ?</label>
+                    </div>
                   </mdb-modal-body>
                   <mdb-modal-footer>
                     <mdb-btn color="success" @click.native="addChoix">Ajouter</mdb-btn>
@@ -158,6 +175,35 @@
                     <mdb-btn color="blue-grey" @click.native="modal.supprQuestion = false">Non</mdb-btn>
                   </mdb-modal-footer>
                 </mdb-modal>
+
+                 <!-- Pop up visualisation choix multiples -->
+                <mdb-modal :show="modal.visuChoixMult" @close="modal.visuChoixMult = false">
+                  <mdb-modal-header>
+                    <mdb-modal-title>{{question.titre}}</mdb-modal-title>
+                  </mdb-modal-header>
+                  <mdb-modal-body>                 
+                    <div v-if="question.choix.length">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Choix</th>
+                            <th scope="col">Réponse</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="choix in question.choix" :key="choix.id">
+                            <td>
+                              {{ choix.choix }}
+                            </td>
+                            <td>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </mdb-modal-body>
+                </mdb-modal>
+
 
             </form>
           </mdb-card-body>
@@ -199,6 +245,7 @@
           ok: false,
           choix: false,
           supprQuestion: false,
+          visuChoixMult: false,
           index: '',
           indexChoix: ''
         },
@@ -223,7 +270,13 @@
         choix:'',
         verification : {
           question: false,
-          choix: false
+          choix: false,
+          typeQuestion: false
+        },
+        question: {
+          titre: '',
+          choix: [],
+          radioBtn: ''
         }
       };
     },
@@ -249,8 +302,10 @@
           estOuverte = 2
         }
 
-        if ((this.questForm.radioBtn == "0") && (this.questForm.choix.length < 2)){
+        if ((estOuverte == 0) && (this.questForm.choix.length < 2)){
           this.verification.choix = true
+        }  else if (estOuverte == 2) {
+          this.verification.typeQuestion = true
         } else {
           const q = {
             id: this.idQuestion,
@@ -302,22 +357,22 @@
       },
       onSubmit(evt) {
         evt.preventDefault();
+        const q = JSON.parse(JSON.stringify(this.qcmForm.questions))
         const newQcm = {
           titre: this.qcmForm.titre,
           date_debut: this.getDateDebut(),
           date_fin: this.getDateFin(),
           groupe: this.qcmForm.groupe,
           utilisateur: this.qcmForm.utilisateur,
-          questions: this.qcmForm.questions
+          questions: q
         };
-        console.log(newQcm)
-        console.log(this.qcmForm)
 
         if (this.qcmForm.questions.length < 1) {
           this.verification.question = true
         } else {
           this.verification.question = false
-          //this.addQcm(newQcm);
+          console.log(newQcm)
+          this.addQcm(newQcm);
         }
 
       },
@@ -329,6 +384,12 @@
         let date = this.qcmForm.date + " " + this.qcmForm.time.fin
         return date
       },
+      getQuestChoixMult(question){
+        this.question.titre = question.titre
+        this.question.choix = question.choix
+        this.question.radioBtn = question.radioBtn
+        this.modal.visuChoixMult = true
+      },
       prepSupprQuest(id) {
         this.modal.supprQuestion = true
         this.modal.index = id
@@ -338,16 +399,20 @@
         this.modal.indexChoix = id
       },
       supprimerQuestion() {
-        const index = this.qcmForm.questions.findIndex((element) => element == this.modal.index)
+        const index = this.qcmForm.questions.findIndex((element) => element.id == this.modal.index)
+
         this.qcmForm.questions.splice(index, 1)
         this.modal.index = ''
         this.modal.supprQuestion = false
       },
       supprimerChoix(id) {
-        const index = this.questForm.choix.findIndex((element) => element == id)
+        const index = this.questForm.choix.findIndex((element) => element.id == id)
         this.questForm.choix.splice(index, 1)
       },
       annulerAjout() {
+        if(this.verification.typeQuestion){
+          this.verification.typeQuestion = false
+        }
         this.initQuestForm()
         this.modal.question = false
         this.modal.modifQuestion = false
@@ -362,6 +427,7 @@
 </script>
 
 <style>
+
   p {
     color: red;
   }
