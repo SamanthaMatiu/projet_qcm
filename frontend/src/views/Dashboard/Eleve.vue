@@ -11,13 +11,11 @@
 /* eslint-disable vue/no-unused-components */
 
 import Navbar from '@/components/Eleve/NavBar.vue'
-import Home from '@/components/Eleve/Home.vue'
 
 export default {
   name: 'Eleve',
   components: {
-    Navbar,
-    Home
+    Navbar
   }
 }
 </script>
