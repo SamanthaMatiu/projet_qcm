@@ -23,22 +23,28 @@
            
            <br>
             <form v-on:submit.prevent="onSubmit">
-                <div v-for="(question,id) in qcm.questions" :key="id">
+                <div v-for="(question,index) in qcm.questions" :key="index">
                 <h3> {{question.titre}} </h3>
-                <mdb-input v-if = question.ouverte label="Tapez votre réponse ici" v-bind:key = question.choix.id  required/>
+                <mdb-input v-model="reponseOuverteForm.id[question.id]" v-if = question.ouverte label="Tapez votre réponse ici" required/>
+                {{ reponseOuverteForm.id[question.id]}}
+             
                 <br>
                 <div v-if = !question.ouverte >
-                    <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                    <mdb-input class="" type="checkbox" id="choix" /> <label class="" for="choix">{{ choix.choix }} </label>
+                    <div v-for="(c,index) in question.choix" :key="index" class="justify-content-start">
+                    <input type="checkbox" :value="c.id" :id="'choix_'+c.id" v-model="selected" /> <!-- @change="addChoix.push({reponseouverte:'',id_question:question.id,id_choix:c.id})" -->
+                    <label >{{ c.choix}} {{index}}</label>
+                                        
+
                     </div>
-                    <br>
+                    
                     
                 </div>
                 <br>
                 </div>
+                <span>cases cochées: {{ selected }} {{ selected.id }}</span>
             
                 <div class="text-center mb-4 mt-5">
-                <mdb-btn color="#97adff" type="submit" class="btn-block z-depth-2">Valider vos réponses</mdb-btn>
+                <mdb-btn color="#97adff" type="submit" v-on:click="submit = true"  class="btn-block z-depth-2">Valider vos réponses</mdb-btn>
 
                 <!-- Pop up Utilisateur créé -->
                 <mdb-modal :show="modalOk" @close="modalOk = false">
@@ -73,6 +79,8 @@
 
 <script>
   import axios from 'axios';
+  import router from '../../router';
+
   import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbModal,
       mdbModalHeader,
       mdbModalTitle,
@@ -100,24 +108,32 @@
     ],
     data() {
       return {
-        radioBtn: '',
+        selected: [],
+        addChoix: [],
+        modalQCM: false,
         modalOk: false,
-        modalUserExist: false,
-        mdpEstIncorrecte: false,
-        userForm: {
-          nomauth: '',
-          prenomauth: '',
-          mailauth: '',
-          mdpauth: '',
-          mdpverif: ''
-        },
+
         qcm: {},
         id_qcm: this.$route.params.id,
+        qcmForm: {
+          id_question: '',
+          titre: '',
+          reponses: []
+        },
+        reponsesForm: {
+          reponseouverte:'',
+          id_choix:'',
+          id_eleve:'',
+          id_question:''
+        },
+        reponseOuverteForm: {
+          id: []
+        },
+        submit : false
       };
     },
     methods: {
-      onSubmit(evt) {
-        evt.preventDefault();
+      addQcmReponses(data) {
         const path = `http://localhost:5000/api/qcmReponses`;
         axios.post(path, data).
         then((res) => {
@@ -128,8 +144,101 @@
             this.modalOk = true
             router.push({ name: "Eleve", params: {}});
           }
-
         });
+      },
+      
+      initQcmForm() {
+        this.qcmForm = {
+          id_question: '',
+          titre: '',
+          reponses: []
+        }
+      },
+
+      initReponseOuverteForm() {
+        this.reponseOuverteForm = {id:[]}
+      },
+
+      initReponsesForm() {
+        this.reponsesForm = {
+              reponseouverte:'',
+              id_choix:'',
+              id_eleve:'',
+              id_question:''
+            }
+      },
+
+      addReponseOuverte() {
+        for (let i = 0; i < this.qcm.questions.length; i++) {
+          this.initReponsesForm()
+          console.log('coucou')
+          console.log(this.qcm.questions[i].ouverte)
+          if(this.qcm.questions[i].ouverte == true) {
+            console.log('lardon')
+            this.reponsesForm.reponseouverte = this.reponseOuverteForm.id[this.qcm.questions[i].id]
+            this.reponsesForm.id_choix = null
+            this.reponsesForm.id_eleve = this.qcm.id_eleve
+            this.reponsesForm.id_question= this.qcm.questions[i].id
+            this.qcmForm.reponses.push(this.reponsesForm)
+          }
+
+        }
+      },
+
+     
+      onSubmit(evt) {
+        if(this.submit) {
+          evt.preventDefault();
+          //Add réponses choix
+          console.log(this.addChoix.length)
+          /*for (let i = 0; i < this.addChoix.length; i++) {
+            this.initReponsesForm()
+            this.reponsesForm.reponseouverte = this.addChoix[i].reponseouverte
+            this.reponsesForm.id_choix = this.addChoix[i].id_choix
+            this.reponsesForm.id_eleve = this.qcm.id_eleve
+            this.reponsesForm.id_question= this.addChoix[i].id_question
+            this.qcmForm.reponses.push(this.reponsesForm)
+          }*/
+          this.addReponseOuverte()
+          //const r = JSON.parse(JSON.stringify(this.qcmForm.reponses))
+          //const newQcmReponses = {
+          //  id: this.qcmForm.id,
+          //  titre: this.qcmForm.titre,
+          //  reponses: r
+          //};
+          console.log('selected')
+
+          for (let i = 0; i < this.qcm.questions.length; i++) {
+            
+            if(this.qcm.questions[i].ouverte == false) {
+
+              for (let j = 0; j < this.qcm.questions[i].choix.length; j ++){
+                this.initReponsesForm()
+                for(let k = 0; k < this.selected.length; k ++) {
+
+                  if(this.selected[k] == this.qcm.questions[i].choix[j].id) {
+                    this.reponsesForm.reponseouverte = ''
+                    this.reponsesForm.id_choix = this.selected[k]
+                    this.reponsesForm.id_eleve = this.qcm.id_eleve
+                    this.reponsesForm.id_question= this.qcm.questions[i].id
+                    this.qcmForm.reponses.push(this.reponsesForm)
+                  }
+                }
+              }
+            }
+          }
+          console.log(this.selected)
+          //console.log('addChoix')
+          //console.log(this.addChoix)
+          console.log('toutes les réponses')
+          console.log(this.qcmForm.reponses)
+          //this.addQcmReponses(newQcmReponses)
+          this.initReponseOuverteForm()
+          this.initReponsesForm()
+          this.initQcmForm()
+          this.addChoix = []
+        
+        }
       }
     },
     async created(){
@@ -139,6 +248,7 @@
         console.log(res.data)}) //this.todos = res.data
         .catch(err => console.log(err));
     },
+ 
   }
 </script>
 
