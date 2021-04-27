@@ -177,8 +177,8 @@ class QCMRessources(Resource):
         datas=request.get_json()
         try: 
             titre=datas['titre']
-            debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
-            fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
+            debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M:%S")
+            fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M:%S")
             id=user.id
             groupe_id=datas['droit']['groupe']
             eleve_id=datas['droit']['utilisateur']
@@ -189,7 +189,9 @@ class QCMRessources(Resource):
             prof=db.session.query(Utilisateurs).filter_by(id=id).first()
             ##création du QCM
             QCM=Qcm(titre=titre,date_debut=debut,date_fin=fin,utilisateurs=prof)
+            print(datas['questions'])
             creation_question(datas['questions'],QCM)
+            print('questions crées')
             ## On ajoute les élèves d'un groupe ou un élève seulement
             if groupe_id != "":
                 for groupe in groupe_id:
@@ -210,20 +212,19 @@ def exist_qcm(titre,debut,fin,id_prof):
 
 def creation_question(data,QCM):
     for questionChoix in data:
-        for x in questionChoix:
-            if questionChoix[x]['ouverte']==0:
-                ouverte=False
-            else :
-                ouverte=True
-            question=Question(intitule=questionChoix[x]['titre'],ouverte=ouverte,bareme=questionChoix[x]['bareme'],qcm=QCM)
-            db.session.add(question)
-            db.session.commit()
-           
-            if not (ouverte):
-                for y in questionChoix[x]['choix']:
-                    choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)
-                    db.session.add(choix)
-                    db.session.commit()
+        if questionChoix['ouverte']==0:
+            ouverte=False
+        else :
+            ouverte=True
+        question=Question(intitule=questionChoix['titre'],ouverte=ouverte,bareme=questionChoix['bareme'],qcm=QCM)
+        db.session.add(question)
+        db.session.commit()
+
+        if not (ouverte):
+            for y in questionChoix['choix']:
+                choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)
+                db.session.add(choix)
+                db.session.commit()
     
 def get_qcm(qcm):
     questions=[]
