@@ -1,7 +1,5 @@
 <template>
   <section class="form-simple">
-    <mdb-row>
-      <mdb-col md="5 mx-auto">
         <mdb-card>
           <div class="header pt-3 grey lighten-2">
             <mdb-row class="d-flex justify-content-start">
@@ -10,13 +8,32 @@
           </div>
           <mdb-card-body class="mx-4 mt-4">
             <form v-on:submit.prevent="onSubmit">
-              <mdb-input label="Titre" type="text" v-model="userForm.nomauth" required/>
-              <mdb-input label="Date de début" type="date" v-model="userForm.prenomauth" required/>
-              <mdb-input label="Date de fin" type="date" v-model="userForm.prenomauth" required/>
+              <mdb-input label="Titre" type="text" v-model="qcmForm.titre" required/>
+
+              <mdb-row>
+                <mdb-col col="6">
+                  <mdb-input label="" type="date" v-model="qcmForm.date" required/>
+                </mdb-col>
+                <mdb-col col="6">
+
+                  <!--<label class="grey-text">hh:mm AM/PM</label>-->
+                  <mdb-row>
+                    <mdb-col col="6 lg-8">
+                      <label class="grey-text heure">Heure de début</label>
+                      <mdb-input label="" type="time" class="time" v-model="qcmForm.time.debut" required/>
+                    </mdb-col>
+                    <mdb-col col="6 lg-4">
+                      <label class="grey-text heure">Heure de fin</label>
+                      <mdb-input label="" type="time" class="time" v-model="qcmForm.time.fin" required/>
+                    </mdb-col>
+                  </mdb-row>
+                </mdb-col>
+              </mdb-row>
               
+              <!-- Dropdown : TODO v-for sur groupe/user -->
               <mdb-input basic class="mb-3" ariaLabel="Example text with button addon" ariaDescribedBy="button-addon1">
                 <mdb-dropdown slot="prepend">
-                  <mdb-dropdown-toggle color="primary" size="md" slot="toggle" class="z-depth-0">Droits</mdb-dropdown-toggle>
+                  <mdb-dropdown-toggle color="#97adff" size="md" slot="toggle" class="z-depth-0">Droits</mdb-dropdown-toggle>
                   <mdb-dropdown-menu>
                     <mdb-dropdown-item>Action</mdb-dropdown-item>
                     <mdb-dropdown-item>Another action</mdb-dropdown-item>
@@ -26,56 +43,195 @@
                   </mdb-dropdown-menu>
                 </mdb-dropdown>
               </mdb-input>
-              <mdb-input label="Mot de passe" type="password" v-model="userForm.mdpauth" required/>
-              <mdb-input label="Confirmez mot de passe" type="password" v-model="userForm.mdpverif" required/>
-              <div v-if="mdpEstIncorrecte">
-                <p> Les deux mots de passe ne sont pas identiques</p><br>
+
+              <!-- Questions -->
+              <label class="grey-text">Ajouter des questions</label> 
+              <i class="fas fa-plus-circle" v-on:click="modal.question = true"></i>
+              <div v-if="qcmForm.questions.length">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Question</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="question in qcmForm.questions" :key="question.id">
+                      <td>{{ question.titre }}</td>
+                      <td v-if="question.ouverte === 0">Choix multiples</td>
+                      <td v-if="question.ouverte === 1">Ouverte</td>
+                      <td v-if="question.ouverte === 2"> / </td>
+                      <td>
+                        <i v-if="question.ouverte === 0" class="fas fa-eye" v-on:click="getQuestChoixMult(question)"></i>
+                        <i class="fas fa-trash" v-on:click="prepSupprQuest(question.id)"></i>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div class="radio-btn">
-                  <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" radioValue="Professeur" v-model="radioBtn" label="Professeur" required/>
-                  <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" radioValue="Élève" v-model="radioBtn" label="Élève" required/>
+              <div v-if="verification.question">
+                <p class="unequest"> Un Qcm est composé d'au moins une question </p><br>
               </div>
+
               <div class="text-center mb-4 mt-5">
-                <mdb-btn color="#97adff" type="submit" class="btn-block z-depth-2">S'inscrire</mdb-btn>
+                <mdb-btn color="#97adff" type="submit" v-on:click="submit = true" class="btn-block z-depth-2">Submit</mdb-btn>
+              </div>
 
                 <!-- Pop up Utilisateur créé -->
-                <mdb-modal :show="modalOk" @close="modalOk = false">
+                <mdb-modal :show="modal.ok" @close="modal.ok = false">
                   <mdb-modal-header>
                     <mdb-modal-title>Utilisateur créer !</mdb-modal-title>
                   </mdb-modal-header>
                   <mdb-modal-body>Vous devez attendre que votre compte soit validé.</mdb-modal-body>
                   <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modalOk = false">Ok</mdb-btn>
+                    <mdb-btn color="secondary" @click.native="modal.ok = false">Ok</mdb-btn>
                   </mdb-modal-footer>
                 </mdb-modal>
 
-                <!-- Pop up Utilisateur existe déjà -->
-                <mdb-modal :show="modalUserExist" @close="modalUserExist = false">
+                <!-- Pop up créer question -->
+                <mdb-modal :show="modal.question" @close="annulerAjout">
                   <mdb-modal-header>
-                    <mdb-modal-title>Oh oh !</mdb-modal-title>
+                    <mdb-modal-title>Ajout d'une question</mdb-modal-title>
                   </mdb-modal-header>
-                  <mdb-modal-body>Un compte à déjà été créé avec cet adresse email</mdb-modal-body>
+                  <mdb-modal-body>
+                    <mdb-input type="textarea" label="Ecrire votre question" outline :rows="3" v-model="questForm.titre" />
+                    <mdb-input label="Barème" type="number" v-model="questForm.bareme" />
+                    <div class="radio-btn">
+                      <div>
+                        Question : 
+                      </div>
+                      <div>
+                        <mdb-input type="radio" id="option-1" name="groupOfMaterialRadios" radioValue="1" v-model="questForm.radioBtn" label="ouverte"/>
+                      </div>
+                      <div>
+                        <mdb-input type="radio" id="option-2" name="groupOfMaterialRadios" radioValue="0" v-model="questForm.radioBtn" label="à choix multiples"/>
+                      </div>
+                    </div>
+                    <div v-if="questForm.radioBtn === '3'">
+                      <br><p> Choisissez le type de votre question </p>
+                    </div>
+
+                    <!-- si c'est une question à choix multiple -->
+                    <div class="btn-ajout-choix" v-if="questForm.radioBtn === '0'">
+                      <label class="grey-text">Ajouter un choix</label> 
+                      <i class="fas fa-plus-circle" v-on:click="prepAjoutChoix"></i>
+                    
+                      <div v-if="questForm.choix.length">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col">Choix</th>
+                              <th scope="col">Bonne réponse ?</th>
+                              <th scope="col">#</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="choix in questForm.choix" :key="choix.id">
+                              <td>
+                                {{ choix.choix }}
+                              </td>
+                              <td v-if="choix.true == 1">
+                                Oui
+                              </td>
+                              <td v-if="choix.true == 0">
+                                Non
+                              </td>
+                              <td>
+                                <i class="fas fa-trash" v-on:click="supprimerChoix(choix.id)"></i>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div v-if="verification.choix">
+                        <p> Une question à choix multiple est composé d'au moins deux réponses </p><br>
+                      </div>
+                    </div>
+
+                  </mdb-modal-body>
                   <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modalUserExist = false">Ok</mdb-btn>
+                    <mdb-btn color="success" @click.native="addQuestion">Ajouter</mdb-btn>
+                    <mdb-btn color="blue-grey" @click.native="annulerAjout">Annuler</mdb-btn>
                   </mdb-modal-footer>
                 </mdb-modal>
 
-              </div>
+                <!-- Pop up créer choix -->
+                <mdb-modal :show="modal.choix" @close="annulerAjoutChoix">
+                  <mdb-modal-header>
+                    <mdb-modal-title>Ajout d'un choix</mdb-modal-title>
+                  </mdb-modal-header>
+                  <mdb-modal-body>
+                    <mdb-input type="textarea" label="Ecrire votre choix" outline :rows="3" v-model="choixForm.choix" />
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        value="oui"
+                        id="form2Example3"
+                        v-model="choixForm.estBonneReponse"
+                      />
+                      <label class="form-check-label" for="form2Example3">Est-ce une bonne réponse ?</label>
+                     
+                    </div>
+                  </mdb-modal-body>
+                  <mdb-modal-footer>
+                    <mdb-btn color="success" @click.native="addChoix">Ajouter</mdb-btn>
+                  </mdb-modal-footer>
+                </mdb-modal>
+
+                <!-- Pop up supprimer question -->
+                <mdb-modal :show="modal.supprQuestion" @close="modal.supprQuestion = false">
+                  <mdb-modal-body>Voulez-vous vraiment supprimer cette question ?</mdb-modal-body>
+                  <mdb-modal-footer>
+                    <mdb-btn color="success" @click.native="supprimerQuestion">Oui</mdb-btn>
+                    <mdb-btn color="blue-grey" @click.native="modal.supprQuestion = false">Non</mdb-btn>
+                  </mdb-modal-footer>
+                </mdb-modal>
+
+                 <!-- Pop up visualisation choix multiples -->
+                <mdb-modal :show="modal.visuChoixMult" @close="modal.visuChoixMult = false">
+                  <mdb-modal-header>
+                    <mdb-modal-title>{{question.titre}}</mdb-modal-title>
+                  </mdb-modal-header>
+                  <mdb-modal-body>                 
+                    <div v-if="question.choix.length">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Choix</th>
+                            <th scope="col">Bonne réponse ?</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="choix in question.choix" :key="choix.id">
+                            <td>
+                              {{ choix.choix }}
+                            </td>
+                            <td v-if="choix.true == 1">
+                              Oui
+                            </td>
+                            <td v-if="choix.true == 0">
+                              Non
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </mdb-modal-body>
+                </mdb-modal>
+
+
             </form>
           </mdb-card-body>
         </mdb-card>
-      </mdb-col>
-    </mdb-row>
   </section>
 </template>
 
 <script>
   import axios from 'axios';
   import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbModal,
-      mdbModalHeader,
-      mdbModalTitle,
-      mdbModalBody,
-      mdbModalFooter,
+      mdbModalHeader, mdbModalTitle, mdbModalBody, mdbModalFooter,
       mdbDropdown, mdbDropdownToggle, mdbDropdownMenu, mdbDropdownItem } from 'mdbvue';
 
   export default { 
@@ -99,77 +255,285 @@
     },
     data() {
       return {
-        radioBtn: '',
-        modalOk: false,
-        modalUserExist: false,
-        mdpEstIncorrecte: false,
-        userForm: {
-          nomauth: '',
-          prenomauth: '',
-          mailauth: '',
-          mdpauth: '',
-          mdpverif: ''
-        } 
+        modal: {
+          question: false,
+          ok: false,
+          choix: false,
+          supprQuestion: false,
+          visuChoixMult: false,
+          index: '',
+          indexChoix: ''
+        },
+        qcmForm: {
+          titre: '',
+          date:'',
+          time: {
+            debut:'',
+            fin:''
+          },
+          groupe: '', //{"id":6}
+          utilisateur: '', //{"id":6}
+          questions: []
+        },
+        questForm: {
+          titre: '',
+          bareme: '',
+          choix: [],
+          radioBtn: ''
+        },
+        idChoix: 0,
+        idQuestion: 0,
+        choixForm:{
+          choix: '',
+          estBonneReponse: ''
+        },
+        verification : {
+          question: false,
+          choix: false
+        },
+        question: {
+          titre: '',
+          choix: [],
+          radioBtn: ''
+        },
+        submit: false
       };
     },
     methods: {
-      addUser(data) {
-        const path = `http://localhost:5000/api/register`;
+      addQcm(data) {
+        const path = `http://localhost:5000/api/qcm`;
         axios.post(path, data)
-        .then((res) => {
-          if (res.data.status == 404){
-            this.modalUserExist = true
-          } else {
-            this.modalOk = true
-            this.initForm();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+          // eslint-disable-next-line no-unused-vars
+          .then((res) => {
+            this.initForm()
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       },
-      initForm() {
-        this.mdpEstIncorrecte = false,
-        this.radioBtn = '',
-        this.userForm.nomauth = '',
-        this.userForm.prenomauth = '',
-        this.userForm.mailauth = '',
-        this.userForm.mdpauth = '',
-        this.userForm.mdpverif = '',
-        this.userForm.droitauth = ''
-      },
-      onSubmit(evt) {
-        evt.preventDefault();
-        if (this.userForm.mdpauth == this.userForm.mdpverif) {
-          const newUser = {
-            nomauth: this.userForm.nomauth,
-            prenomauth: this.userForm.prenomauth,
-            mailauth: this.userForm.mailauth,
-            mdpauth: this.userForm.mdpauth,
-            droitauth: this.radioBtn,
-          };
-          this.addUser(newUser);
+      addQuestion() {
+        let estOuverte = -1;
+        if (this.questForm.radioBtn == "0") {
+          estOuverte = 0
+        } else if (this.questForm.radioBtn == "1"){
+          estOuverte = 1
         } else {
-          this.mdpEstIncorrecte = true
+          estOuverte = 3
+        }
+
+        if ((estOuverte == 0) && (this.questForm.choix.length < 2)){
+          this.verification.choix = true
+        }  else if (estOuverte == 3) {
+          this.questForm.radioBtn = "3"
+        } else {
+          const q = {
+            id: this.idQuestion,
+            titre: this.questForm.titre,
+            ouverte: estOuverte,
+            bareme: this.questForm.bareme,
+            choix: this.questForm.choix,
+          }
+
+          this.qcmForm.questions.push(q)
+          this.idQuestion++
+          this.modal.question = false
+          this.initQuestForm()
+
+          if(this.verification.question){
+            this.verification.question = false
+          }
+        }
+      },
+      addChoix() {
+        let estBonneReponse
+        if(this.choixForm.estBonneReponse) {
+          estBonneReponse = 1
+        } else {
+          estBonneReponse = 0
+        }
+
+        const c = 
+        {
+          id: this.idChoix,
+          choix: this.choixForm.choix,
+          true: estBonneReponse
         }
         
+        this.questForm.choix.push(c)
+        this.idChoix++
+        this.modal.choix = false
+        this.initChoixForm()
+
+        if (this.questForm.choix.length >= 2){
+          this.verification.choix = false
+        }
+      },
+      initForm() {
+        this.qcmForm.titre = '',
+        this.qcmForm.date = '',
+        this.qcmForm.time.debut = '',
+        this.qcmForm.time.fin = '',
+        this.qcmForm.groupe = '',
+        this.qcmForm.utilisateur = '',
+        this.qcmForm.questions = '',
+        this.submit = false
+      },
+      initQuestForm() {
+        this.questForm.titre = '',
+        this.questForm.bareme = '',
+        this.questForm.choix = [],
+        this.questForm.radioBtn = ''
+      },
+      initChoixForm() {
+        this.choixForm.choix = '',
+        this.choixForm.estBonneReponse = ''
+      },
+      choixQuestForm() {
+        this.questForm.titre = '',
+        this.questForm.choix = [],
+        this.questForm.radioBtn = ''
+      },
+      onSubmit(evt) {
+        if (this.submit) {
+          evt.preventDefault();
+          const q = JSON.parse(JSON.stringify(this.qcmForm.questions))
+          const newQcm = {
+            titre: this.qcmForm.titre,
+            date_debut: this.getDateDebut(),
+            date_fin: this.getDateFin(),
+            groupe: this.qcmForm.groupe,
+            utilisateur: this.qcmForm.utilisateur,
+            questions: q
+          };
+
+          if (this.qcmForm.questions.length < 1) {
+            this.verification.question = true
+          } else {
+            this.verification.question = false
+            console.log(newQcm)
+            this.addQcm(newQcm);
+          }
+        }
+        
+
+      },
+      getDateDebut(){
+        let date = this.qcmForm.date + " " + this.qcmForm.time.debut
+        return date
+      },
+      getDateFin(){
+        let date = this.qcmForm.date + " " + this.qcmForm.time.fin
+        return date
+      },
+      getQuestChoixMult(question){
+        this.question.titre = question.titre
+        this.question.choix = question.choix
+        this.question.radioBtn = question.radioBtn
+        this.modal.visuChoixMult = true
+      },
+      prepSupprQuest(id) {
+        this.modal.supprQuestion = true
+        this.modal.index = id
+      },
+      prepAjoutChoix(id) {
+        this.modal.choix = true
+        this.modal.indexChoix = id
+      },
+      supprimerQuestion() {
+        const index = this.qcmForm.questions.findIndex((element) => element.id == this.modal.index)
+
+        this.qcmForm.questions.splice(index, 1)
+        this.modal.index = ''
+        this.modal.supprQuestion = false
+      },
+      supprimerChoix(id) {
+        const index = this.questForm.choix.findIndex((element) => element.id == id)
+        this.questForm.choix.splice(index, 1)
+      },
+      annulerAjout() {
+        this.initQuestForm()
+        this.modal.question = false
+        this.modal.modifQuestion = false
+      },
+      annulerAjoutChoix() {
+        this.modal.indexChoix = ''
+        this.initChoixForm()
+        this.modal.choix = false
       }
     }
   }
 </script>
 
 <style>
+
+  .unequest {
+    margin-top: 50px;
+  } 
+
+  .mb-3.input-group {
+    margin-bottom: 2rem !important;
+    margin-top: 1rem;
+  }
+
+  .card {
+    max-width: 50%;
+    left: 25%;
+  }
+
+  .card .md-form label {
+    font-weight: 300;
+    left: 0;
+  }
+
   p {
     color: red;
   }
 
-  .btn-block {
+  .btn-ajout-choix {
+    margin-top: 20px;
+  }
+
+  .btn-choix {
+    margin-top: 20px;
+    background-color: #f5f5f5;
+  }
+  
+  .radio-btn {
+      text-align: left;
+  }
+
+  thead {
+    background-color: #f5f5f5;
+  }
+  
+  .form-check-label {
+    margin-left: 10px;
+  }
+  
+  i {
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .time {
+    width: 100px
+  }
+
+  .heure {
+    position: absolute;
+    left: 15px;
+  }
+
+  .dropdown {
     background-color: #d5deff;
   }
 
-  .radio-btn {
-    text-align: left;
-    color: #757575;
+  .btn-questions {
+    background-color: #fff4d5;
+  }
+
+  .btn-block {
+    background-color: #d5deff;
   }
 
   .form-simple {
