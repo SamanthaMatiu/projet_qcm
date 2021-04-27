@@ -20,7 +20,7 @@ class QCMFaitResources(Resource):
     @token_verif
     def get(user,self):
         try :
-            list_qcm_a_fait =  []
+            list_qcm_fait =  []
             qcm_eleve=QcmEleve.query.filter(QcmEleve.id_eleve == user.id).all()
             
             for qcm in qcm_eleve:

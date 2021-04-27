@@ -52,13 +52,13 @@
                 </mdb-modal>
 
                 <!-- Pop up Utilisateur existe déjà -->
-                <mdb-modal :show="modalUserExist" @close="modalUserExist = false">
+                <mdb-modal :show="modalQCM" @close="modalQCM = false">
                     <mdb-modal-header>
                     <mdb-modal-title>Oh oh !</mdb-modal-title>
                     </mdb-modal-header>
-                    <mdb-modal-body>Un compte à déjà été créé avec cet adresse email</mdb-modal-body>
+                    <mdb-modal-body>Vous avez déjà répondu au QCM !</mdb-modal-body>
                     <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modalUserExist = false">Ok</mdb-btn>
+                    <mdb-btn color="secondary" @click.native="modalQCM = false">Ok</mdb-btn>
                     </mdb-modal-footer>
                 </mdb-modal>
 
@@ -116,6 +116,21 @@
       };
     },
     methods: {
+      onSubmit(evt) {
+        evt.preventDefault();
+        const path = `http://localhost:5000/api/qcmReponses`;
+        axios.post(path, data).
+        then((res) => {
+          if(res.data.status == 404) {
+            console.log("erreur 404")
+            this.modalQCM = true
+          } else {
+            this.modalOk = true
+            router.push({ name: "Eleve", params: {}});
+          }
+
+        });
+      }
     },
     async created(){
         console.log(this.id);
