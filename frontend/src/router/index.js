@@ -79,6 +79,16 @@ const routes = [
           path: 'afaire/:id',
           name: 'RepondreQCM',
           component : () => import('../components/Eleve/RepondreQCM.vue')
+        },
+        {
+          path: 'fait',
+          name: 'QcmsFait',
+          component : () => import('../components/Eleve/QCMsFait.vue')
+        },
+        {
+          path: 'fait/:id',
+          name: 'ConsulterQCM',
+          component : () => import('../components/Eleve/ConsulterQCM.vue')
         }
       ]
     }
