@@ -11,7 +11,6 @@
         </mdb-navbar-nav>
       </mdb-navbar-toggler>
     </mdb-navbar>
-    
   </div>
 </template>
 
@@ -37,9 +36,9 @@
         navElements: Array
     }
   };
-  </script>
+</script>
 
-  <style scoped>
+<style scoped>
   .view {
     background: url("https://mdbootstrap.com/img/Photos/Others/img (50).jpg")
       no-repeat center center;
@@ -50,4 +49,4 @@
   .navbar .dropdown-menu a:hover {
     color: inherit !important;
   }
-  </style>
+</style>
