@@ -94,6 +94,11 @@ const routes = [
           path: 'fait/:id',
           name: 'ConsulterQCM',
           component : () => import('../components/Eleve/ConsulterQCM.vue')
+        },
+        {
+          path: 'corriges',
+          name: 'QcmsCorriges',
+          component : () => import('../components/Eleve/QCMsCorriges.vue')
         }
       ]
     }

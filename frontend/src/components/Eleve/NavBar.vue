@@ -6,8 +6,8 @@
         <mdb-navbar-nav>
           <mdb-nav-item to="/dashboardEleve/home" waves-fixed>Home</mdb-nav-item>
           <mdb-nav-item to="/dashboardEleve/afaire" waves-fixed>A faire</mdb-nav-item>
-          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>En cours de correction</mdb-nav-item>
-          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>Corrigés</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/fait" waves-fixed>En cours de correction</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/corriges" waves-fixed>Corrigés</mdb-nav-item>
         </mdb-navbar-nav>
       </mdb-navbar-toggler>
     </mdb-navbar>
