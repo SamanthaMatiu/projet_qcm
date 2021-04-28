@@ -209,9 +209,10 @@ export default {
         eleves: this.infosUsers.selected,
         groupe_id: this.infosUsers.groupe,
       };
-      const users = JSON.parse(JSON.stringify(userss));
+      const users = JSON.stringify(userss);
+      console.log(users);
       this.setGroupeMulti(users);
-      //console.log(users);
+      
     }
   },
   created() {
