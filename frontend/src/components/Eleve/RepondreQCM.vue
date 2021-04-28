@@ -25,7 +25,7 @@
             <form v-on:submit.prevent="onSubmit">
                 <div v-for="(question,index) in qcm.questions" :key="index">
                 <h3> {{question.titre}} </h3>
-                <mdb-input v-model="reponseOuverteForm.id[question.id]" v-if = question.ouverte label="Tapez votre réponse ici" required/>
+                <mdb-input v-model="reponseOuverteForm.id[question.id]" v-if = question.ouverte label="Tapez votre réponse ici" />
                 {{ reponseOuverteForm.id[question.id]}}
              
                 <br>
@@ -44,18 +44,9 @@
                 <span>cases cochées: {{ selected }} {{ selected.id }}</span>
             
                 <div class="text-center mb-4 mt-5">
-                <mdb-btn color="#97adff" type="submit" v-on:click="submit = true"  class="btn-block z-depth-2">Valider vos réponses</mdb-btn>
+                <mdb-btn color="#97adff" type="submit" class="btn-block z-depth-2">Valider vos réponses</mdb-btn>
 
-                <!-- Pop up Utilisateur créé -->
-                <mdb-modal :show="modalOk" @close="modalOk = false">
-                    <mdb-modal-header>
-                    <mdb-modal-title>Vos réponses ont été enregistrées !</mdb-modal-title>
-                    </mdb-modal-header>
-                    <mdb-modal-body>Votre professeurs corrigera votre QCM dès que possible. En attendant vous pouvez toujours le visualiser dans vos QCM faits</mdb-modal-body>
-                    <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modalOk = false">Ok</mdb-btn>
-                    </mdb-modal-footer>
-                </mdb-modal>
+            
 
                 <!-- Pop up Utilisateur existe déjà -->
                 <mdb-modal :show="modalQCM" @close="modalQCM = false">
@@ -111,8 +102,7 @@
         selected: [],
         addChoix: [],
         modalQCM: false,
-        modalOk: false,
-
+      
         qcm: {},
         id_qcm: this.$route.params.id,
         qcmForm: {
@@ -141,7 +131,6 @@
             console.log("erreur 404")
             this.modalQCM = true
           } else {
-            this.modalOk = true
             router.push({ name: "Eleve", params: {}});
           }
         });
@@ -175,7 +164,11 @@
           console.log(this.qcm.questions[i].ouverte)
           if(this.qcm.questions[i].ouverte == true) {
             console.log('lardon')
-            this.reponsesForm.reponseouverte = this.reponseOuverteForm.id[this.qcm.questions[i].id]
+            if(this.reponseOuverteForm.id[this.qcm.questions[i].id] != undefined) {
+              this.reponsesForm.reponseouverte = this.reponseOuverteForm.id[this.qcm.questions[i].id]
+            }else {
+              this.reponsesForm.reponseouverte = ""
+            }
             this.reponsesForm.id_choix = null
             this.reponsesForm.id_eleve = this.qcm.id_eleve
             this.reponsesForm.id_question= this.qcm.questions[i].id
@@ -186,26 +179,12 @@
       },
 
      
-      onSubmit(evt) {
-        if(this.submit) {
-          evt.preventDefault();
-          //Add réponses choix
-          console.log(this.addChoix.length)
-          /*for (let i = 0; i < this.addChoix.length; i++) {
-            this.initReponsesForm()
-            this.reponsesForm.reponseouverte = this.addChoix[i].reponseouverte
-            this.reponsesForm.id_choix = this.addChoix[i].id_choix
-            this.reponsesForm.id_eleve = this.qcm.id_eleve
-            this.reponsesForm.id_question= this.addChoix[i].id_question
-            this.qcmForm.reponses.push(this.reponsesForm)
-          }*/
+      onSubmit(e) {
+        
+          e.preventDefault();
+        
           this.addReponseOuverte()
-          //const r = JSON.parse(JSON.stringify(this.qcmForm.reponses))
-          //const newQcmReponses = {
-          //  id: this.qcmForm.id,
-          //  titre: this.qcmForm.titre,
-          //  reponses: r
-          //};
+        
           console.log('selected')
 
           for (let i = 0; i < this.qcm.questions.length; i++) {
@@ -217,29 +196,37 @@
                 for(let k = 0; k < this.selected.length; k ++) {
 
                   if(this.selected[k] == this.qcm.questions[i].choix[j].id) {
-                    this.reponsesForm.reponseouverte = ''
-                    this.reponsesForm.id_choix = this.selected[k]
-                    this.reponsesForm.id_eleve = this.qcm.id_eleve
-                    this.reponsesForm.id_question= this.qcm.questions[i].id
-                    this.qcmForm.reponses.push(this.reponsesForm)
+                    const r = {
+                      reponseouverte : "",
+                      id_choix : this.selected[k],
+                      id_eleve : this.qcm.id_eleve,
+                      id_question : this.qcm.questions[i].id
+                    }
+            
+                    this.qcmForm.reponses.push(r)
                   }
                 }
               }
             }
           }
+          const newQcmReponses = {
+            id: this.qcm.id,
+            titre: this.qcm.titre,
+            réponses: this.qcmForm.reponses
+          };
+          console.log(newQcmReponses)
+       
+
           console.log(this.selected)
-          //console.log('addChoix')
-          //console.log(this.addChoix)
           console.log('toutes les réponses')
           console.log(this.qcmForm.reponses)
-          //this.addQcmReponses(newQcmReponses)
+          this.addQcmReponses(newQcmReponses)
           this.initReponseOuverteForm()
           this.initReponsesForm()
           this.initQcmForm()
-          this.addChoix = []
         
         }
-      }
+      
     },
     async created(){
         console.log(this.id);
