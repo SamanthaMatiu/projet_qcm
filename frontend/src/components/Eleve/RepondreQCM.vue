@@ -26,27 +26,20 @@
                 <div v-for="(question,index) in qcm.questions" :key="index">
                 <h3> {{question.titre}} </h3>
                 <mdb-input v-model="reponseOuverteForm.id[question.id]" v-if = question.ouverte label="Tapez votre réponse ici" />
-                {{ reponseOuverteForm.id[question.id]}}
-             
+               
                 <br>
                 <div v-if = !question.ouverte >
                     <div v-for="(c,index) in question.choix" :key="index" class="justify-content-start">
                     <input type="checkbox" :value="c.id" :id="'choix_'+c.id" v-model="selected" /> <!-- @change="addChoix.push({reponseouverte:'',id_question:question.id,id_choix:c.id})" -->
-                    <label >{{ c.choix}} {{index}}</label>
-                                        
-
+                    <label >{{ c.choix}} </label>
                     </div>
-                    
-                    
                 </div>
                 <br>
                 </div>
-                <span>cases cochées: {{ selected }} {{ selected.id }}</span>
+                <!--span>cases cochées: {{ selected }} {{ selected.id }}</span-->
             
                 <div class="text-center mb-4 mt-5">
                 <mdb-btn color="#97adff" type="submit" class="btn-block z-depth-2">Valider vos réponses</mdb-btn>
-
-            
 
                 <!-- Pop up Utilisateur existe déjà -->
                 <mdb-modal :show="modalQCM" @close="modalQCM = false">
