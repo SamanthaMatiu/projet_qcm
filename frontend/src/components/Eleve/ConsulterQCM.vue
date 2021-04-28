@@ -25,11 +25,11 @@
             <form v-on:submit.prevent="onSubmit">
                 <div v-for="(question,id) in qcm.questions" :key="id">
                 <h3> {{question.titre}} </h3>
-                <mdb-input v-if = question.ouverte v-model="question.choix" v-bind:key = question.choix.id disabled/>
+                <mdb-input v-if = question.ouverte v-model="qcm.reponses[id].reponseouverte" v-bind:key = question.choix.id disabled/>
                 <br>
                 <div v-if = !question.ouverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                        <div v-if = choix.true>
+                        <div v-if = "choix.choix === qcm.reponses[id].choix">
                         <mdb-input type="checkbox" id="choix" v-model="checkOk" disabled/> <label  for="choix">{{ choix.choix }}</label>
                         </div>
                         <div v-else>
