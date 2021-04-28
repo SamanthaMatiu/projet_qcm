@@ -3,7 +3,7 @@
     <br><br>
     <div class="row">
       <div class="col-sm-10">
-        <h2>QCMs à faire</h2>
+        <h2>QCMs en attente de correction</h2>
         <hr><br><br>
         <table class="table table-hover">
           <thead>
