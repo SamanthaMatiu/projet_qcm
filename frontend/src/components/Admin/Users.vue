@@ -19,7 +19,7 @@
           </thead>
           <tbody>
             <tr v-for="(user, index) in eleves" :key="index">
-              <td><input type="checkbox" :id="user.id_utilisateur" :value="user.id_utilisateur" v-model="selected"></td>
+              <td><input type="checkbox" :id="user.id_utilisateur" :value="{'id': user.id_utilisateur}" v-model="infosUsers.selected"></td>
               <td>{{ user.nom }}</td>
               <td>{{ user.prenom }}</td>
               <td>{{ user.mail }}</td>
@@ -83,7 +83,16 @@
     </b-modal>
 
     <b-modal ref="selectModal" id="select-modal" title="Choisir groupe" hide-footer>
-      <p class="my-4"><b>Selected :</b> {{ selected}} </p>
+      <p class="my-4"><b>Selected :</b> {{ infosUsers.selected}} </p>
+      <b-form @submit="onSubmitModifGroupeMulti" class="w-100">
+      <b-form-select v-model="infosUser.groupe" class="mb-2">
+        <b-form-select-option :value="null" disabled>Choisir un groupe</b-form-select-option>
+        <b-form-select-option v-for="(option, index) in groupes" :key="index" v-bind:value="option.id_groupe">{{option.nom}}</b-form-select-option>
+      </b-form-select>
+      <b-button-group>
+        <b-button type="submit" variant="primary">Valider</b-button>
+      </b-button-group>
+      </b-form>
     </b-modal>
   </div>
  
@@ -96,7 +105,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      selected: [],
+      //selected: [],
       profs: [],
       eleves: [],
       groupes: [],
@@ -107,7 +116,11 @@ export default {
         droit: '',
         groupe: '',
         id_utilisateur: ''
-      }
+      },
+      infosUsers : {
+        groupe: [],
+        selected: []
+      },
     };
   },
   methods: {
@@ -178,6 +191,26 @@ export default {
       };
       this.setGroupe(user, this.infosUser.id_utilisateur);
     },
+    setGroupeMulti(payload) {
+      const path = `http://localhost:5000/api/groupesmanyusers`;
+      axios.patch(path, payload)
+        .then(() => {
+          this.getEleves();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    onSubmitModifGroupeMulti(evt) {
+      evt.preventDefault();
+      this.$refs.modifGroupeModal.hide();
+      const users = {
+        eleves: this.infosUsers.selected,
+        groupe_id: this.infosUsers.groupe,
+      };
+      this.setGroupeMulti(users);
+      //console.log(users.eleves);
+    }
   },
   created() {
     //if (!(localStorage.getItem('token'))){
