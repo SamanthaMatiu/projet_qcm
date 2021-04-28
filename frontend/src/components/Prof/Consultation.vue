@@ -37,33 +37,7 @@ export default {
   name: 'Consultation',
   data() {
       return {
-        data: [
-          {
-              "id": 1,
-              "titre": "Examen 1",
-              "date_debut": "12/01/2021 11:00"
-          },
-          {
-              "id": 2,
-              "titre": "Examen 2",
-              "date_debut": "12/01/2021 11:00"
-          },
-          {
-              "id": 3,
-              "titre": "Examen 3",
-              "date_debut": "12/01/2021 11:00"
-          },
-          {
-              "id": 4,
-              "titre": "Examen 4",
-              "date_debut": "12/01/2021 11:00"
-          },
-          {
-              "id": 5,
-              "titre": "Examen 5",
-              "date_debut": "12/01/2021 11:00"
-          }
-      ]
+        data: []
       }
     },
   methods: {
@@ -71,6 +45,7 @@ export default {
       const path = `http://localhost:5000/api/qcmProf`;
       axios.get(path)
         .then((res) => {
+          this.data = res.data
           console.log(res)
         })
         .catch((error) => {
