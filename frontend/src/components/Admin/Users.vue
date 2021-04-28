@@ -85,7 +85,7 @@
     <b-modal ref="selectModal" id="select-modal" title="Choisir groupe" hide-footer>
       <p class="my-4"><b>Selected :</b> {{ infosUsers.selected}} </p>
       <b-form @submit="onSubmitModifGroupeMulti" class="w-100">
-      <b-form-select v-model="infosUser.groupe" class="mb-2">
+      <b-form-select v-model="infosUsers.groupe" class="mb-2">
         <b-form-select-option :value="null" disabled>Choisir un groupe</b-form-select-option>
         <b-form-select-option v-for="(option, index) in groupes" :key="index" v-bind:value="option.id_groupe">{{option.nom}}</b-form-select-option>
       </b-form-select>
@@ -118,7 +118,7 @@ export default {
         id_utilisateur: ''
       },
       infosUsers : {
-        groupe: [],
+        groupe: '',
         selected: []
       },
     };
@@ -204,12 +204,14 @@ export default {
     onSubmitModifGroupeMulti(evt) {
       evt.preventDefault();
       this.$refs.modifGroupeModal.hide();
-      const users = {
+      console.log(this.infosUsers.groupe);
+      const userss = {
         eleves: this.infosUsers.selected,
         groupe_id: this.infosUsers.groupe,
       };
+      const users = JSON.parse(JSON.stringify(userss));
       this.setGroupeMulti(users);
-      //console.log(users.eleves);
+      //console.log(users);
     }
   },
   created() {
