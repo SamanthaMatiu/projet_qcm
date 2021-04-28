@@ -107,11 +107,11 @@ class QCMRessources(Resource):
                 db.session.commit()
             ## changement des horraires/dates
             if datas['date_debut'] != "":
-                qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
+                qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M:%S")
                 db.session.commit()
 
             if datas['date_fin'] != "":
-                qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
+                qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M:%S")
                 db.session.commit()
 
                 ## changement du groupe 
@@ -176,12 +176,16 @@ class QCMRessources(Resource):
     def post(user,self):
         datas=request.get_json()
         try: 
+           
             titre=datas['titre']
+            print('toto')
             debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M:%S")
+            
             fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M:%S")
             id=user.id
             groupe_id=datas['droit']['groupe']
             eleve_id=datas['droit']['utilisateur']
+            
             ## Si le qcm existe déjà on ne le recréer pas.
             if(exist_qcm(titre,debut,fin,id)):
                 return {'status':404,'message':'Le QCM existe déjà.'}
