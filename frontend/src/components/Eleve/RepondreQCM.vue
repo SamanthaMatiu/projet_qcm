@@ -31,7 +31,7 @@
                 <div v-if = !question.ouverte >
                     <div v-for="(c,index) in question.choix" :key="index" class="justify-content-start">
                     <input type="checkbox" :value="c.id" :id="'choix_'+c.id" v-model="selected" /> <!-- @change="addChoix.push({reponseouverte:'',id_question:question.id,id_choix:c.id})" -->
-                    <label >{{ c.choix}} </label>
+                    <label >{{ c.choix}}</label>
                     </div>
                 </div>
                 <br>
