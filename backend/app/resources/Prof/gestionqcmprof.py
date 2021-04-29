@@ -30,6 +30,7 @@ class ListACorriger(Resource):
                     ListeQcmEleve.append({'id qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
             return ListeQcmEleve
         except :
+            db.session.rollback()
             db.session.commit()
             abort(400)
 
@@ -57,8 +58,22 @@ class CorrectionDunQCM(Resource):
     def get(user,self,id_qcm,id_eleve):
         try:
             qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
-            return get_Corrige(qcmeEleve)
+            return correction(qcmeEleve)
         except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+    
+    @token_verif
+    def patch(user,self,id_qcm,id_eleve):
+        try:
+            qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
+            qcmeEleve.statut='Corrigé'
+            db.session.commit()
+            return ("Statut mis à jour.")
+            
+        except :
+            db.session.rollback()
             db.session.commit()
             abort(400)
 
