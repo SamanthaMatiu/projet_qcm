@@ -94,8 +94,9 @@ class ListQCMFait(Resource):
             ListeQcmEleve=[]
             for qcm in user.qcm:
                 for qcmeEleve in qcm.eleve :
-                    if(qcmeEleve.statut == "Corrigé"):
-                        ListeQcmEleve.append({'id qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
+                    if(qcmeEleve.statut == "Fait"):
+                        eleve=qcmeEleve.utilisateurs
+                        ListeQcmEleve.append({'id qcm':qcm.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
             return ListeQcmEleve
         except :
             db.session.rollback()
@@ -109,11 +110,11 @@ class ListQCMFaitParGroupe(Resource):
             ListeQcmEleve=[]
             groupe=db.session.query(Groupe).filter(Groupe.id == id_groupe).first()
             for user in groupe.utilisateurs:
-                print(user)
                 for qcm in user.qcm:
                     for qcmeEleve in qcm.eleve :
-                        if(qcmeEleve.statut == "Corrigé"):
-                            ListeQcmEleve.append({'id qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
+                        if(qcmeEleve.statut == "Fait"):
+                            eleve=qcmeEleve.utilisateurs
+                            ListeQcmEleve.append({'id qcm':qcm.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
             return ListeQcmEleve
         except :
             db.session.rollback()
