@@ -64,6 +64,20 @@ class QCMFaitQuestionsResources(Resource):
         except:
             abort(400)
 
+class ListQCMCorrige(Resource):
+    @token_verif
+    def get(user,self):
+        try:
+            ListeQcmEleve=[]
+            for qcm in user.qcm:
+                for qcmeEleve in qcm.eleve :
+                    if(qcmeEleve.statut == "Corrigé"):
+                        ListeQcmEleve.append({'id qcm':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+            return ListeQcmEleve
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
 
 
 
