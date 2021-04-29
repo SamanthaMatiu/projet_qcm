@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource, reqparse, abort
 from typing import Dict, List, Any
-
+from sqlalchemy import or_
 from app import db, models
 from app.models import Utilisateurs, Groupe, Qcm, QcmEleve
 
@@ -19,11 +19,10 @@ class ElevesValidesResource(Resource):
     """
         
     def get(self) -> List:
-        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True, Utilisateurs.droit == "Élève")
+        result = db.session.query(Utilisateurs).filter(Utilisateurs.valide == True ,or_(Utilisateurs.droit == "Élève" , Utilisateurs.droit == "élève"))
         if result.count() == 0:
             return {'status':404, 'message':'Il n\'y a aucun utilisateur déjà validé.'}
         else:
-            print(result)
             users = []
             for row in result:
                 user = {}
@@ -55,7 +54,6 @@ class ProfesseursValidesResource(Resource):
         if result.count() == 0:
             return {'status':404, 'message':'Il n\'y a aucun utilisateur déjà validé.'}
         else:
-            print(result)
             users = []
             for row in result:
                 user = {}
@@ -118,7 +116,6 @@ class GestionGroupeResource(Resource):
         if result == []:
             return {'status':404, 'message':'Il n\'y a aucun groupe à récupérer.'}
         else:
-            print(result)
             groupes = []
             for row in result:
                 groupe = {}
@@ -248,6 +245,7 @@ class GestionGroupeByEleveId(Resource):
             return {'status':404, 'message': 'L\'utilisateur que vous tentez de modifier n\'existe pas.'}
         try:
             new_groupe= args['groupe_id']
+            print(new_groupe)
             if(check_if_group_already_has_eleve_with_qcm(new_groupe) is not None):
                 #Créer la/les liaisons qcm_eleve que va impliquer ce changement de groupe
                 #Récupère un élève qui est déjà dans le groupe
@@ -257,7 +255,7 @@ class GestionGroupeByEleveId(Resource):
 
                 for qcm in eleve_deja_dans_groupe.qcmeleve:
                     qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
-                    if(eleve_already_has_this_qcm(eleve,qcm_du_groupe) is None):
+                    if(eleve_already_has_this_qcm(eleve.id,qcm_du_groupe) is None):
                         add_eleve_to_qcm(eleve,qcm_du_groupe)
                 
                 db.session.query(Utilisateurs).filter(Utilisateurs.id == id_eleve).update({Utilisateurs.id_groupe: new_groupe}, synchronize_session=False)
@@ -320,7 +318,7 @@ class GestionGroupeManyEleves(Resource):
                     #On met les qcm du groupe à ce nouvelle élève
                     for qcm in eleve_deja_dans_groupe.qcmeleve:
                         qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
-                        if(eleve_already_has_this_qcm(eleve,qcm_du_groupe) is None):
+                        if(eleve_already_has_this_qcm(eleve['id'],qcm_du_groupe) is None):
                             add_eleve_to_qcm(eleve_a_modifier,qcm_du_groupe)
                     #On met le nouveau groupe à l'élève
                     db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve['id']).update({Utilisateurs.id_groupe: new_groupe}, synchronize_session=False)
@@ -366,10 +364,9 @@ def check_user_exists(id_user: str):
     already_exists = db.session.query(db.exists().where(Utilisateurs.id == id_user)).scalar()
     return already_exists
 
-def eleve_already_has_this_qcm(eleve,QCM):
-    q = db.session.query(QcmEleve).filter(QcmEleve.id_eleve == eleve['id'], QcmEleve.id_qcm == QCM.id).first()
+def eleve_already_has_this_qcm(eleve_id,QCM):
+    q = db.session.query(QcmEleve).filter(QcmEleve.id_eleve == eleve_id, QcmEleve.id_qcm == QCM.id).first()
     return q
-
 
 def add_eleve_to_qcm(eleve,QCM):    
     qcmEleve=QcmEleve(statut='A faire',utilisateurs=eleve,qcm=QCM)
