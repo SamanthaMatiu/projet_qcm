@@ -435,7 +435,6 @@
               questions: q
             };
 
-            console.log(newQcm)
             this.addQcm(newQcm);
           }
         }
@@ -459,7 +458,6 @@
           // eslint-disable-next-line no-unused-vars
           .then((res) => {
             this.droit.utilisateur = res.data.data
-            console.log(res);
           })
           .catch((error) => {
             console.log(error);
@@ -467,7 +465,6 @@
       },
       getDateDebut(){
         let date = this.qcmForm.date + " " + this.qcmForm.time.debut + ":00"
-        console.log(this.qcmForm.time.debut)
         return date
       },
       getDateFin(){

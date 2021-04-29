@@ -9,53 +9,88 @@
       <div class="card text-center">
         <div class="card-header">{{data.titre}}</div>
         <div class="card-body">
-          <p>
-            A faire
-          </p>
+          
+          <mdb-row class="time">
+            <mdb-col col="4">
+              <p>Date : {{this.affichage.date}}</p> 
+            </mdb-col>
+            <mdb-col col="8">
+              à faire de {{this.affichage.time.debut}} jusqu'à {{this.affichage.time.fin}}  
+            </mdb-col>
+          </mdb-row>
+
+          <div>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Question</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Barème</th>
+                      <th scope="col">#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="question in data.questions" :key="question.id">
+                      <td>{{ question.titre }}</td>
+                      <td v-if="!question.ouverte">Choix multiples</td>
+                      <td v-if="question.ouverte">Ouverte</td>
+                      <td>{{ question.bareme }}</td>
+                      <td>{{ question.bareme }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
         </div>
         <div class="card-footer text-muted">
-          <button type="button" class="btn btn-primary btn-sm">Modifier</button>
-          <button type="button" class="btn btn-danger btn-sm" data-mdb-toggle="modal" data-mdb-target="#exampleModal">Supprimer</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="modifierQcm()">Modifier</button>
+          <button type="button" class="btn btn-danger btn-sm" @click="$bvModal.show('bv-modal-example')">Supprimer</button>
+        
+          <b-modal id="modal-1" title="Suppression d'une question">
+            <p class="my-4">Etes-vous sur de vouloir supprimer cette question ?</p>
+          </b-modal>
+          <b-modal id="bv-modal-example" hide-footer>
+            <template #modal-title>
+              Suppression d'une question
+            </template>
+            <div class="text-center-modal">
+              Etes-vous sur de vouloir supprimer cette question ?
+            </div>
+            <div class="suppr">
+              <b-button variant="danger" @click="supprimerQcm()">Oui</b-button>
+              <b-button variant="primary" @click="$bvModal.hide('bv-modal-example')">Non</b-button>
+            </div>
+          </b-modal>
+
         </div>
       </div>  
     </div>
-
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                        <button
-                          type="button"
-                          class="btn-close"
-                          data-mdb-dismiss="modal"
-                          aria-label="Close"
-                        ></button>
-                      </div>
-                      <div class="modal-body">...</div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
-                          Close
-                        </button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
   </div>
 </template>
 
 <script>
   import axios from 'axios';
+  import { mdbRow, mdbCol } from 'mdbvue';
 
 export default {
   name: 'DetailQcm',
+  components: {
+    mdbRow,
+    mdbCol
+  },
   data() {
     return {
       data: {},
       modal: {
         delete: false,
         modify: false
+      },
+      affichage: {
+        date: "",
+        time: {
+          debut: "",
+          fin: ""
+        }
       }
     }
   },
@@ -65,6 +100,9 @@ export default {
       axios.get(path)
         .then((res) => {
           this.data = res.data
+          this.affichage.date = res.data.date_debut.slice(0,10)
+          this.affichage.time.debut = res.data.date_debut.slice(11,16)
+          this.affichage.time.fin = res.data.date_fin.slice(11,16)
           console.log(res)
         })
         .catch((error) => {
@@ -72,10 +110,16 @@ export default {
           console.error(error);
         });
     },
-    supprimerQuestion(){
-      const path = `http://localhost:5000/api/qcm`;
+    getDate(){
+      this.data.date_debut
+    },
+    modifierQcm(){
+    },
+    supprimerQcm(){
+      const path = `http://localhost:5000/api/qcm/${this.data.id}`;
       axios.delete(path)
         .then((res) => {
+          this.$router.go(-1)
           console.log(res)
         })
         .catch((error) => {
@@ -91,6 +135,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+  .suppr {
+    position: relative;
+    left: 250px;
+  }
+
+  .text-center-modal{
+    margin-bottom: 20px;
+  }
 
   .text-center {
     max-width: 70%;
