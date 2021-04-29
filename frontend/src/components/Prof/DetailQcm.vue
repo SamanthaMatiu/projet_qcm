@@ -5,9 +5,9 @@
         <i class="retour fas fa-arrow-circle-left fa-2x"></i>
       </router-link>
     </div>
-    <div class="col-11 center-tab">
+    <div class="col-11">
       <div class="card text-center">
-        <div class="card-header">Titre</div>
+        <div class="card-header">{{data.titre}}</div>
         <div class="card-body">
           <p>
             A faire
@@ -15,10 +15,33 @@
         </div>
         <div class="card-footer text-muted">
           <button type="button" class="btn btn-primary btn-sm">Modifier</button>
-          <button type="button" class="btn btn-danger btn-sm">Supprimer</button>
+          <button type="button" class="btn btn-danger btn-sm" data-mdb-toggle="modal" data-mdb-target="#exampleModal">Supprimer</button>
         </div>
       </div>  
     </div>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-mdb-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body">...</div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
+                          Close
+                        </button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
   </div>
 </template>
 
@@ -27,10 +50,31 @@
 
 export default {
   name: 'DetailQcm',
+  data() {
+    return {
+      data: {},
+      modal: {
+        delete: false,
+        modify: false
+      }
+    }
+  },
   methods: {
     getQcm(){
       const path = `http://localhost:5000/api/qcm/${this.$route.params.id}`;
       axios.get(path)
+        .then((res) => {
+          this.data = res.data
+          console.log(res)
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    supprimerQuestion(){
+      const path = `http://localhost:5000/api/qcm`;
+      axios.delete(path)
         .then((res) => {
           console.log(res)
         })
@@ -48,17 +92,17 @@ export default {
 
 <style scoped lang="scss">
 
+  .text-center {
+    max-width: 70%;
+    left: 12%;
+  }
+
   .card-footer {
     text-align: right;  
   }
 
   .retour {
     color: #3f51b5;
-  }
-
-  .center-tab {
-    max-width: 80%;
-    left: 4%;
   }
 
   thead {

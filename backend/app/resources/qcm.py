@@ -109,11 +109,9 @@ class QCMRessources(Resource):
             if datas['date_debut'] != "":
                 qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M:%S")
                 db.session.commit()
-
             if datas['date_fin'] != "":
                 qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M:%S")
                 db.session.commit()
-
                 ## changement du groupe 
             if groupe_id != "":
                 for groupe in groupe_id:
@@ -193,9 +191,7 @@ class QCMRessources(Resource):
             prof=db.session.query(Utilisateurs).filter_by(id=id).first()
             ##création du QCM
             QCM=Qcm(titre=titre,date_debut=debut,date_fin=fin,utilisateurs=prof)
-            print(datas['questions'])
             creation_question(datas['questions'],QCM)
-            print('questions crées')
             ## On ajoute les élèves d'un groupe ou un élève seulement
             if groupe_id != "":
                 for groupe in groupe_id:
@@ -255,4 +251,3 @@ def add_groupe_to_qcm(groupe_id,QCM):
     groupe=db.session.query(Groupe).filter_by(id=groupe_id).first()
     for eleve in groupe.utilisateurs :
         add_eleve_to_qcm(eleve,QCM)
-
