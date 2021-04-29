@@ -1,5 +1,5 @@
 from app import api
-
+from app.resources.Authentification.login import LoginResource
 from app.resources.Authentification.register import RegisterResource
 from app.resources.Admin.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, ElevesValidesResource, ProfesseursValidesResource, GestionGroupeManyEleves
@@ -8,7 +8,8 @@ from app.resources.Prof.gestionqcmprof import QCMProf,ListACorriger,ListACorrige
 from app.resources.Eleve.qcmafaire import QCMaFaireResources, QMCaFaireQuestionsResources
 from app.resources.Eleve.qcmfait import QCMFaitResources, QCMFaitQuestionsResources
 from app.resources.Eleve.postqcmeleve import ReponsesQCM
-from app.resources.Authentification.login import LoginResource
+from app.resources.Eleve.noteqcm import NoteQCM
+
 #tests
 
 # login
@@ -49,3 +50,4 @@ api.add_resource(ReponsesQCM,'/api/qcmReponses')
 #qcms fait élèves
 api.add_resource(QCMFaitResources,'/api/qcmFaitInfos')
 api.add_resource(QCMFaitQuestionsResources,'/api/qcmFait/<int:id_qcm_fait>')
+api.add_resource(NoteQCM,'/api/NoteQcmFait/<int:id_eleve>/<int:id_qcm>')
