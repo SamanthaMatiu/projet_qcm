@@ -32,7 +32,7 @@
           <strong>QCMs en cours de correction</strong>
         </h3>
         <p class="dark-grey-text">Tu peux voir touuuus les petis qcms que tu as fait ici - Malheureusement, ils ne sont pas encore corrigés mais tu peux revenir voir tes réponses</p>
-        <mdb-btn color="primary" size="md" @click="goToConsultation()">Je veux voir mes qcms</mdb-btn>
+        <mdb-btn color="primary" size="md" @click="goToConsultation()">Je veux voir mes qcms en cours de correction</mdb-btn>
       </mdb-col>
     </mdb-row>
     <hr class="my-5" />
@@ -50,7 +50,7 @@
           <strong>Mes QCMs corrigés</strong>
         </h3>
         <p class="dark-grey-text">Penses à venir ici de temps en temps pour corriger les qcm de tes élèves - blablabla - Tes élèves sont impatients</p>
-        <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux faire une correction</mdb-btn>
+        <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux voir mes qcms corrigés</mdb-btn>
       </mdb-col>
     </mdb-row>
   </mdb-container>
@@ -81,10 +81,10 @@ export default {
         this.$router.push({ name: 'QcmsAFaire' });
       },
       goToConsultation(){
-        this.$router.push({ name: 'Consultation' });
+        this.$router.push({ name: 'QcmsFait' });
       },
       goToCorrection(){
-        this.$router.push({ name: 'Correction' });
+        this.$router.push({ name: 'QcmsCorriges' });
       }
     }
 }

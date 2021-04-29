@@ -6,6 +6,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
+import Multiselect from 'vue-multiselect'
 
 axios.interceptors.request.use(req => {
   console.log(`${req.method} ${req.url}`);
@@ -14,7 +15,7 @@ axios.interceptors.request.use(req => {
 })
 
 Vue.use(BootstrapVue);
-
+Vue.component('multiselect', Multiselect)
 Vue.config.productionTip = false
 
 axios.defaults.withCredentials = false;

@@ -321,8 +321,10 @@ class GestionGroupeManyEleves(Resource):
                     eleve_a_modifier = db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve['id']).first()
                     #On met les qcm du groupe à ce nouvelle élève
                     for qcm in eleve_deja_dans_groupe.qcmeleve:
+                        
                         qcm_du_groupe = db.session.query(Qcm).filter_by(id=qcm.id_qcm).first()
                         if(eleve_already_has_this_qcm(eleve,qcm_du_groupe) is None):
+                            print("coucou")
                             add_eleve_to_qcm(eleve_a_modifier,qcm_du_groupe)
                     #On met le nouveau groupe à l'élève
                     db.session.query(Utilisateurs).filter(Utilisateurs.id == eleve['id']).update({Utilisateurs.id_groupe: new_groupe}, synchronize_session=False)

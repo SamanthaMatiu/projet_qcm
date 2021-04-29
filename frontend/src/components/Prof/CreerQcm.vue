@@ -17,32 +17,31 @@
                 <mdb-col col="6">
 
                   <!--<label class="grey-text">hh:mm AM/PM</label>-->
-                  <mdb-row>
+                  <mdb-row class="time">
                     <mdb-col col="6 lg-8">
-                      <label class="grey-text heure">Heure de début</label>
-                      <mdb-input label="" type="time" class="time" v-model="qcmForm.time.debut" required/>
+                        <vue-timepicker @click.native="verification.time = false" placeholder="Heure deb" :minute-interval="5" hide-disabled-hours :hour-range="[[8, 19]]" input-width="102px" v-model="qcmForm.time.debut" required></vue-timepicker>
                     </mdb-col>
                     <mdb-col col="6 lg-4">
-                      <label class="grey-text heure">Heure de fin</label>
-                      <mdb-input label="" type="time" class="time" v-model="qcmForm.time.fin" required/>
+                      <vue-timepicker @click.native="verification.time = false" placeholder="Heure fin" :minute-interval="5" hide-disabled-hours :hour-range="[[8, 20]]" input-width="102px" v-model="qcmForm.time.fin" required></vue-timepicker>
                     </mdb-col>
                   </mdb-row>
                 </mdb-col>
               </mdb-row>
               
-              <!-- Dropdown : TODO v-for sur groupe/user -->
-              <mdb-input basic class="mb-3" ariaLabel="Example text with button addon" ariaDescribedBy="button-addon1">
-                <mdb-dropdown slot="prepend">
-                  <mdb-dropdown-toggle color="#97adff" size="md" slot="toggle" class="z-depth-0">Droits</mdb-dropdown-toggle>
-                  <mdb-dropdown-menu>
-                    <mdb-dropdown-item>Action</mdb-dropdown-item>
-                    <mdb-dropdown-item>Another action</mdb-dropdown-item>
-                    <mdb-dropdown-item>Something else here</mdb-dropdown-item>
-                    <div class="dropdown-divider"></div>
-                    <mdb-dropdown-item>Separated link</mdb-dropdown-item>
-                  </mdb-dropdown-menu>
-                </mdb-dropdown>
-              </mdb-input>
+              <!-- Dropdown -->
+              <label class="grey-text margetop">Pour qui est ce qcm ?</label> 
+              <mdb-row class="dropdown"> 
+                <mdb-col>
+                  <multiselect v-model="droit.valueGroupe" :options="droit.groupes" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="groupe(s)" label="nom" track-by="nom" :preselect-first="true">
+                    <template slot="selection" slot-scope="{ values, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} groupe(s) selectionné</span></template>
+                  </multiselect>
+                </mdb-col>
+                <mdb-col>
+                  <multiselect v-model="droit.valueUser" :options="droit.utilisateur" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="élève(s)" label="nom" track-by="nom" :preselect-first="true">
+                    <template slot="selection" slot-scope="{ values, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} élève(s) selectionné</span></template>
+                  </multiselect>
+                </mdb-col>
+              </mdb-row>
 
               <!-- Questions -->
               <label class="grey-text">Ajouter des questions</label> 
@@ -73,21 +72,16 @@
               <div v-if="verification.question">
                 <p class="unequest"> Un Qcm est composé d'au moins une question </p><br>
               </div>
+              <div v-if="verification.droit">
+                <p class="unequest"> Veuillez selectionner au moins un groupe ou un élève qui effectuera ce qcm </p><br>
+              </div>
+              <div v-if="verification.time">
+                <p class="unequest"> Veuillez remplir l'heure pendant laquelle s'effectuera ce qcm </p><br>
+              </div>
 
               <div class="text-center mb-4 mt-5">
                 <mdb-btn color="#97adff" type="submit" v-on:click="submit = true" class="btn-block z-depth-2">Submit</mdb-btn>
               </div>
-
-                <!-- Pop up Utilisateur créé -->
-                <mdb-modal :show="modal.ok" @close="modal.ok = false">
-                  <mdb-modal-header>
-                    <mdb-modal-title>Utilisateur créer !</mdb-modal-title>
-                  </mdb-modal-header>
-                  <mdb-modal-body>Vous devez attendre que votre compte soit validé.</mdb-modal-body>
-                  <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modal.ok = false">Ok</mdb-btn>
-                  </mdb-modal-footer>
-                </mdb-modal>
 
                 <!-- Pop up créer question -->
                 <mdb-modal :show="modal.question" @close="annulerAjout">
@@ -96,7 +90,12 @@
                   </mdb-modal-header>
                   <mdb-modal-body>
                     <mdb-input type="textarea" label="Ecrire votre question" outline :rows="3" v-model="questForm.titre" />
-                    <mdb-input label="Barème" type="number" v-model="questForm.bareme" />
+                  
+                    <div class="form-label">
+                      <label for="typeNumber">Barème</label>
+                      <input label="Barème" type="number" id="typeNumber" class="form-control" v-model="questForm.bareme" min="1" required/>
+                    </div>
+                    
                     <div class="radio-btn">
                       <div>
                         Question : 
@@ -231,8 +230,10 @@
 <script>
   import axios from 'axios';
   import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbModal,
-      mdbModalHeader, mdbModalTitle, mdbModalBody, mdbModalFooter,
-      mdbDropdown, mdbDropdownToggle, mdbDropdownMenu, mdbDropdownItem } from 'mdbvue';
+      mdbModalHeader, mdbModalTitle, mdbModalBody, mdbModalFooter } from 'mdbvue';
+  import Multiselect from 'vue-multiselect'
+  import VueTimepicker from 'vue2-timepicker/dist/VueTimepicker.common.js'
+
 
   export default { 
     name: 'CreationQcm',
@@ -248,13 +249,17 @@
       mdbCardBody,
       mdbInput,
       mdbBtn,
-      mdbDropdown,
-      mdbDropdownToggle,
-      mdbDropdownMenu,
-      mdbDropdownItem
+      Multiselect,
+      VueTimepicker
     },
     data() {
       return {
+        droit: {
+          groupes: [],
+          utilisateur: [],
+          valueGroupe: [],
+          valueUser: []
+        },
         modal: {
           question: false,
           ok: false,
@@ -264,15 +269,17 @@
           index: '',
           indexChoix: ''
         },
-        qcmForm: {
+        qcmForm: { 
           titre: '',
           date:'',
+          droit:{
+            groupe: [], 
+            utilisateur: [] 
+          },
           time: {
             debut:'',
             fin:''
           },
-          groupe: '', //{"id":6}
-          utilisateur: '', //{"id":6}
           questions: []
         },
         questForm: {
@@ -289,7 +296,9 @@
         },
         verification : {
           question: false,
-          choix: false
+          choix: false,
+          droit: false,
+          time: false
         },
         question: {
           titre: '',
@@ -325,7 +334,7 @@
           this.verification.choix = true
         }  else if (estOuverte == 3) {
           this.questForm.radioBtn = "3"
-        } else {
+        } else if (this.questForm.bareme > 0){
           const q = {
             id: this.idQuestion,
             titre: this.questForm.titre,
@@ -377,6 +386,8 @@
         this.qcmForm.utilisateur = '',
         this.qcmForm.questions = '',
         this.submit = false
+        this.droit.valueUser = []
+        this.droit.valueGroupe = []
       },
       initQuestForm() {
         this.questForm.titre = '',
@@ -396,20 +407,34 @@
       onSubmit(evt) {
         if (this.submit) {
           evt.preventDefault();
-          const q = JSON.parse(JSON.stringify(this.qcmForm.questions))
-          const newQcm = {
-            titre: this.qcmForm.titre,
-            date_debut: this.getDateDebut(),
-            date_fin: this.getDateFin(),
-            groupe: this.qcmForm.groupe,
-            utilisateur: this.qcmForm.utilisateur,
-            questions: q
-          };
 
           if (this.qcmForm.questions.length < 1) {
             this.verification.question = true
+            this.submit = false
+          } else if ((this.droit.valueGroupe.length == 0) && (this.droit.valueUser.length == 0)) {
+            this.verification.droit = true
+            this.submit = false
+          } else if (!(this.qcmForm.time.debut && this.qcmForm.time.fin)) {
+            this.verification.time = true
+            this.submit = false
           } else {
             this.verification.question = false
+            this.verification.droit = false
+
+            this.qcmForm.droit.groupe = this.getDroit(this.droit.valueGroupe)
+            this.qcmForm.droit.utilisateur = this.getDroit(this.droit.valueUser)
+
+            const q = JSON.parse(JSON.stringify(this.qcmForm.questions))
+            const d = JSON.parse(JSON.stringify(this.qcmForm.droit))
+
+            const newQcm = {
+              titre: this.qcmForm.titre,
+              droit: d,
+              date_debut: this.getDateDebut(),
+              date_fin: this.getDateFin(),
+              questions: q
+            };
+
             console.log(newQcm)
             this.addQcm(newQcm);
           }
@@ -417,12 +442,36 @@
         
 
       },
+      getGroupe(){
+        const path = `http://localhost:5000/api/groupes`;
+        axios.get(path)
+          // eslint-disable-next-line no-unused-vars
+          .then((res) => {
+            this.droit.groupes = res.data.data
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      },
+      getUser(){
+        const path = `http://localhost:5000/api/elevesvalides`;
+        axios.get(path)
+          // eslint-disable-next-line no-unused-vars
+          .then((res) => {
+            this.droit.utilisateur = res.data.data
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      },
       getDateDebut(){
-        let date = this.qcmForm.date + " " + this.qcmForm.time.debut
+        let date = this.qcmForm.date + " " + this.qcmForm.time.debut + ":00"
+        console.log(this.qcmForm.time.debut)
         return date
       },
       getDateFin(){
-        let date = this.qcmForm.date + " " + this.qcmForm.time.fin
+        let date = this.qcmForm.date + " " + this.qcmForm.time.fin + ":00"
         return date
       },
       getQuestChoixMult(question){
@@ -430,6 +479,34 @@
         this.question.choix = question.choix
         this.question.radioBtn = question.radioBtn
         this.modal.visuChoixMult = true
+      },
+      getDroit(list){
+        let droit
+        
+        if (list.length <= 0){
+          droit = ""
+        } else {
+          droit = []
+          for(let i=0 ; i<=list.length-1 ; i++){
+
+            if(list[i].id_utilisateur){
+              const item = {
+                id: list[i].id_utilisateur
+              }
+              droit.push(item)
+            }
+
+            if(list[i].id_groupe){
+              const item = {
+                id: list[i].id_groupe
+              }
+              droit.push(item)
+            }
+            
+          }
+        }
+        
+        return droit
       },
       prepSupprQuest(id) {
         this.modal.supprQuestion = true
@@ -460,11 +537,31 @@
         this.initChoixForm()
         this.modal.choix = false
       }
+    },
+    created(){
+      this.getGroupe()
+      this.getUser()
     }
   }
 </script>
 
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style src="vue2-timepicker/dist/VueTimepicker.css"></style>
+
 <style>
+
+  .margetop {
+    margin-top: 25px;
+  }
+
+  .form-label {
+    text-align: left;
+    margin-bottom: 25px;
+  }
+
+  .dropdown {
+    margin-bottom: 30px;
+  }
 
   .unequest {
     margin-top: 50px;
@@ -516,16 +613,13 @@
   }
 
   .time {
-    width: 100px
+    top: 30px;
+    position: relative;
   }
 
   .heure {
     position: absolute;
     left: 15px;
-  }
-
-  .dropdown {
-    background-color: #d5deff;
   }
 
   .btn-questions {
