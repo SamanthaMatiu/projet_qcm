@@ -6,7 +6,6 @@ from app.models import Qcm,Utilisateurs,Question,Choix,QcmEleve,Groupe, ReponseE
 from app.resources.Authentification.login import token_verif
 
 class QCMProf(Resource):
-
     @token_verif
     def get(user,self):
         try :
@@ -16,20 +15,6 @@ class QCMProf(Resource):
                 Listeqcm.append({'id':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M')})
             return Listeqcm
         except:
-            db.session.rollback()
-            db.session.commit()
-            abort(400)
-
-class ListACorriger(Resource):
-    @token_verif
-    def get(user,self):
-        try:
-            ListeQcmEleve=[]
-            for qcm in user.qcm:
-                for qcmeEleve in qcm.eleve :
-                    ListeQcmEleve.append({'id qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
-            return ListeQcmEleve
-        except :
             db.session.rollback()
             db.session.commit()
             abort(400)
@@ -87,6 +72,20 @@ class CorrectionQuestionOuverte(Resource):
             db.session.commit()
             abort(400)
 
+class ListDesQCMS(Resource):
+    @token_verif
+    def get(user,self):
+        try:
+            ListeQcmEleve=[]
+            for qcm in user.qcm:
+                for qcmeEleve in qcm.eleve :
+                    ListeQcmEleve.append({'id_qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
+            return ListeQcmEleve
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
 class ListQCMFait(Resource):
     @token_verif
     def get(user,self):
@@ -96,7 +95,7 @@ class ListQCMFait(Resource):
                 for qcmeEleve in qcm.eleve :
                     if(qcmeEleve.statut == "Fait"):
                         eleve=qcmeEleve.utilisateurs
-                        ListeQcmEleve.append({'id qcm':qcm.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+                        ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
             return ListeQcmEleve
         except :
             db.session.rollback()
@@ -114,7 +113,7 @@ class ListQCMFaitParGroupe(Resource):
                     for qcmeEleve in qcm.eleve :
                         if(qcmeEleve.statut == "Fait"):
                             eleve=qcmeEleve.utilisateurs
-                            ListeQcmEleve.append({'id qcm':qcm.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+                            ListeQcmEleve.append({'id_qcm':qcm.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
             return ListeQcmEleve
         except :
             db.session.rollback()
