@@ -204,13 +204,11 @@ export default {
     onSubmitModifGroupeMulti(evt) {
       evt.preventDefault();
       this.$refs.modifGroupeModal.hide();
-      console.log(this.infosUsers.groupe);
       const userss = {
         eleves: this.infosUsers.selected,
         groupe_id: this.infosUsers.groupe,
       };
-      const users = JSON.stringify(userss);
-      console.log(users);
+      const users = JSON.parse(JSON.stringify(userss));
       this.setGroupeMulti(users);
       
     }
