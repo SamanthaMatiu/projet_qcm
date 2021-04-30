@@ -55,6 +55,7 @@
             console.log(res.data.message);
             if (res.data.token){
               localStorage.setItem('token', res.data.token);
+              localStorage.setItem('statut', res.data.statut);
               this.initForm();
               if(res.data.statut==='Admin'){
                 router.push({ name: "Admin", params: {}});
