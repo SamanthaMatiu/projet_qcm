@@ -209,7 +209,7 @@ class GestionQuestion(Resource):
         datas=request.get_json()
         try:
             id_qcm=datas['id_qcm']
-            qcm=db.session.query(QCM).filter_by(id_qcm=id_qcm).first()
+            qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
             creation_question(datas['question'],qcm)
             return {'status':200,'message':"Question(s) créée(s)."}
         except:
@@ -278,8 +278,6 @@ class GestionQuestionById(Resource):
             db.session.rollback()
             db.session.commit()
             abort(400)
-
-
 
 def exist_qcm(titre,debut,fin,id_prof):
     exist=db.session.query(Qcm).filter_by(titre=titre,date_debut=debut,date_fin=fin,id_professeur=id_prof).first()
