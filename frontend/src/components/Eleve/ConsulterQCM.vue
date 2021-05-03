@@ -30,10 +30,10 @@
                 <div v-if = !question.ouverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
                         <div v-if = "choix.choix === qcm.reponses[id].choix">
-                        <mdb-input type="checkbox" id="choix" v-model="checkOk" disabled/> <label  for="choix">{{ choix.choix }}</label>
+                            <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.choix }}</b-form-checkbox>
                         </div>
                         <div v-else>
-                        <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.choix }}</label>
+                            <b-form-checkbox id="choix" disabled>{{ choix.choix }}</b-form-checkbox>
                         </div>
                     </div>
                     <br>
@@ -56,7 +56,7 @@
      } from 'mdbvue';
 
   export default { 
-    name: 'RepondreQcm',
+    name: 'ConsulterQcm',
     components: {
       mdbRow,
       mdbCol,
