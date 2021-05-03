@@ -12,8 +12,10 @@ class NoteQCMEleve(Resource):
             id_eleve=user.id
             qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
             noteglobale=get_Note(qcmeEleve)
+            baremeTotal=get_Bareme(id_qcm)
             questions=get_qcm_choix_eleve(qcmeEleve)
-            jsonqcm={'titre':qcmeEleve.qcm.titre,'note':noteglobale,'questions':questions}
+            conversion=(20/baremeTotal)*noteglobale
+            jsonqcm={'titre':qcmeEleve.qcm.titre,'note':noteglobale,'baremeTotal':baremeTotal,'conversionSur20':conversion,'questions':questions}
             return(jsonqcm)
 
             
@@ -37,6 +39,13 @@ def get_Note(Qcmeleve):
         if (contenairetempo[answer]==True):
             note+=1
     return (note)
+
+def get_Bareme(id_qcm):
+    qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
+    bareme=0
+    for question in qcm.questions:
+        bareme+=question.bareme
+    return (bareme)
 
 ## renvoie tout le qcm 
 def get_qcm_choix_eleve(Qcmeleve):
