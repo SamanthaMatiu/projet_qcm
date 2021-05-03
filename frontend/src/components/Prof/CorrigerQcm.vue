@@ -13,20 +13,24 @@
             <form v-on:submit.prevent="onSubmit">
                 <div v-for="(question,id) in data.questions" :key="id">
                 <h4> {{question.intitule}} </h4>
-                <!--mdb-input v-if = question.estOuverte v-bind:key = question.choix.id disabled/>
+                <div v-if = question.estOuverte>
+                <mdb-input v-model="question.reponseOuverte" disabled/>                
+                <button type="button" class="btn btn-success btn-sm" @click="onSubmitReponseTrue(question)">Ok</button>
+                <button type="button" class="btn btn-danger btn-sm" @click="onDeleteUser(question.id)">Non</button>
+                </div>
                 <br>
                 <div v-if = !question.estOuverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                        <div v-if = "choix.choix === qcm.reponses[id].choix">
-                            <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.choix }}</b-form-checkbox>
+                        <div v-if = choix.estChoisi>
+                            <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.intitule }}</b-form-checkbox>
                         </div>
                         <div v-else>
-                            <b-form-checkbox id="choix" disabled>{{ choix.choix }}</b-form-checkbox>
+                            <b-form-checkbox id="choix" disabled>{{ choix.intitule }}</b-form-checkbox>
                         </div>
                     </div>
                     <br>
                     
-                </div-->
+                </div>
                 <br>
                 </div>
             
@@ -40,14 +44,23 @@
 
 <script>
 import axios from 'axios';
+import {mdbInput} from 'mdbvue';
 
 export default {
   name: 'CorrigerQcm',
+  components: {
+      mdbInput,
+    },
   data() {
     return {
         id_qcm: this.$route.params.id_qcm,
         id_eleve: this.$route.params.id_eleve,
         data: {},
+        checkOk: true,
+        reponse : {
+            isTrue:'false',
+            id_question: ''
+        }
     }
   },
   methods: {
@@ -61,6 +74,26 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+
+    setReponseTrue(payload, id_question) {
+      const path = `http://localhost:5000/api/correctionQuestionOuverte/`+this.id_eleve+`/${id_question}`;
+      //axios.post(path, payload)
+       // .then(() => {
+        //  console.log('ok')
+        //})
+        //.catch((error) => {
+        //  console.error(error);
+        //});
+        console.log(path);
+        console.log(payload);
+    },
+    onSubmitReponseTrue(question) {
+      const infos = {
+        correction: true,
+      };
+      console.log(question);
+      this.setReponseTrue(infos, question.id);
     },
 
   },
