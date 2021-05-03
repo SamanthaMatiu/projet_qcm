@@ -5,7 +5,7 @@ from app import db,app
 from app.models import Qcm,Utilisateurs,Question,Choix,QcmEleve,Groupe, ReponseEleve
 from app.resources.Authentification.login import token_verif
 
-class NoteQCM(Resource):
+class NoteQCMProf(Resource):
     @token_verif
     def get(user,self,id_eleve,id_qcm):
         try:
