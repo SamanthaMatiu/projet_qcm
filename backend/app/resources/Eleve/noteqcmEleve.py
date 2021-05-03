@@ -17,8 +17,6 @@ class NoteQCMEleve(Resource):
             conversion=(20/baremeTotal)*noteglobale
             jsonqcm={'titre':qcmeEleve.qcm.titre,'note':noteglobale,'baremeTotal':baremeTotal,'conversionSur20':conversion,'questions':questions}
             return(jsonqcm)
-
-            
         except :
             db.session.commit()
             abort(400)
