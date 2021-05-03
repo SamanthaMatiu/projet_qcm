@@ -82,8 +82,7 @@
       </b-form>
     </b-modal>
 
-    <b-modal ref="selectModal" id="select-modal" title="Choisir groupe" hide-footer>
-      <p class="my-4"><b>Selected :</b> {{ infosUsers.selected}} </p>
+    <b-modal ref="modifGroupeMultiModal" id="select-modal" title="Choisir groupe" hide-footer>
       <b-form @submit="onSubmitModifGroupeMulti" class="w-100">
       <b-form-select v-model="infosUsers.groupe" class="mb-2">
         <b-form-select-option :value="null" disabled>Choisir un groupe</b-form-select-option>
@@ -203,13 +202,15 @@ export default {
     },
     onSubmitModifGroupeMulti(evt) {
       evt.preventDefault();
-      this.$refs.modifGroupeModal.hide();
+      this.$refs.modifGroupeMultiModal.hide();
       const userss = {
         eleves: this.infosUsers.selected,
         groupe_id: this.infosUsers.groupe,
       };
       const users = JSON.parse(JSON.stringify(userss));
       this.setGroupeMulti(users);
+      this.infosUsers.selected = [];
+      this.infosUsers.groupe = '';
       
     }
   },
