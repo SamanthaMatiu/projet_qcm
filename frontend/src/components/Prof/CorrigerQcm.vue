@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-1">
-      <router-link :to="{ name: 'Consultation'}">
+      <router-link :to="{ name: 'Correction'}">
         <i class="retour fas fa-arrow-circle-left fa-2x"></i>
       </router-link>
     </div>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-  import axios from 'axios';
+//import axios from 'axios';
 
 export default {
   name: 'CorrigerQcm',
@@ -60,32 +60,9 @@ export default {
     }
   },
   methods: {
-    getQcm(){
-      const path = `http://localhost:5000/api/qcm/${this.$route.params.id}`;
-      axios.get(path)
-        .then((res) => {
-          this.data = res.data
-          console.log(res)
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-        });
-    },
-    supprimerQuestion(){
-      const path = `http://localhost:5000/api/qcm`;
-      axios.delete(path)
-        .then((res) => {
-          console.log(res)
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-        });
-    }
+
   },
   created() {
-    this.getQcm()
   }
 }
 </script>
