@@ -5,35 +5,36 @@
         <mdb-card>
           <div class="header pt-3 grey lighten-2">
             <mdb-row class="d-flex justify-content-start">
-              <h3 class="deep-grey-text mt-3 mb-4 pb-1 mx-5">{{ qcm.titre}}</h3>
+              <h3 class="deep-grey-text mt-3 mb-4 pb-1 mx-5">{{ qcm.titre}} </h3>
             </mdb-row>
+             <h5> Note: {{qcm.note}}/20 </h5>
           </div>
           <mdb-card-body class="mx-4 mt-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Dates</h5>
-                    <mdb-row class="d-flex justify-content-center">
-                        <p>Début de l'examen:  {{ qcm.date_debut }}</p> 
-                    </mdb-row>
-                    <mdb-row class="d-flex justify-content-center">
-                        <p>Fin de l'examen:  {{ qcm.date_fin }}</p>
-                    </mdb-row>
-                </div>
-            </div>
            
            <br>
             <form v-on:submit.prevent="onSubmit">
-                <div v-for="(question,id) in qcm.questions" :key="id">
-                <h3> {{question.titre}} </h3>
-                <mdb-input v-if = question.ouverte v-model="qcm.reponses[id].reponseouverte" v-bind:key = question.choix.id disabled/>
+                <div v-for="(question,index) in qcm.questions" :key="index">
+                <h3> {{question.intitule}} </h3> <h5> {{question.note}}/{{question.bareme}} </h5>
+                <mdb-input v-if = question.estOuverte v-model="question.reponseOuverte" disabled/>
                 <br>
                 <div v-if = !question.ouverte >
-                    <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                        <div v-if = "choix.choix === qcm.reponses[id].choix">
-                        <mdb-input type="checkbox" id="choix" v-model="checkOk" disabled/> <label  for="choix">{{ choix.choix }}</label>
+                    <div v-for="(choix,index) in question.choix" :key="index" class="justify-content-start">
+                        <div v-if = choix.estChoisi>
+                          <div v-if = choix.estCorrect  v-bind:class="{'checkCorrect': checkCorrect}">
+                            <mdb-input type="checkbox" id="choix" v-model="checkCorrect" disabled/> <label  for="choix">{{ choix.intitule }} <span><i style="color: #66CC33;" class=" ml-5 fas fa-check-circle"></i></span></label>
+                          </div>
+                          <div v-else >
+                            <mdb-input   type="checkbox" id="choix" v-model="checkIncorrect" disabled/> <label  for="choix">{{ choix.intitule }} <span><i  style=" color: Tomato;" class="ml-5 fas fa-times-circle"></i></span></label>
+                          </div>
                         </div>
                         <div v-else>
-                        <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.choix }}</label>
+                          <div v-if = choix.estCorrect>
+                            <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.intitule }} <span><i style="color: Blue;" class="ml-5 fas fa-check-double"></i></span></label>
+                          </div>
+                          <div v-else>
+                            <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.intitule }} <span><i style="color: White;" class=" ml-5 fas fa-arrow-alt-left"></i></span></label>
+                          </div>
+
                         </div>
                     </div>
                     <br>
@@ -69,7 +70,8 @@
     ],
     data() {
       return {
-        checkOk: true,
+        checkCorrect: true,
+        checkIncorrect: true, 
         qcm: {},
         id_qcm: this.$route.params.id,
       };
@@ -87,8 +89,17 @@
 </script>
 
 <style>
- 
 
+
+ 
+ .checkCorrect{
+  border: 1px;
+  border-color: green;
+}
+  .checkIncorrect{
+  background-color:red;
+
+} 
   .btn-block {
     background-color: #d5deff;
   }
@@ -96,6 +107,11 @@
   .checkbox-btn {
     text-align: left;
     color: #757575;
+  }
+
+  /* When the checkbox is checked, add a blue background */
+  input:checked{
+  background-color: #2196F3;
   }
 
   label {
