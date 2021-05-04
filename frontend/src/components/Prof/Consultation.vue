@@ -1,6 +1,6 @@
 <template>
   <div class="center-tab card text-center">
-    <div class="card-header">Mes QCMs</div>
+    <div class="card-header"><h3>Mes QCMs</h3></div>
     <div class="card-body">
       <div class="col-sm table-responsive">
         <table class="table">
