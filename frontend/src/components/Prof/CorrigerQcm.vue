@@ -8,24 +8,34 @@
     <div class="col-11">
       <div class="card text-center">
         <div class="card-header"><h3>{{data.titre}}</h3></div>
+        <form v-on:submit.prevent="onSubmit">
         <div class="card-body">
        
-            <form v-on:submit.prevent="onSubmit">
                 <div v-for="(question,id) in data.questions" :key="id">
                 <h4> {{question.intitule}} </h4>
                 <div v-if = question.estOuverte>
                 <mdb-input v-model="question.reponseOuverte" disabled/>                
-                <button type="button" class="btn btn-success btn-sm" @click="onSubmitReponseTrue(question)">Ok</button>
-                <button type="button" class="btn btn-danger btn-sm" @click="onDeleteUser(question.id)">Non</button>
+                <button type="button" class="btn btn-success btn-sm" @click="onSubmitReponseTrue(question.id_question)">Ok</button>
+                <button type="button" class="btn btn-danger btn-sm" @click="onSubmitReponseFalse(question.id_question)">Non</button>
                 </div>
                 <br>
                 <div v-if = !question.estOuverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
                         <div v-if = choix.estChoisi>
-                            <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.intitule }}</b-form-checkbox>
+                          <div v-if = choix.estCorrect  v-bind:class="{'checkCorrect': checkCorrect}">
+                            <b-form-checkbox id="choix" v-model="checkCorrect" disabled> {{ choix.intitule }} <span><i style="color: #66CC33;" class=" ml-5 fas fa-check-circle"></i></span></b-form-checkbox>
+                          </div>
+                          <div v-else >
+                            <b-form-checkbox id="choix" v-model="checkIncorrect" disabled>{{ choix.intitule }} <span><i  style=" color: Tomato;" class="ml-5 fas fa-times-circle"></i></span></b-form-checkbox>
+                          </div>
                         </div>
                         <div v-else>
-                            <b-form-checkbox id="choix" disabled>{{ choix.intitule }}</b-form-checkbox>
+                          <div v-if = choix.estCorrect>
+                            <b-form-checkbox id="choix" disabled>{{ choix.intitule }} <span><i style="color: Blue;" class="ml-5 fas fa-check-double"></i></span></b-form-checkbox>
+                          </div>
+                          <div v-else>
+                            <b-form-checkbox id="choix" disabled> {{ choix.intitule }} <span><i style="color: White;" class=" ml-5 fas fa-arrow-alt-left"></i></span></b-form-checkbox>
+                          </div>
                         </div>
                     </div>
                     <br>
@@ -33,10 +43,11 @@
                 </div>
                 <br>
                 </div>
-            
-            </form>
-       
         </div>
+          <div class="card-footer text-muted">
+          <button type="submit" class="btn btn-primary btn-sm">Correction terminée</button>
+        </div>
+        </form>
       </div>  
     </div>
   </div>
@@ -44,12 +55,13 @@
 
 <script>
 import axios from 'axios';
+import router from '../../router';
 import {mdbInput} from 'mdbvue';
 
 export default {
   name: 'CorrigerQcm',
   components: {
-      mdbInput,
+      mdbInput
     },
   data() {
     return {
@@ -57,10 +69,8 @@ export default {
         id_eleve: this.$route.params.id_eleve,
         data: {},
         checkOk: true,
-        reponse : {
-            isTrue:'false',
-            id_question: ''
-        }
+        checkCorrect: true,
+        checkIncorrect: true, 
     }
   },
   methods: {
@@ -69,31 +79,53 @@ export default {
       axios.get(path)
         .then((res) => {
           this.data = res.data;
-          console.log(this.data);
         })
         .catch((error) => {
           console.error(error);
         });
     },
 
-    setReponseTrue(payload, id_question) {
+    setReponse(payload, id_question) {
       const path = `http://localhost:5000/api/correctionQuestionOuverte/`+this.id_eleve+`/${id_question}`;
-      //axios.post(path, payload)
-       // .then(() => {
-        //  console.log('ok')
-        //})
-        //.catch((error) => {
-        //  console.error(error);
-        //});
-        console.log(path);
-        console.log(payload);
+      axios.post(path, payload)
+        .then(() => {
+          console.log('Question corrigée')
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     onSubmitReponseTrue(question) {
       const infos = {
         correction: true,
       };
       console.log(question);
-      this.setReponseTrue(infos, question.id);
+      this.setReponse(infos, question);
+    },
+
+    onSubmitReponseFalse(question) {
+      const infos = {
+        correction: false,
+      };
+      console.log(question);
+      this.setReponse(infos, question);
+    },
+
+    onSubmit(evt){
+      evt.preventDefault();
+      this.setQcmCorrige();
+    },
+
+    setQcmCorrige() {
+      const path = 'http://localhost:5000/api/correction/'+this.id_qcm+'/'+this.id_eleve;
+      axios.patch(path)
+        .then(() => {
+          console.log('ok')
+          router.push({ name: "Correction", params: {}});
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
 
   },
@@ -104,6 +136,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+ .checkCorrect{
+  border: 1px;
+  border-color: green;
+}
+  .checkIncorrect{
+  background-color:red;
+
+} 
 
   .text-center {
     max-width: 70%;
