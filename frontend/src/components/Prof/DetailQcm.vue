@@ -20,32 +20,67 @@
           </mdb-row>
 
           <div>
-                <table class="table table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col">Question</th>
-                      <th scope="col">Type</th>
-                      <th scope="col">Barème</th>
-                      <th scope="col">#</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="question in data.questions" :key="question.id">
-                      <td>{{ question.titre }}</td>
-                      <td v-if="!question.ouverte">Choix multiples</td>
-                      <td v-if="question.ouverte">Ouverte</td>
-                      <td>{{ question.bareme }}</td>
-                      <td>{{ question.bareme }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <b-tabs content-class="mt-3">
+              <b-tab title="Questions ouverte" active>
+                <div>
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">Question</th>
+                        <th scope="col">Barème</th>
+                        <th scope="col">#</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="question in data.questions" :key="question.id">
+                        <template v-if="question.ouverte">
+                        <td>{{ question.titre }}</td>
+                        <td>{{ question.bareme }}</td>
+                        <td>TODO btn action</td>
+                        </template>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </b-tab>
+
+              <b-tab title="Questions à choix multiples">
+                <div>
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">Question</th>
+                        <th scope="col">Barème</th>
+                        <th scope="col">Réponse</th>
+                        <th scope="col">#</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="question in data.questions" :key="question.id">
+                        <template v-if="!question.ouverte">
+                          <td>{{ question.titre }}</td>
+                          <td>{{ question.bareme }}</td>
+                          <td>
+                            <template v-for="choix in question.choix">
+                              - {{ choix.choix }} 
+                            </template>
+                          </td>                          
+                          <td>TODO btn action</td>
+                        </template>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </b-tab>
+            </b-tabs>
+          </div>
 
         </div>
         <div class="card-footer text-muted">
           <button type="button" class="btn btn-primary btn-sm" @click="modifierQcm()">Modifier</button>
           <button type="button" class="btn btn-danger btn-sm" @click="$bvModal.show('bv-modal-example')">Supprimer</button>
         
+        <!-- Pop up supprimer -->
           <b-modal id="modal-1" title="Suppression d'une question">
             <p class="my-4">Etes-vous sur de vouloir supprimer cette question ?</p>
           </b-modal>
