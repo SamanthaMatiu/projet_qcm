@@ -29,10 +29,10 @@
       </mdb-col>
       <mdb-col sm="7" xl="8">
         <h3 class="font-weight-bold mb-3 p-0">
-          <strong>QCMs en cours de correction</strong>
+          <strong>Mes QCMs en cours de correction</strong>
         </h3>
-        <p class="dark-grey-text">Tu peux voir touuuus les petis qcms que tu as fait ici - Malheureusement, ils ne sont pas encore corrigés mais tu peux revenir voir tes réponses</p>
-        <mdb-btn color="primary" size="md" @click="goToConsultation()">Je veux voir mes qcms en cours de correction</mdb-btn>
+        <p class="dark-grey-text">Tu peux voir tous les QCMs que tu as fait et qui ne sont malheureusement pas encore corrigés mais tu peux revenir revoir tes réponses !</p>
+        <mdb-btn color="primary" size="md" @click="goToConsultation()">Je veux voir les QCMs en cours de correction</mdb-btn>
       </mdb-col>
     </mdb-row>
     <hr class="my-5" />
@@ -49,8 +49,8 @@
         <h3 class="font-weight-bold mb-3 p-0">
           <strong>Mes QCMs corrigés</strong>
         </h3>
-        <p class="dark-grey-text">Penses à venir ici de temps en temps pour corriger les qcm de tes élèves - blablabla - Tes élèves sont impatients</p>
-        <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux voir mes qcms corrigés</mdb-btn>
+        <p class="dark-grey-text">Pense à venir ici de temps en temps pour voir les résultats de tes QCMs qui ont été corrigés !</p>
+        <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux voir les QCMs corrigés</mdb-btn>
       </mdb-col>
     </mdb-row>
   </mdb-container>
