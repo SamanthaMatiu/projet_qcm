@@ -71,7 +71,7 @@ class ListQCMCorrige(Resource):
             for qcm in user.qcm:
                 for qcmeEleve in qcm.eleve :
                     if(qcmeEleve.statut == "Corrigé"):
-                        ListeQcmEleve.append({'id qcm':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+                        ListeQcmEleve.append({'id_qcm':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
             return ListeQcmEleve
         except :
             db.session.rollback()
