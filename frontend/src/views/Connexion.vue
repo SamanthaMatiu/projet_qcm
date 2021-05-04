@@ -9,6 +9,10 @@
             </mdb-row>
           </div>
           <mdb-card-body class="mx-4 mt-4">
+            <mdb-alert v-if = error color="danger">
+              Mail et/ou mot de passe incorrect
+            </mdb-alert>
+            <br>
           <form v-on:submit.prevent="onSubmit">
             <mdb-input v-model="loginForm.mail" label="Mail" type="text" required/>
             <mdb-input v-model="loginForm.mdp" label="Mot de passe" type="password" containerClass="mb-0" required/>
@@ -28,7 +32,7 @@
   import axios from 'axios';
   import router from '../router';
 
-  import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn} from 'mdbvue';
+  import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn,mdbAlert} from 'mdbvue';
   export default { 
     name: 'FormsPage',
     components: {
@@ -37,7 +41,8 @@
       mdbCard,
       mdbCardBody,
       mdbInput,
-      mdbBtn
+      mdbBtn,
+      mdbAlert
     },
     data() {
       return {
@@ -45,6 +50,7 @@
           mail: '',
           mdp: '',
         },
+        error:false,
       };
     },
     methods: {
@@ -68,6 +74,7 @@
           })
           .catch((error) => {
             console.log(error);
+            this.error=true;
           });
       },
       initForm() {
