@@ -107,13 +107,11 @@ class QCMRessources(Resource):
                 db.session.commit()
             ## changement des horraires/dates
             if datas['date_debut'] != "":
-                qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M")
+                qcm.date_debut=datetime.strptime(datas['date_debut'],"%Y-%m-%d %H:%M:%S")
                 db.session.commit()
-
             if datas['date_fin'] != "":
-                qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M")
+                qcm.date_fin=datetime.strptime(datas['date_fin'],"%Y-%m-%d %H:%M:%S")
                 db.session.commit()
-
                 ## changement du groupe 
             if groupe_id != "":
                 for groupe in groupe_id:
@@ -182,6 +180,7 @@ class QCMRessources(Resource):
             id=user.id
             groupe_id=datas['droit']['groupe']
             eleve_id=datas['droit']['utilisateur']
+            
             ## Si le qcm existe déjà on ne le recréer pas.
             if(exist_qcm(titre,debut,fin,id)):
                 return {'status':404,'message':'Le QCM existe déjà.'}
@@ -189,9 +188,7 @@ class QCMRessources(Resource):
             prof=db.session.query(Utilisateurs).filter_by(id=id).first()
             ##création du QCM
             QCM=Qcm(titre=titre,date_debut=debut,date_fin=fin,utilisateurs=prof)
-            print(datas['questions'])
             creation_question(datas['questions'],QCM)
-            print('questions crées')
             ## On ajoute les élèves d'un groupe ou un élève seulement
             if groupe_id != "":
                 for groupe in groupe_id:
@@ -204,6 +201,82 @@ class QCMRessources(Resource):
             db.session.commit()
             return {'status':201,'message':'QCM créé avec succès !'}
         except:
+            abort(400)
+
+class GestionQuestion(Resource):
+    @token_verif
+    def post(user,self):
+        datas=request.get_json()
+        try:
+            id_qcm=datas['id_qcm']
+            qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
+            creation_question(datas['question'],qcm)
+            return {'status':200,'message':"Question(s) créée(s)."}
+        except:
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+class GestionQuestionById(Resource):
+    @token_verif
+    def patch(user,self,id_question):
+        datas=request.get_json()
+        try:
+            question=datas['question']
+            choix=datas['choix']
+            ## pour chaque question qu'on souhaite changer on recupere son homologue
+            quest=db.session.query(Question).filter_by(id=id_question).first()
+            ## on change son titre si désiré
+            if question['titre'] != "":
+                quest.intitule=question['titre']
+            if question['bareme'] != "":
+                quest.bareme=question['bareme']
+            ## si on souhaite changer le type de question.
+            if question['ouverte'] != "":
+                ## si on passe d'une question ouverte a fermé
+                if question['ouverte'] == 0:
+                    if quest.ouverte !=0:
+                        quest.ouverte=0
+                        ## On ajoute les choix a la question
+                        for choose in question['choix']: 
+                            choixQuestion=Choix(intitule=choose['titre'],estcorrect=choose['estcorrect'],question=quest)
+                            db.session.add(choixQuestion)
+                            db.session.commit()
+                        db.session.commit()
+                else:
+                    ## si on passe d'une question fermée a une question ouverte
+                    quest.ouverte=1
+                    ## on supprime les choix liées
+                    db.session.query(Choix).filter_by(id_question=id_question).delete()
+                db.session.commit()
+            
+            ## si on veut modifier un choix 
+            if choix != "":
+                ## Pour chaque choix renseigné 
+                for choi in choix :
+                    ## on recupère le choix concerné en BDD 
+                    value=db.session.query(Choix).filter_by(id=choi['id']).first()
+                    ## on change ses attributs
+                    if choi['intitule'] != "" :
+                        value.intitule=choi['intitule']
+                    if choi['estcorrect'] != "":
+                        value.estcorrect=choi['estcorrect']
+                    db.session.commit()
+            return {'status':200,'message': 'Les changements ont été effectués.'}
+        except:
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+    @token_verif
+    def delete(user,self,id_question):
+        try:
+            q=db.session.query(Question).filter(Question.id==id_question).delete()
+            db.session.commit()
+            return ("Question supprimée")
+        except:
+            db.session.rollback()
+            db.session.commit()
             abort(400)
 
 def exist_qcm(titre,debut,fin,id_prof):
@@ -251,4 +324,3 @@ def add_groupe_to_qcm(groupe_id,QCM):
     groupe=db.session.query(Groupe).filter_by(id=groupe_id).first()
     for eleve in groupe.utilisateurs :
         add_eleve_to_qcm(eleve,QCM)
-

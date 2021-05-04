@@ -3,7 +3,7 @@
     <br><br>
     <div class="row">
       <div class="col-sm-10">
-        <h2>QCMs en attente de correction</h2>
+        <h2>QCMs corrigés</h2>
         <hr><br><br>
         <table class="table table-hover">
           <thead>
@@ -15,13 +15,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(qcm, index) in qcmsAFaire" :key="index">
+            <tr v-for="(qcm, index) in qcmsCorriges" :key="index">
               <td>{{ qcm.titre }}</td>
               <td>{{ qcm.date_debut }}</td>
               <td>{{ qcm.date_fin }}</td>
               <td>
                 <div class="btn-group" role="group">
-                    <router-link :to="{ name: 'ConsulterQCM', params: { id: qcm.id }}">
+                    <router-link :to="{ name: 'ConsulterQCMCorriges', params: { id: qcm.id }}">
                         <button type="button" class="btn btn-success btn-sm">Voir le QCM</button>
                     </router-link>
                 </div>
@@ -34,23 +34,22 @@
   </div>
  
 </template>
-
 <script>
 import axios from 'axios';
-//import router from '../router';
 
 export default {
+  name: 'QcmsCorriges',
   data() {
     return {
-      qcmsAFaire: []
+      qcmsCorriges: []
     };
   },
   methods: {
     getQcms() {
-      const path = `http://localhost:5000/api/qcmFaitInfos`;
+      const path = `http://localhost:5000/api/qcmCorrigeInfos`;
       axios.get(path)
         .then((res) => {
-          this.qcmsAFaire = res.data;
+          this.qcmsCorriges = res.data;
           console.log(res.data);
         })
         .catch((error) => {
@@ -65,4 +64,10 @@ export default {
     this.getQcms();
   },
 };
+
+
 </script>
+
+<style scoped lang="scss">
+
+</style>

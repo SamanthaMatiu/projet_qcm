@@ -59,7 +59,13 @@ const routes = [
         path: 'correction',
         name: 'Correction',
         component : () => import('../components/Prof/Correction.vue')
+      },
+      {
+        path: 'correction/:id_qcm/:id_eleve',
+        name: 'CorrigerQCM',
+        component : () => import('../components/Prof/CorrigerQcm.vue')
       }
+      
     ]
   },
     /** Eleve **/
@@ -94,6 +100,16 @@ const routes = [
           path: 'fait/:id',
           name: 'ConsulterQCM',
           component : () => import('../components/Eleve/ConsulterQCM.vue')
+        },
+        {
+          path: 'corriges',
+          name: 'QcmsCorriges',
+          component : () => import('../components/Eleve/QCMsCorriges.vue')
+        },
+        {
+          path: 'corriges/:id',
+          name: 'ConsulterQCMCorriges',
+          component : () => import('../components/Eleve/ConsulterQCMCorriges.vue')
         }
       ]
     }

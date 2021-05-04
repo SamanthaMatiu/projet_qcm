@@ -23,42 +23,32 @@
            
            <br>
             <form v-on:submit.prevent="onSubmit">
-                <div v-for="(question,id) in qcm.questions" :key="id">
+                <div v-for="(question,index) in qcm.questions" :key="index">
                 <h3> {{question.titre}} </h3>
-                <mdb-input v-if = question.ouverte label="Tapez votre réponse ici" v-bind:key = question.choix.id  required/>
+                <mdb-input v-model="reponseOuverteForm.id[question.id]" v-if = question.ouverte label="Tapez votre réponse ici" />
+               
                 <br>
                 <div v-if = !question.ouverte >
-                    <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                    <mdb-input class="" type="checkbox" id="choix" /> <label class="" for="choix">{{ choix.choix }} </label>
+                    <div v-for="(c,index) in question.choix" :key="index" class="justify-content-start">
+                    <b-form-checkbox  :value="c.id" :id="'choix_'+c.id" v-model="selected" > <!-- @change="addChoix.push({reponseouverte:'',id_question:question.id,id_choix:c.id})" -->
+                    {{ c.choix}} </b-form-checkbox>
                     </div>
-                    <br>
-                    
                 </div>
                 <br>
                 </div>
+                <!--span>cases cochées: {{ selected }} {{ selected.id }}</span-->
             
                 <div class="text-center mb-4 mt-5">
                 <mdb-btn color="#97adff" type="submit" class="btn-block z-depth-2">Valider vos réponses</mdb-btn>
 
-                <!-- Pop up Utilisateur créé -->
-                <mdb-modal :show="modalOk" @close="modalOk = false">
-                    <mdb-modal-header>
-                    <mdb-modal-title>Vos réponses ont été enregistrées !</mdb-modal-title>
-                    </mdb-modal-header>
-                    <mdb-modal-body>Votre professeurs corrigera votre QCM dès que possible. En attendant vous pouvez toujours le visualiser dans vos QCM faits</mdb-modal-body>
-                    <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modalOk = false">Ok</mdb-btn>
-                    </mdb-modal-footer>
-                </mdb-modal>
-
                 <!-- Pop up Utilisateur existe déjà -->
-                <mdb-modal :show="modalUserExist" @close="modalUserExist = false">
+                <mdb-modal :show="modalQCM" @close="modalQCM = false">
                     <mdb-modal-header>
                     <mdb-modal-title>Oh oh !</mdb-modal-title>
                     </mdb-modal-header>
-                    <mdb-modal-body>Un compte à déjà été créé avec cet adresse email</mdb-modal-body>
+                    <mdb-modal-body>Vous avez déjà répondu au QCM !</mdb-modal-body>
                     <mdb-modal-footer>
-                    <mdb-btn color="secondary" @click.native="modalUserExist = false">Ok</mdb-btn>
+                    <mdb-btn color="secondary" @click.native="modalQCM = false">Ok</mdb-btn>
                     </mdb-modal-footer>
                 </mdb-modal>
 
@@ -73,6 +63,8 @@
 
 <script>
   import axios from 'axios';
+  import router from '../../router';
+
   import { mdbRow, mdbCol, mdbCard, mdbCardBody, mdbInput, mdbBtn, mdbModal,
       mdbModalHeader,
       mdbModalTitle,
@@ -100,22 +92,134 @@
     ],
     data() {
       return {
-        radioBtn: '',
-        modalOk: false,
-        modalUserExist: false,
-        mdpEstIncorrecte: false,
-        userForm: {
-          nomauth: '',
-          prenomauth: '',
-          mailauth: '',
-          mdpauth: '',
-          mdpverif: ''
-        },
+        selected: [],
+        addChoix: [],
+        modalQCM: false,
+      
         qcm: {},
         id_qcm: this.$route.params.id,
+        qcmForm: {
+          id_question: '',
+          titre: '',
+          reponses: []
+        },
+        reponsesForm: {
+          reponseouverte:'',
+          id_choix:'',
+          id_eleve:'',
+          id_question:''
+        },
+        reponseOuverteForm: {
+          id: []
+        },
+        submit : false
       };
     },
     methods: {
+      addQcmReponses(data) {
+        const path = `http://localhost:5000/api/qcmReponses`;
+        axios.post(path, data).
+        then((res) => {
+          if(res.data.status == 404) {
+            console.log("erreur 404")
+            this.modalQCM = true
+          } else {
+            router.push({ name: "Eleve", params: {}});
+          }
+        });
+      },
+      
+      initQcmForm() {
+        this.qcmForm = {
+          id_question: '',
+          titre: '',
+          reponses: []
+        }
+      },
+
+      initReponseOuverteForm() {
+        this.reponseOuverteForm = {id:[]}
+      },
+
+      initReponsesForm() {
+        this.reponsesForm = {
+              reponseouverte:'',
+              id_choix:'',
+              id_eleve:'',
+              id_question:''
+            }
+      },
+
+      addReponseOuverte() {
+        for (let i = 0; i < this.qcm.questions.length; i++) {
+          this.initReponsesForm()
+          console.log('coucou')
+          console.log(this.qcm.questions[i].ouverte)
+          if(this.qcm.questions[i].ouverte == true) {
+            console.log('lardon')
+            if(this.reponseOuverteForm.id[this.qcm.questions[i].id] != undefined) {
+              this.reponsesForm.reponseouverte = this.reponseOuverteForm.id[this.qcm.questions[i].id]
+            }else {
+              this.reponsesForm.reponseouverte = ""
+            }
+            this.reponsesForm.id_choix = null
+            this.reponsesForm.id_eleve = this.qcm.id_eleve
+            this.reponsesForm.id_question= this.qcm.questions[i].id
+            this.qcmForm.reponses.push(this.reponsesForm)
+          }
+
+        }
+      },
+
+     
+      onSubmit(e) {
+        
+          e.preventDefault();
+        
+          this.addReponseOuverte()
+        
+          console.log('selected')
+
+          for (let i = 0; i < this.qcm.questions.length; i++) {
+            
+            if(this.qcm.questions[i].ouverte == false) {
+
+              for (let j = 0; j < this.qcm.questions[i].choix.length; j ++){
+                this.initReponsesForm()
+                for(let k = 0; k < this.selected.length; k ++) {
+
+                  if(this.selected[k] == this.qcm.questions[i].choix[j].id) {
+                    const r = {
+                      reponseouverte : "",
+                      id_choix : this.selected[k],
+                      id_eleve : this.qcm.id_eleve,
+                      id_question : this.qcm.questions[i].id
+                    }
+            
+                    this.qcmForm.reponses.push(r)
+                  }
+                }
+              }
+            }
+          }
+          const newQcmReponses = {
+            id: this.qcm.id,
+            titre: this.qcm.titre,
+            réponses: this.qcmForm.reponses
+          };
+          console.log(newQcmReponses)
+       
+
+          console.log(this.selected)
+          console.log('toutes les réponses')
+          console.log(this.qcmForm.reponses)
+          this.addQcmReponses(newQcmReponses)
+          this.initReponseOuverteForm()
+          this.initReponsesForm()
+          this.initQcmForm()
+        
+        }
+      
     },
     async created(){
         console.log(this.id);
@@ -124,6 +228,7 @@
         console.log(res.data)}) //this.todos = res.data
         .catch(err => console.log(err));
     },
+ 
   }
 </script>
 

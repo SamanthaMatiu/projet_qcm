@@ -50,7 +50,7 @@
           <strong>Mes QCMs corrigés</strong>
         </h3>
         <p class="dark-grey-text">Penses à venir ici de temps en temps pour corriger les qcm de tes élèves - blablabla - Tes élèves sont impatients</p>
-        <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux faire une correction</mdb-btn>
+        <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux voir mes qcms corrigés</mdb-btn>
       </mdb-col>
     </mdb-row>
   </mdb-container>
@@ -84,7 +84,7 @@ export default {
         this.$router.push({ name: 'QcmsFait' });
       },
       goToCorrection(){
-        this.$router.push({ name: 'Correction' });
+        this.$router.push({ name: 'QcmsCorriges' });
       }
     }
 }

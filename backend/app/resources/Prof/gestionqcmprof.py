@@ -6,7 +6,6 @@ from app.models import Qcm,Utilisateurs,Question,Choix,QcmEleve,Groupe, ReponseE
 from app.resources.Authentification.login import token_verif
 
 class QCMProf(Resource):
-
     @token_verif
     def get(user,self):
         try :
@@ -18,28 +17,6 @@ class QCMProf(Resource):
         except:
             db.session.rollback()
             db.session.commit()
-            abort(400)
-
-class ListACorriger(Resource):
-    @token_verif
-    def get(user,self):
-        try:
-            ListeQcmEleve=[]
-            for qcm in user.qcm:
-                for qcmeEleve in qcm.eleve :
-                    ListeQcmEleve.append({'id qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
-            return ListeQcmEleve
-        except :
-            db.session.commit()
-            abort(400)
-
-class ListACorrigerDetails(Resource):
-    @token_verif
-    def get(user,self,id_qcm,id_eleve):
-        try:
-            qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
-            return get_qcm_eleve(qcmeEleve)
-        except :
             abort(400)
 
 class CorrectionDunQCM(Resource):
@@ -59,6 +36,20 @@ class CorrectionDunQCM(Resource):
             qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
             return get_Corrige(qcmeEleve)
         except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+    
+    @token_verif
+    def patch(user,self,id_qcm,id_eleve):
+        try:
+            qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
+            qcmeEleve.statut='Corrigé'
+            db.session.commit()
+            return ("Statut mis à jour.")
+            
+        except :
+            db.session.rollback()
             db.session.commit()
             abort(400)
 
@@ -76,6 +67,52 @@ class CorrectionQuestionOuverte(Resource):
             else:
                 Reponse.note=0
             return("Question corrigée")
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+class ListDesQCMS(Resource):
+    @token_verif
+    def get(user,self):
+        try:
+            ListeQcmEleve=[]
+            for qcm in user.qcm:
+                for qcmeEleve in qcm.eleve :
+                    ListeQcmEleve.append({'id_qcm':qcm.id,'id eleve':qcmeEleve.id_eleve,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'statut':qcmeEleve.statut})
+            return ListeQcmEleve
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+class ListQCMFait(Resource):
+    @token_verif
+    def get(user,self):
+        try:
+            ListeQcmEleve=[]
+            for qcm in user.qcm:
+                for qcmeEleve in qcm.eleve :
+                    if(qcmeEleve.statut == "Fait"):
+                        eleve=qcmeEleve.utilisateurs
+                        ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+            return ListeQcmEleve
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+class ListQCMFaitParExam(Resource):
+    @token_verif
+    def get(user,self,id_qcm):
+        try:
+            ListeQcmEleve=[]
+            qcm=db.session.query(Qcm).filter_by(id = id_qcm).first()
+            for qcmeleve in qcm.eleve:
+                if(qcmeleve.statut == "Fait"):
+                    eleve=qcmeleve.utilisateurs
+                    ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+            return ListeQcmEleve
         except :
             db.session.rollback()
             db.session.commit()

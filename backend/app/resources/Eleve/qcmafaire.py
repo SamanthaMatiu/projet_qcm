@@ -26,8 +26,12 @@ class QCMaFaireResources(Resource):
             for qcm in qcm_eleve:
 
                 if(qcm.statut == "A faire"):
-
+                    
                     qcm_a_faire=Qcm.query.filter_by(id=qcm.id_qcm).first()
+
+                    #now = datetime.now()
+
+                    #if((qcm_a_faire.date_debut < now) and (now < qcm_a_faire.date_fin)):
                     res = get_qcm_a_faire_titre(qcm_a_faire,user.id)
                     list_qcm_a_faire.append(res)
 
@@ -50,12 +54,9 @@ class QMCaFaireQuestionsResources(Resource):
         """
     @token_verif
     def get(user,self,id_qcm_a_faire):
-        print('toto')
         try:
             if(check_qcm_a_faire_exists(id_qcm_a_faire)):
-                print('toto')
                 qcm_a_faire=Qcm.query.filter(Qcm.id == id_qcm_a_faire).first()
-                print(qcm_a_faire)
                 res = get_qcm_a_faire(qcm_a_faire,user.id)
     
                 return res
@@ -80,8 +81,9 @@ def check_qcm_a_faire_exists(id_qcm:int):
     return qcm_a_faire_already_exists
 
 def get_qcm_a_faire_titre(qcm,id_eleve):
-    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M')
-    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M')
+  
+    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M:%S')
+    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M:%S')
     jsonqcm_a_faire = {'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleve':id_eleve,'id_prof':qcm.id_professeur}
     return jsonqcm_a_faire
 
@@ -93,7 +95,7 @@ def get_qcm_a_faire(qcm,id_eleve):
             Listchoix.append({'id':choix.id,'choix':choix.intitule,'true':choix.estcorrect})
         temp={'id': question.id ,'titre':question.intitule,'ouverte':question.ouverte,'choix':Listchoix}
         questions.append(temp)
-    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M')
-    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M')
+    date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M:%S')
+    date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M:%S')
     jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleve':id_eleve,'id_prof':qcm.id_professeur,'questions':questions}
     return jsonqcm

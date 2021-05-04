@@ -25,15 +25,15 @@
             <form v-on:submit.prevent="onSubmit">
                 <div v-for="(question,id) in qcm.questions" :key="id">
                 <h3> {{question.titre}} </h3>
-                <mdb-input v-if = question.ouverte v-model="question.choix" v-bind:key = question.choix.id disabled/>
+                <mdb-input v-if = question.ouverte v-model="question.reponses.reponseouverte" v-bind:key = question.choix.id disabled/>
                 <br>
                 <div v-if = !question.ouverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                        <div v-if = choix.true>
-                        <mdb-input type="checkbox" id="choix" v-model="checkOk" disabled/> <label  for="choix">{{ choix.choix }}</label>
+                        <div v-if = "choix.choix === question.reponses.choix">
+                            <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.choix }}</b-form-checkbox>
                         </div>
                         <div v-else>
-                        <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.choix }}</label>
+                            <b-form-checkbox id="choix" disabled>{{ choix.choix }}</b-form-checkbox>
                         </div>
                     </div>
                     <br>
@@ -56,7 +56,7 @@
      } from 'mdbvue';
 
   export default { 
-    name: 'RepondreQcm',
+    name: 'ConsulterQcm',
     components: {
       mdbRow,
       mdbCol,

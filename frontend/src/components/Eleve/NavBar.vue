@@ -6,9 +6,12 @@
         <mdb-navbar-nav>
           <mdb-nav-item to="/dashboardEleve/home" waves-fixed>Home</mdb-nav-item>
           <mdb-nav-item to="/dashboardEleve/afaire" waves-fixed>A faire</mdb-nav-item>
-          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>En cours de correction</mdb-nav-item>
-          <mdb-nav-item to="/dashboardEleve/home" waves-fixed>Corrigés</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/fait" waves-fixed>En cours de correction</mdb-nav-item>
+          <mdb-nav-item to="/dashboardEleve/corriges" waves-fixed>Corrigés</mdb-nav-item>
         </mdb-navbar-nav>
+        <mdb-form-inline>
+        <mdb-btn outline="success" type="button" @click="logout()">Déconnexion</mdb-btn>
+        </mdb-form-inline>
       </mdb-navbar-toggler>
     </mdb-navbar>
     
@@ -21,8 +24,10 @@
     mdbNavItem,
     mdbNavbarNav,
     mdbNavbarToggler,
-    mdbNavbarBrand
+    mdbNavbarBrand,
+    mdbBtn, mdbFormInline
   } from "mdbvue";
+  import router from '../../router';
 
   export default {
     name: "Navbar",
@@ -31,11 +36,31 @@
       mdbNavItem,
       mdbNavbarNav,
       mdbNavbarToggler,
-      mdbNavbarBrand
+      mdbNavbarBrand,
+      mdbBtn, mdbFormInline
     },
     props: {
         navElements: Array
-    }
+    },
+    data() {
+      return {
+      };
+    },
+    methods: {
+      logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('statut');
+        router.push({ name: "Connexion", params: {}});
+      },
+    },
+    created() {
+      if (!(localStorage.getItem('token'))){
+        router.push({ name: "Connexion", params: {}});
+      }
+      if (!(localStorage.getItem('statut')==="élève")){
+        router.push({ name: "Prof", params: {}});
+      }
+    },
   };
   </script>
 
@@ -50,4 +75,12 @@
   .navbar .dropdown-menu a:hover {
     color: inherit !important;
   }
-  </style>
+  .btn-outline-success {
+    border: 2px solid white !important;
+    background-color: transparent !important;
+    color: white !important;
+} 
+ .btn-outline-success:not([disabled]):not(.disabled):active {
+    border-color: white !important;
+}
+</style>
