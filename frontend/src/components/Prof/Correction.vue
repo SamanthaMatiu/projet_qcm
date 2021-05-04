@@ -3,6 +3,20 @@
     <div class="card-header"><h3>QCMs à corriger</h3></div>
     <div class="card-body">
       <div class="col-sm table-responsive">
+        <div>
+        <b-form class="w-100">
+          <b-form-select v-model="exam" class="mb-2">
+            <b-form-select-option :value="null" disabled>Choisir un examen</b-form-select-option>
+            <b-form-select-option v-for="(option, index) in exams" :key="index" v-bind:value="option.id">{{option.titre}}</b-form-select-option>
+          </b-form-select>
+          <b-button-group>
+            <button type="button" class="btn btn-primary btn-sm" @click="onSubmitFiltre()">Filtrer</button>
+            <button type="button" class="btn btn-dark btn-sm" @click="reset()">Supprimer filtre</button>
+          </b-button-group>
+          </b-form>
+        </div>
+        <br>
+        <br>
         <table class="table">
           <thead>
             <tr>
@@ -22,7 +36,6 @@
                   </router-link>
                 </td>
               </tr>
-
           </tbody>
         </table>
       </div>
@@ -32,12 +45,13 @@
 
 <script>
   import axios from 'axios';
-
 export default {
   name: 'Consultation',
   data() {
       return {
-        data: []
+        data: [],
+        exams:[],
+        exam:null,
       }
     },
   methods: {
@@ -52,10 +66,41 @@ export default {
           // eslint-disable-next-line
           console.error(error);
         });
+    },
+    getExams(){
+      const path = `http://localhost:5000/api/qcmProf`;
+      axios.get(path)
+        .then((res) => {
+          this.exams = res.data
+          console.log(res)
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    setFiltrer() {
+      const path = `http://localhost:5000/api/listQCM/`+this.exam;
+      axios.get(path)
+        .then((res) => {
+          this.data = res.data
+          console.log('Liste filtrée')
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    onSubmitFiltre() {
+      console.log(this.exam);
+      this.setFiltrer();
+    },
+    reset() {
+      this.exam = null;
+      this.getQcms();
     }
   },
   created() {
-    this.getQcms()
+    this.getQcms();
+    this.getExams();
   }
 }
 </script>
