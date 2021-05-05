@@ -55,7 +55,7 @@
               <b-tab title="Questions à choix multiples">
                 <div>
                   <label class="grey-text ajout-quest">Ajouter une question</label> 
-                  <i class="fas fa-plus-circle" v-on:click="modal.question = true"></i>
+                  <i class="fas fa-plus-circle" v-on:click="$bvModal.show('modal-creer-mult')"></i>
 
                   <table class="table table-hover">
                     <thead>
@@ -122,11 +122,11 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="question in data.questions" :key="question.id">
-                          <template v-if="!question.ouverte">
-                            <td>{{ question.bareme }}</td>                       
+                        <tr v-for="eleve in data.id_eleves" :key="eleve.id">
+                          <template>
+                            <td>{{ eleve.nom }} {{ eleve.prenom }}</td>                       
                             <td>
-                              <i v-on:click="prepSupprimer(question.id)" class="fas fa-trash"></i>
+                              <i class="fas fa-trash"></i>
                             </td>
                           </template>
                         </tr>
@@ -288,7 +288,7 @@
             </div>
           </b-modal>
 
-           <!-- Pop up creer une question ouverte -->
+          <!-- Pop up creer une question ouverte -->
           <b-modal id="modal-creer-ouverte" hide-footer>
             <template #modal-title>
               Création d'une question ouverte
@@ -313,6 +313,95 @@
               <b-button variant="secondary" @click="initOuvert()">Annuler</b-button>
             </div>
           </b-modal>
+
+          <!-- Pop up creer une question mult -->
+          <b-modal id="modal-creer-mult" hide-footer>
+            <template #modal-title>
+              Création d'une question à choix multiples
+            </template>
+            <div class="text-center-modal">
+              <div class="modif-ouv-titre">
+                <div class="row">
+                  <label for="titreQO">Question</label>
+                </div>
+                <div class="row">
+                  <textarea id="titreQO" v-model="creerMult.question" cols="48"/>
+                </div>
+              </div>
+
+              <div class="form-label">
+                <label for="typeNumber">Barème</label>
+                <input label="Barème" type="number" id="typeNumber" class="form-control" v-model="creerMult.bareme" min="1" required/>
+              </div>
+              
+              <div class="ajout-choix">
+                <label class="grey-text">Ajouter un choix</label> 
+                <i class="fas fa-plus-circle" v-on:click="$bvModal.show('modal-creer-choix')"></i>
+              </div>
+
+              <div v-if="creerMult.choix.length > 0">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Choix</th>
+                      <th width="150px" scope="col">Bonne réponse ?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="choix in creerMult.choix" :key="choix.id">
+                      <td>
+                        {{ choix.choix }}
+                      </td>
+                      <td v-if="choix.true == 1">
+                        Oui
+                      </td>
+                      <td v-if="choix.true == 0">
+                        Non
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="modifOuverte">
+              <b-button variant="primary" @click="creerQuestMult()">Ajouter</b-button>
+              <b-button variant="secondary" @click="initMult()">Annuler</b-button>
+            </div>
+          </b-modal>
+
+          <!-- Pop up creer un choix -->
+          <b-modal id="modal-creer-choix" hide-footer>
+            <template #modal-title>
+              Création d'un choix
+            </template>
+            <div class="text-center-modal">
+              <div class="modif-ouv-titre">
+                <div class="row">
+                  <label for="choix">Choix</label>
+                </div>
+                <div class="row">
+                  <textarea id="choix" v-model="creerChoix.choix" cols="48"/>
+                </div>
+              </div>
+
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  value="oui"
+                  id="form2Example3"
+                  v-model="creerChoix.estBonneReponse"
+                />
+                <label class="form-check-label" for="form2Example3">Est-ce une bonne réponse ?</label>
+
+              </div>
+            </div>
+            <div class="modifOuverte">
+              <b-button variant="primary" @click="creeChoix()">Ajouter</b-button>
+              <b-button variant="secondary" @click="initChoix()">Annuler</b-button>
+            </div>
+          </b-modal>
+
         </div>
       </div>  
     </div>
@@ -367,6 +456,15 @@ export default {
         question: "",
         bareme: ""
       },
+      creerMult: {
+        question: "",
+        bareme: "",
+        choix:[]
+      },
+      creerChoix: {
+        choix: "",
+        estBonneReponse: ""
+      },
       idQuestion: ""
     }
   },
@@ -380,6 +478,7 @@ export default {
           this.affichage.date = res.data.date_debut.slice(0,10)
           this.affichage.time.debut = res.data.date_debut.slice(11,16)
           this.affichage.time.fin = res.data.date_fin.slice(11,16)
+          console.log(this.data.id_eleves)
           console.log(res)
         })
         .catch((error) => {
@@ -469,29 +568,62 @@ export default {
      this.modifierQuestion(q)
     },
     creerQuestion(data) {
-      const path = `http://localhost:5000/api/creationQuestions`;
-        axios.post(path, data)
+      //const path = `http://localhost:5000/api/creationQuestions`;
+      console.log(data)
+        /*axios.post(path, data)
           // eslint-disable-next-line no-unused-vars
           .then((res) => {
             this.$router.go(0);
             this.initOuvert()
+            this.initMult()
           })
           .catch((error) => {
             console.log(error);
-          });
+          });*/
     },
     creerQuestOuverte(){
       const q = {
         id_qcm: this.data.id,
         question: {
           titre: this.creerOuverte.question,
-          ouverte: true,
+          ouverte: 1,
           bareme: this.creerOuverte.bareme,
           choix: "",
         }
       }
 
       this.creerQuestion(q)
+    },
+    creerQuestMult(){
+      const q = {
+        id_qcm: this.data.id,
+        question: {
+          titre: this.creerMult.question,
+          ouverte: 0,
+          bareme: this.creerMult.bareme,
+          choix: JSON.parse(JSON.stringify(this.creerMult.choix)),
+        }
+      }
+
+console.log(q)
+      this.creerQuestion(q)
+    },
+    creeChoix(){
+      let estBonneReponse
+      if(this.creerChoix.estBonneReponse) {
+        estBonneReponse = 1
+      } else {
+        estBonneReponse = 0
+      }
+      
+      const c = 
+      {
+        choix: this.creerChoix.choix,
+        true: estBonneReponse
+      }
+
+      this.creerMult.choix.push(c)
+      this.initChoix()
     },
     supprimerQcm(){
       const path = `http://localhost:5000/api/qcm/${this.data.id}`;
@@ -548,6 +680,19 @@ export default {
 
       this.$bvModal.hide('modal-creer-ouverte')
     },
+    initMult(){
+      this.creerMult.question = ""
+      this.creerMult.bareme = ""
+      this.creerMult.choix = []
+
+      this.$bvModal.hide('modal-creer-mult')
+    },
+    initChoix(){
+      this.creerChoix.choix = ""
+      this.creerChoix.estBonneReponse = ""
+
+      this.$bvModal.hide('modal-creer-choix')
+    },
     annuleModifQcm(){
       this.affichage.titre = this.modifQcm.titre 
       this.affichage.date = this.modifQcm.date
@@ -600,6 +745,11 @@ export default {
 <style src="vue2-timepicker/dist/VueTimepicker.css"></style>
 
 <style scoped lang="scss">
+
+  .ajout-choix {
+    text-align: center;
+    margin-top: 25px;
+  }
 
   .ajout-quest {
     margin-bottom: 20px;

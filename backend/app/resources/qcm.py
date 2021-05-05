@@ -209,7 +209,6 @@ class GestionQuestion(Resource):
         datas=request.get_json()
         try:
             id_qcm=datas['id_qcm']
-            print(datas['question'])
             qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
             creation_quest(datas['question'],qcm)
             return {'status':200,'message':"Question(s) créée(s)."}
@@ -326,7 +325,7 @@ def get_qcm(qcm):
     date_fin=qcm.date_fin.strftime('%Y-%m-%d %H:%M')
     Listusers=[]
     for eleve in qcm.eleve:
-        Listusers.append({'id':eleve.utilisateurs.id})
+        Listusers.append({'id':eleve.utilisateurs.id,'prenom':eleve.utilisateurs.prenom,'nom':eleve.utilisateurs.nom})
     jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleves':Listusers,'id_prof':qcm.id_professeur,'questions':questions}
     return jsonqcm
 
