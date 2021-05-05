@@ -6,7 +6,7 @@
         <div>
         <b-form class="w-100">
           <b-form-select v-model="exam" class="mb-2">
-            <b-form-select-option :value="null" disabled>Choisir un examen</b-form-select-option>
+            <b-form-select-option :value="null" disabled>Choisir un QCM</b-form-select-option>
             <b-form-select-option v-for="(option, index) in exams" :key="index" v-bind:value="option.id">{{option.titre}}</b-form-select-option>
           </b-form-select>
           <b-button-group>
@@ -60,10 +60,8 @@ export default {
       axios.get(path)
         .then((res) => {
           this.data = res.data
-          console.log(res)
         })
         .catch((error) => {
-          // eslint-disable-next-line
           console.error(error);
         });
     },
@@ -72,7 +70,6 @@ export default {
       axios.get(path)
         .then((res) => {
           this.exams = res.data
-          console.log(res)
         })
         .catch((error) => {
           console.error(error);
@@ -83,14 +80,12 @@ export default {
       axios.get(path)
         .then((res) => {
           this.data = res.data
-          console.log('Liste filtrée')
         })
         .catch((error) => {
           console.error(error);
         });
     },
     onSubmitFiltre() {
-      console.log(this.exam);
       this.setFiltrer();
     },
     reset() {

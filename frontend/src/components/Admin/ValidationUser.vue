@@ -111,6 +111,7 @@ export default {
         id_groupeutilisateur: this.infosUser.groupe,
       };
       this.setGroupe(user, this.infosUser.id_utilisateur);
+      window.location.reload();
     },
     removeUser(user_id) {
       const path = `http://localhost:5000/api/validation/${user_id}`;

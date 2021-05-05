@@ -99,7 +99,6 @@ export default {
       const infos = {
         correction: true,
       };
-      console.log(question);
       this.setReponse(infos, question);
     },
 
@@ -107,7 +106,6 @@ export default {
       const infos = {
         correction: false,
       };
-      console.log(question);
       this.setReponse(infos, question);
     },
 
@@ -120,7 +118,6 @@ export default {
       const path = 'http://localhost:5000/api/correction/'+this.id_qcm+'/'+this.id_eleve;
       axios.patch(path)
         .then(() => {
-          console.log('ok')
           router.push({ name: "Correction", params: {}});
         })
         .catch((error) => {
