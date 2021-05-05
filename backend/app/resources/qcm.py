@@ -210,7 +210,7 @@ class GestionQuestion(Resource):
         try:
             id_qcm=datas['id_qcm']
             qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
-            creation_question(datas['question'],qcm)
+            creation_quest(datas['question'],qcm)
             return {'status':200,'message':"Question(s) créée(s)."}
         except:
             db.session.rollback()
@@ -257,10 +257,10 @@ class GestionQuestionById(Resource):
                     ## on recupère le choix concerné en BDD 
                     value=db.session.query(Choix).filter_by(id=choi['id']).first()
                     ## on change ses attributs
-                    if choi['intitule'] != "" :
-                        value.intitule=choi['intitule']
-                    if choi['estcorrect'] != "":
-                        value.estcorrect=choi['estcorrect']
+                    if choi['choix'] != "" :
+                        value.intitule=choi['choix']
+                    if choi['true'] != "":
+                        value.estcorrect=choi['true']
                     db.session.commit()
             return {'status':200,'message': 'Les changements ont été effectués.'}
         except:
@@ -298,7 +298,21 @@ def creation_question(data,QCM):
                 choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)
                 db.session.add(choix)
                 db.session.commit()
-    
+
+def creation_quest(question,QCM):
+    if question['ouverte']==0:
+        ouverte=False
+    else :
+        ouverte=True
+    question=Question(intitule=question['titre'],ouverte=ouverte,bareme=question['bareme'],qcm=QCM)
+    db.session.add(question)
+    db.session.commit()
+    if not (ouverte):
+        for y in question['choix']:
+            choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)
+            db.session.add(choix)
+            db.session.commit()
+
 def get_qcm(qcm):
     questions=[]
     for question in qcm.questions:
@@ -311,7 +325,7 @@ def get_qcm(qcm):
     date_fin=qcm.date_fin.strftime('%Y-%m-%d %H:%M')
     Listusers=[]
     for eleve in qcm.eleve:
-        Listusers.append({'id':eleve.utilisateurs.id})
+        Listusers.append({'id':eleve.utilisateurs.id,'prenom':eleve.utilisateurs.prenom,'nom':eleve.utilisateurs.nom})
     jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleves':Listusers,'id_prof':qcm.id_professeur,'questions':questions}
     return jsonqcm
 

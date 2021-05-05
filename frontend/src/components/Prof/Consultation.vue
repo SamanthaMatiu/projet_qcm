@@ -46,7 +46,7 @@ export default {
       axios.get(path)
         .then((res) => {
           this.data = res.data
-          console.log(res)
+          console.log(this.data)
         })
         .catch((error) => {
           // eslint-disable-next-line
