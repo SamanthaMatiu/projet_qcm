@@ -44,7 +44,9 @@ class CorrectionDunQCM(Resource):
     def patch(user,self,id_qcm,id_eleve):
         try:
             qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).first()
-            qcmeEleve.statut='Corrigé'
+            qcmeEleve.statut="Corrigé"
+            correction(qcmeEleve,id_eleve)
+            db.session.query(QcmEleve).filter(QcmEleve.id_eleve == id_eleve, QcmEleve.id_qcm == id_qcm ).update({QcmEleve.statut: "Corrigé"}, synchronize_session=False)
             db.session.commit()
             return ("Statut mis à jour.")
             
@@ -62,10 +64,11 @@ class CorrectionQuestionOuverte(Resource):
         try:
             correction=args['correction']
             Reponse=db.session.query(ReponseEleve).filter_by(id_question=id_question,id_eleve=id_eleve).first()
-            if(correction):
+            if(correction == "True"):
                 Reponse.note=Reponse.question.bareme
             else:
                 Reponse.note=0
+            db.session.commit()
             return("Question corrigée")
         except :
             db.session.rollback()
@@ -147,14 +150,15 @@ def get_qcm_eleve(Qcmeleve):
             questionreponses.append(questionreponse)
     return questionreponses
 
-def correction(Qcmeleve):
+def correction(Qcmeleve,id_eleve):
     id_qcm=Qcmeleve.qcm.id
-    id_eleve=Qcmeleve.utilisateurs
-    for reponse in id_eleve.reponseleve:
-        if reponse.question.id_qcm == id_qcm :
-            if (reponse.reponseouverte == None) :
-                if (reponse.choix.estcorrect == 1 and reponse.note != 0):
-                    reponse.note=1
+    qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
+    for question in qcm.questions:
+        responseEleve=db.session.query(ReponseEleve).filter_by(id_eleve=id_eleve,id_question=question.id).all()
+        for reponse in responseEleve:
+            if (reponse.choix != None) :
+                if (reponse.choix.estcorrect and reponse.note != 0):
+                    reponse.note=reponse.question.bareme
                 else : 
                     reponse.note=0
     db.session.commit()

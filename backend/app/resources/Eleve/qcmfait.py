@@ -68,10 +68,14 @@ class ListQCMCorrige(Resource):
     def get(user,self):
         try:
             ListeQcmEleve=[]
-            for qcm in user.qcm:
-                for qcmeEleve in qcm.eleve :
-                    if(qcmeEleve.statut == "Corrigé"):
-                        ListeQcmEleve.append({'id_qcm':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+            qcm_eleve = QcmEleve.query.filter(QcmEleve.id_eleve == user.id).all()
+       
+            for qcm in qcm_eleve:
+                if(qcm.statut == "Corrigé"):
+                    qcm_corrige=Qcm.query.filter_by(id=qcm.id_qcm).first()
+                    res = get_qcm_fait_titre(qcm_corrige,user.id)
+                    ListeQcmEleve.append(res)
+
             return ListeQcmEleve
         except :
             db.session.rollback()
@@ -105,16 +109,19 @@ def get_qcm_fait(qcm,id_eleve):
         for choix in question.choix:
             Listchoix.append({'id':choix.id,'choix':choix.intitule,'true':choix.estcorrect})
         
-        reponse = db.session.query(ReponseEleve).filter(ReponseEleve.id_question == question.id, ReponseEleve.id_eleve == id_eleve).first()
+        reponse = db.session.query(ReponseEleve).filter(ReponseEleve.id_question == question.id, ReponseEleve.id_eleve == id_eleve)
         if (reponse != None):
-            if (reponse.id_choix != None):
-                choix_reponse = db.session.query(Choix).filter(Choix.id == reponse.id_choix).first()
-                choix = choix_reponse.intitule
-            else:
-                choix = ""
-            r = {'id':reponse.id,'id_choix':reponse.id_choix,'choix':choix,'reponseouverte':reponse.reponseouverte,'question':reponse.id_question}
+            r=[]
+            for rep in reponse:
+                if (rep.id_choix != None):
+                    choix_reponse = db.session.query(Choix).filter(Choix.id == rep.id_choix).first()
+                    choix = choix_reponse.intitule
+                else:
+                    choix = ""
+                r.append({'id':rep.id,'id_choix':rep.id_choix,'choix':choix,'reponseouverte':rep.reponseouverte,'question':rep.id_question})
         else : 
             r={'id':"",'id_choix':"",'choix':"",'reponseouverte':"",'question':""}
+        print(r)
         temp={'id': question.id ,'titre':question.intitule,'ouverte':question.ouverte,'choix':Listchoix,'reponses':r}
         questions.append(temp)
     

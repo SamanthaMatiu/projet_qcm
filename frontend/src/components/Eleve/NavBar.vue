@@ -57,8 +57,10 @@
       if (!(localStorage.getItem('token'))){
         router.push({ name: "Connexion", params: {}});
       }
-      if (!(localStorage.getItem('statut')==="élève")){
-        router.push({ name: "Prof", params: {}});
+      if (!((localStorage.getItem('statut')==="Élève") || (localStorage.getItem('statut')==="élève"))){
+        localStorage.removeItem('token');
+        localStorage.removeItem('statut');
+        router.push({ name: "Connexion", params: {}});
       }
     },
   };

@@ -9,7 +9,7 @@ from app.resources.Eleve.qcmafaire import QCMaFaireResources, QMCaFaireQuestions
 from app.resources.Eleve.qcmfait import QCMFaitResources, QCMFaitQuestionsResources,ListQCMCorrige
 from app.resources.Eleve.postqcmeleve import ReponsesQCM
 from app.resources.Eleve.noteqcmEleve import NoteQCMEleve
-from app.resources.Prof.noteqcmProf import NoteQCMProf
+from app.resources.Prof.noteqcmProf import NoteQCMProf, ListQCMCorrigeParExam, ListQCMCorrigeProf
 
 # login
 api.add_resource(LoginResource, '/api/login')
@@ -26,6 +26,10 @@ api.add_resource(NoteQCMProf,'/api/NoteQcmFait/<int:id_qcm>/<int:id_eleve>') ## 
 ##Correcion qcms prof 
 api.add_resource(CorrectionDunQCM,'/api/correction/<int:id_qcm>/<int:id_eleve>') ##post = correction auto / ## get pas utils mais retourne note  + question ouvertes / patch change statut a corrigé 
 api.add_resource(CorrectionQuestionOuverte,'/api/correctionQuestionOuverte/<int:id_eleve>/<int:id_question>') ## post change note d'une question ouverte
+
+#Consultation QCM Corrigé Prof
+api.add_resource(ListQCMCorrigeProf,'/api/qcmCorriges')
+api.add_resource(ListQCMCorrigeParExam,'/api/qcmCorriges/<int:id_qcm>')
 
 ##modif questions qcms 
 api.add_resource(GestionQuestion,'/api/creationQuestions') ## post creer un question pour le qcm x 

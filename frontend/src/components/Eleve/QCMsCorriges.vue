@@ -21,7 +21,7 @@
               <td>{{ qcm.date_fin }}</td>
               <td>
                 <div class="btn-group" role="group">
-                    <router-link :to="{ name: 'ConsulterQCMCorriges', params: { id: qcm.id_qcm }}">
+                    <router-link :to="{ name: 'ConsulterQCMCorriges', params: { id: qcm.id }}">
                         <button type="button" class="btn btn-success btn-sm">Voir le QCM</button>
                     </router-link>
                 </div>
