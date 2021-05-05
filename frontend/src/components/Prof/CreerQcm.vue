@@ -80,7 +80,7 @@
               </div>
 
               <div class="text-center mb-4 mt-5">
-                <mdb-btn color="#97adff" type="submit" v-on:click="submit = true" class="btn-block z-depth-2">Submit</mdb-btn>
+                <mdb-btn color="#97adff" type="submit" v-on:click="submit = true" class="btn-block z-depth-2">Valider</mdb-btn>
               </div>
 
                 <!-- Pop up créer question -->

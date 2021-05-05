@@ -29,11 +29,11 @@ class QCMaFaireResources(Resource):
                     
                     qcm_a_faire=Qcm.query.filter_by(id=qcm.id_qcm).first()
 
-                    #now = datetime.now()
+                    now = datetime.now()
 
-                    #if((qcm_a_faire.date_debut < now) and (now < qcm_a_faire.date_fin)):
-                    res = get_qcm_a_faire_titre(qcm_a_faire,user.id)
-                    list_qcm_a_faire.append(res)
+                    if((qcm_a_faire.date_debut < now) and (now < qcm_a_faire.date_fin)):
+                        res = get_qcm_a_faire_titre(qcm_a_faire,user.id)
+                        list_qcm_a_faire.append(res)
 
             return list_qcm_a_faire
             
