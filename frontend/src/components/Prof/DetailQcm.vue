@@ -24,6 +24,9 @@
               <!-- Question ouverte -->
               <b-tab title="Questions ouverte" active>
                 <div>
+                  <label class="grey-text ajout-quest">Ajouter une question</label> 
+                  <i class="fas fa-plus-circle" v-on:click="$bvModal.show('modal-creer-ouverte')"></i>
+
                   <table class="table table-hover">
                     <thead>
                       <tr>
@@ -51,6 +54,9 @@
               <!-- Question à choix multiple -->
               <b-tab title="Questions à choix multiples">
                 <div>
+                  <label class="grey-text ajout-quest">Ajouter une question</label> 
+                  <i class="fas fa-plus-circle" v-on:click="modal.question = true"></i>
+
                   <table class="table table-hover">
                     <thead>
                       <tr>
@@ -134,7 +140,7 @@
 
         </div>
         <div class="card-footer text-muted">
-          <button type="button" class="btn btn-primary btn-sm" @click="$bvModal.show('modal-modif-qcm')">Modifier</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="prepModifQcm()">Modifier</button>
           <button type="button" class="btn btn-danger btn-sm" @click="$bvModal.show('bv-modal-example')">Supprimer</button>
         
         <!-- Pop up supprimer qcm -->
@@ -214,7 +220,7 @@
               <!-- Réponse -->
               <div class="text-reponse">
                 <div class="row">
-                  <label for="titre-reponse">Reponse</label>
+                  <label for="titre-reponse">Réponse</label>
                 </div>
                 <div class="row">
                   <div id="titre-reponse">
@@ -278,7 +284,33 @@
             </div>
             <div class="modifOuverte">
               <b-button variant="primary" @click="modifierQcm()">Modifier</b-button>
-              <b-button variant="secondary" @click="initModifQcm()">Annuler</b-button>
+              <b-button variant="secondary" @click="annuleModifQcm()">Annuler</b-button>
+            </div>
+          </b-modal>
+
+           <!-- Pop up creer une question ouverte -->
+          <b-modal id="modal-creer-ouverte" hide-footer>
+            <template #modal-title>
+              Création d'une question ouverte
+            </template>
+            <div class="text-center-modal">
+              <div class="modif-ouv-titre">
+                <div class="row">
+                  <label for="titreQO">Question</label>
+                </div>
+                <div class="row">
+                  <textarea id="titreQO" v-model="creerOuverte.question" cols="48"/>
+                </div>
+              </div>
+
+              <div class="form-label">
+                <label for="typeNumber">Barème</label>
+                <input label="Barème" type="number" id="typeNumber" class="form-control" v-model="creerOuverte.bareme" min="1" required/>
+              </div>
+            </div>
+            <div class="modifOuverte">
+              <b-button variant="primary" @click="creerQuestOuverte()">Ajouter</b-button>
+              <b-button variant="secondary" @click="initOuvert()">Annuler</b-button>
             </div>
           </b-modal>
         </div>
@@ -314,6 +346,14 @@ export default {
           fin: ""
         }
       },
+      modifQcm: {
+        titre: "",
+        date: "",
+        time: {
+          debut: "",
+          fin: ""
+        }
+      },
       modifOuverte: {
         question: "",
         bareme: ""
@@ -322,6 +362,10 @@ export default {
         question: "",
         bareme: "",
         choix: []
+      },
+      creerOuverte: {
+        question: "",
+        bareme: ""
       },
       idQuestion: ""
     }
@@ -344,6 +388,24 @@ export default {
         });
     },
     modifierQcm(){
+      if(this.affichage.titre != this.modifQcm.titre){
+        this.modifQcm.titre = this.affichage.titre
+      } else {
+        this.modifQcm.titre = ""
+      }
+
+      if(this.affichage.date != this.modifQcm.date){
+        this.modifQcm.date = this.affichage.date
+      }
+
+      if(this.affichage.time.debut != this.modifQcm.time.debut){
+        this.modifQcm.time.debut = this.affichage.time.debut
+      }
+
+      if(this.affichage.time.fin != this.modifQcm.time.fin){
+        this.modifQcm.time.fin = this.affichage.time.fin
+      }
+
       const q = {
         id: this.data.id,
         titre: this.affichage.titre,
@@ -403,10 +465,33 @@ export default {
         },
         choix: this.modifMult.choix
       }
-console.log(q)
-console.log(JSON.stringify(q))
 
      this.modifierQuestion(q)
+    },
+    creerQuestion(data) {
+      const path = `http://localhost:5000/api/creationQuestions`;
+        axios.post(path, data)
+          // eslint-disable-next-line no-unused-vars
+          .then((res) => {
+            this.$router.go(0);
+            this.initOuvert()
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    },
+    creerQuestOuverte(){
+      const q = {
+        id_qcm: this.data.id,
+        question: {
+          titre: this.creerOuverte.question,
+          ouverte: true,
+          bareme: this.creerOuverte.bareme,
+          choix: "",
+        }
+      }
+
+      this.creerQuestion(q)
     },
     supprimerQcm(){
       const path = `http://localhost:5000/api/qcm/${this.data.id}`;
@@ -437,6 +522,14 @@ console.log(JSON.stringify(q))
       this.idQuestion = ""
       this.$bvModal.hide('modal-suppr-quest')
     },
+    initModifQcm(){
+      this.modifQcm.titre = ""
+      this.modifQcm.date = ""
+      this.modifQcm.time.debut = ""
+      this.modifQcm.time.fin = ""
+
+      this.$bvModal.hide('modal-modif-qcm')
+    },
     initModifOuverte(){
       this.idQuestion = "",
       this.modifOuverte.question = "",
@@ -449,9 +542,30 @@ console.log(JSON.stringify(q))
       this.modifMult.bareme = ""
       this.$bvModal.hide('modal-modif-mult')
     },
+    initOuvert(){
+      this.creerOuverte.question = ""
+      this.creerOuverte.bareme = ""
+
+      this.$bvModal.hide('modal-creer-ouverte')
+    },
+    annuleModifQcm(){
+      this.affichage.titre = this.modifQcm.titre 
+      this.affichage.date = this.modifQcm.date
+      this.affichage.time.debut = this.modifQcm.time.debut 
+      this.affichage.time.fin = this.modifQcm.time.fin 
+      this.initModifQcm()
+    }, 
     prepSupprimer(id){
       this.idQuestion = id
       this.$bvModal.show('modal-suppr-quest')
+    },
+    prepModifQcm(){
+      this.modifQcm.titre = this.affichage.titre
+      this.modifQcm.date = this.affichage.date
+      this.modifQcm.time.debut = this.affichage.time.debut
+      this.modifQcm.time.fin = this.affichage.time.fin
+
+      this.$bvModal.show('modal-modif-qcm')
     },
     prepModifierOuverte(question){
       this.idQuestion = question.id,
@@ -469,11 +583,11 @@ console.log(JSON.stringify(q))
       this.$bvModal.show('modal-modif-mult')
     },
     getDateDebut(){
-      let date = this.affichage.date + " " + this.affichage.time.debut + ":00"
+      let date = this.modifQcm.date + " " + this.modifQcm.time.debut + ":00"
       return date
     },
     getDateFin(){
-      let date = this.affichage.date + " " + this.affichage.time.fin + ":00"
+      let date = this.modifQcm.date + " " + this.modifQcm.time.fin + ":00"
       return date
     },
   },
@@ -486,6 +600,14 @@ console.log(JSON.stringify(q))
 <style src="vue2-timepicker/dist/VueTimepicker.css"></style>
 
 <style scoped lang="scss">
+
+  .ajout-quest {
+    margin-bottom: 20px;
+  }
+
+  .fa-plus-circle {
+    margin-left: 10px;
+  }
 
   .text-reponse {
     margin-top: 20px;

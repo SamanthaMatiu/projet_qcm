@@ -209,8 +209,9 @@ class GestionQuestion(Resource):
         datas=request.get_json()
         try:
             id_qcm=datas['id_qcm']
+            print(datas['question'])
             qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
-            creation_question(datas['question'],qcm)
+            creation_quest(datas['question'],qcm)
             return {'status':200,'message':"Question(s) créée(s)."}
         except:
             db.session.rollback()
@@ -298,7 +299,21 @@ def creation_question(data,QCM):
                 choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)
                 db.session.add(choix)
                 db.session.commit()
-    
+
+def creation_quest(question,QCM):
+    if question['ouverte']==0:
+        ouverte=False
+    else :
+        ouverte=True
+    question=Question(intitule=question['titre'],ouverte=ouverte,bareme=question['bareme'],qcm=QCM)
+    db.session.add(question)
+    db.session.commit()
+    if not (ouverte):
+        for y in question['choix']:
+            choix=Choix(intitule=y['choix'],estcorrect=y['true'],question=question)
+            db.session.add(choix)
+            db.session.commit()
+
 def get_qcm(qcm):
     questions=[]
     for question in qcm.questions:
