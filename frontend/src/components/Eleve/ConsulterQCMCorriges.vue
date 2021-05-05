@@ -7,7 +7,7 @@
             <mdb-row class="d-flex justify-content-start">
               <h3 class="deep-grey-text mt-3 mb-4 pb-1 mx-5">{{ qcm.titre}} </h3>
             </mdb-row>
-             <h5> Note: {{qcm.note}}/20 </h5>
+             <h5> Note: {{qcm.conversionSur20}}/20 </h5>
           </div>
           <mdb-card-body class="mx-4 mt-4">
            

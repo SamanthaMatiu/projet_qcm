@@ -13,7 +13,7 @@
         <h3 class="font-weight-bold mb-3 p-0">
           <strong>Création d'un QCM</strong>
         </h3>
-        <p class="dark-grey-text">Tu peux créer plein de super QCM - Youpi !</p>
+        <p class="dark-grey-text">Tu peux créer plein de supers QCMs - Youpi !</p>
         <mdb-btn color="primary" size="md" @click="goToCreation()">Je veux créer un qcm</mdb-btn>
       </mdb-col>
     </mdb-row>
@@ -31,7 +31,7 @@
         <h3 class="font-weight-bold mb-3 p-0">
           <strong>Gestion de mes QCMs</strong>
         </h3>
-        <p class="dark-grey-text">Tu peux voir tous les QCMs que tu as créé ici - N'hésites pas à les modifier ou supprimer si tu as fait une bêtise.</p>
+        <p class="dark-grey-text">Tu peux voir tous les QCMs que tu as créés ici - N'hésite pas à les modifier ou supprimer si tu as fait une bêtise.</p>
         <mdb-btn color="primary" size="md" @click="goToConsultation()">Je veux voir mes QCMs</mdb-btn>
       </mdb-col>
     </mdb-row>
@@ -49,7 +49,7 @@
         <h3 class="font-weight-bold mb-3 p-0">
           <strong>Correction des QCMs</strong>
         </h3>
-        <p class="dark-grey-text">Penses à venir ici de temps en temps pour corriger les QCMs de tes élèves -  Ils sont impatients d'avoir leurs résultats !</p>
+        <p class="dark-grey-text">Pense à venir ici de temps en temps pour corriger les QCMs de tes élèves -  Ils sont impatients d'avoir leurs résultats !</p>
         <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux faire une correction</mdb-btn>
       </mdb-col>
     </mdb-row>
