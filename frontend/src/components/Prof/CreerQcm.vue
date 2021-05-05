@@ -16,7 +16,7 @@
                 </mdb-col>
                 <mdb-col col="6">
 
-                  <!--<label class="grey-text">hh:mm AM/PM</label>-->
+                  <!-- Timepicker -->
                   <mdb-row class="time">
                     <mdb-col col="6 lg-8">
                         <vue-timepicker @click.native="verification.time = false" placeholder="Heure deb" :minute-interval="5" hide-disabled-hours :hour-range="[[8, 19]]" input-width="102px" v-model="qcmForm.time.debut" required></vue-timepicker>
