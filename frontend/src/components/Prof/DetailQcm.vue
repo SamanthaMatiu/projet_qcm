@@ -21,6 +21,7 @@
 
           <div>
             <b-tabs content-class="mt-3">
+              <!-- Question ouverte -->
               <b-tab title="Questions ouverte" active>
                 <div>
                   <table class="table table-hover">
@@ -47,6 +48,7 @@
                 </div>
               </b-tab>
 
+              <!-- Question à choix multiple -->
               <b-tab title="Questions à choix multiples">
                 <div>
                   <table class="table table-hover">
@@ -69,13 +71,62 @@
                             </template>
                           </td>                          
                           <td>
-                            <i class="fas fa-pen"></i>
+                            <i v-on:click="prepModifierMult(question)" class="fas fa-pen"></i>
                             <i v-on:click="prepSupprimer(question.id)" class="fas fa-trash"></i>
                           </td>
                         </template>
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              </b-tab>
+
+              <!-- Droit -->
+              <b-tab title="Droit">
+                <div class="row" >
+                  <div class="col-6">
+                    <!-- Groupe -->
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col">Groupe</th>
+                          <th width="35px" scope="col">#</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="question in data.questions" :key="question.id">
+                          <template v-if="!question.ouverte">
+                            <td>{{ question.bareme }}</td>                       
+                            <td>
+                              <i v-on:click="prepSupprimer(question.id)" class="fas fa-trash"></i>
+                            </td>
+                          </template>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="col-6">
+                    <!-- User -->
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th scope="col">User</th>
+                          <th width="35px" scope="col">#</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="question in data.questions" :key="question.id">
+                          <template v-if="!question.ouverte">
+                            <td>{{ question.bareme }}</td>                       
+                            <td>
+                              <i v-on:click="prepSupprimer(question.id)" class="fas fa-trash"></i>
+                            </td>
+                          </template>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </b-tab>
             </b-tabs>
@@ -137,6 +188,58 @@
             <div class="modifOuverte">
               <b-button variant="primary" @click="modifierOuverte()">Modifier</b-button>
               <b-button variant="secondary" @click="initModifOuverte()">Annuler</b-button>
+            </div>
+          </b-modal>
+
+          <!-- Pop up modifier une question à choix multiple -->
+          <b-modal id="modal-modif-mult" hide-footer>
+            <template #modal-title>
+              Modification d'une question à choix multiples
+            </template>
+            <div class="text-center-modal">
+              <div class="modif-ouv-titre">
+                <div class="row">
+                  <label for="titreQO">Question</label>
+                </div>
+                <div class="row">
+                  <textarea id="titreQO" v-model="modifMult.question" cols="48"/>
+                </div>
+              </div>
+
+              <div class="form-label">
+                <label for="typeNumber">Barème</label>
+                <input label="Barème" type="number" id="typeNumber" class="form-control" v-model="modifMult.bareme" min="1" required/>
+              </div>
+
+              <!-- Réponse -->
+              <div class="text-reponse">
+                <div class="row">
+                  <label for="titre-reponse">Reponse</label>
+                </div>
+                <div class="row">
+                  <div id="titre-reponse">
+                    <div v-for="choix in modifMult.choix" :key="choix.id">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          value="oui"
+                          id="form2Example3"
+                          v-model="choix.true"
+                        />
+                        <label class="form-check-label" for="form2Example3">Est-ce une bonne réponse ?</label>
+                      </div>
+                      <textarea v-model="choix.choix" cols="48"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              
+            </div>
+            <div class="modifOuverte">
+              <b-button variant="primary" @click="modifierMult()">Modifier</b-button>
+              <b-button variant="secondary" @click="initModifMult()">Annuler</b-button>
             </div>
           </b-modal>
 
@@ -211,18 +314,14 @@ export default {
           fin: ""
         }
       },
-      modifQcm: {
-        titre: "",
-        date: "",
-        time: {
-          debut: "",
-          fin: ""
-        }
-      },
       modifOuverte: {
-        id: "",
         question: "",
         bareme: ""
+      },
+      modifMult: {
+        question: "",
+        bareme: "",
+        choix: []
       },
       idQuestion: ""
     }
@@ -247,9 +346,9 @@ export default {
     modifierQcm(){
       const q = {
         id: this.data.id,
-        titre: this.modifQcm.titre,
-        date_debut: "",
-        date_fin: "",
+        titre: this.affichage.titre,
+        date_debut: this.getDateDebut(),
+        date_fin: this.getDateFin(),
         droit: {
           groupe: "",
           utilisateur: ""
@@ -262,13 +361,7 @@ export default {
       axios.patch(path, q)
         .then((res) => {
           console.log(res)
-
-          this.affichage.time = this.modifQcm.titre,
-          this.affichage.date = this.modifQcm.date,
-          this.affichage.time.debut = this.modifQcm.time.debut,
-          this.affichage.time.fin = this.modifQcm.time.fin
-
-          this.initModifQcm()
+          this.$bvModal.hide('modal-modif-qcm')
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -276,11 +369,12 @@ export default {
         });
     },
     modifierQuestion(data){
-      const path = `http://localhost:5000/api/ModifQuestions/${this.modifOuverte.id}`;
+      const path = `http://localhost:5000/api/ModifQuestions/${this.idQuestion}`;
       axios.patch(path, data)
         .then((res) => {
           console.log(res)
           this.initModifOuverte()
+          this.initModifMult()
           this.$router.go(0);
         })
         .catch((error) => {
@@ -299,6 +393,20 @@ export default {
       }
 
       this.modifierQuestion(q)
+    },
+    modifierMult(){
+      const q = {
+        question: {
+          titre: this.modifMult.question,
+          ouverte: false,
+          bareme: this.modifMult.bareme,
+        },
+        choix: this.modifMult.choix
+      }
+console.log(q)
+console.log(JSON.stringify(q))
+
+     this.modifierQuestion(q)
     },
     supprimerQcm(){
       const path = `http://localhost:5000/api/qcm/${this.data.id}`;
@@ -329,39 +437,45 @@ export default {
       this.idQuestion = ""
       this.$bvModal.hide('modal-suppr-quest')
     },
-    initModifQcm(){
-      this.modifQcm.titre = "",
-      this.modifQcm.date = "",
-      this.modifQcm.time.debut = "",
-      this.modifQcm.time.fin = "",
-
-      this.$bvModal.hide('modal-modif-qcm')
-    },
     initModifOuverte(){
-      this.modifOuverte.id = "",
+      this.idQuestion = "",
       this.modifOuverte.question = "",
       this.modifOuverte.bareme = ""
       this.$bvModal.hide('modal-modif-ouverte')
+    },
+    initModifMult(){
+      this.idQuestion = "",
+      this.modifMult.question = "",
+      this.modifMult.bareme = ""
+      this.$bvModal.hide('modal-modif-mult')
     },
     prepSupprimer(id){
       this.idQuestion = id
       this.$bvModal.show('modal-suppr-quest')
     },
-    prepModifierQcm(){
-      this.modifQcm.titre = this.affichage.titre,
-      this.modifQcm.date = this.affichage.date,
-      this.modifQcm.time.debut = this.affichage.time.debut,
-      this.modifQcm.time.fin = this.affichage.time.fin,
-
-      this.$bvModal.show('modal-modif-qcm')
-    },
     prepModifierOuverte(question){
-      this.modifOuverte.id = question.id,
+      this.idQuestion = question.id,
       this.modifOuverte.question = question.titre,
       this.modifOuverte.bareme = question.bareme
 
       this.$bvModal.show('modal-modif-ouverte')
-    }
+    },
+    prepModifierMult(question){
+      this.idQuestion = question.id,
+      this.modifMult.question = question.titre,
+      this.modifMult.bareme = question.bareme,
+      this.modifMult.choix = question.choix
+
+      this.$bvModal.show('modal-modif-mult')
+    },
+    getDateDebut(){
+      let date = this.affichage.date + " " + this.affichage.time.debut + ":00"
+      return date
+    },
+    getDateFin(){
+      let date = this.affichage.date + " " + this.affichage.time.fin + ":00"
+      return date
+    },
   },
   created() {
     this.getQcm()
@@ -372,6 +486,11 @@ export default {
 <style src="vue2-timepicker/dist/VueTimepicker.css"></style>
 
 <style scoped lang="scss">
+
+  .text-reponse {
+    margin-top: 20px;
+    margin-left: 15px;
+  }
 
   .row.time {
     margin-left: 15px;

@@ -257,10 +257,10 @@ class GestionQuestionById(Resource):
                     ## on recupère le choix concerné en BDD 
                     value=db.session.query(Choix).filter_by(id=choi['id']).first()
                     ## on change ses attributs
-                    if choi['intitule'] != "" :
-                        value.intitule=choi['intitule']
-                    if choi['estcorrect'] != "":
-                        value.estcorrect=choi['estcorrect']
+                    if choi['choix'] != "" :
+                        value.intitule=choi['choix']
+                    if choi['true'] != "":
+                        value.estcorrect=choi['true']
                     db.session.commit()
             return {'status':200,'message': 'Les changements ont été effectués.'}
         except:
