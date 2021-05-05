@@ -14,7 +14,7 @@ class NoteQCMEleve(Resource):
             noteglobale=get_Note(qcmeEleve)
             baremeTotal=get_Bareme(id_qcm)
             questions=get_qcm_choix_eleve(qcmeEleve)
-            conversion=(20/baremeTotal)*noteglobale
+            conversion=round((20/baremeTotal)*noteglobale,2)
             jsonqcm={'titre':qcmeEleve.qcm.titre,'note':noteglobale,'baremeTotal':baremeTotal,'conversionSur20':conversion,'questions':questions}
             return(jsonqcm)
         except :
@@ -35,7 +35,8 @@ def get_Note(Qcmeleve):
     note=0
     for answer in contenairetempo:
         if (contenairetempo[answer]==True):
-            note+=1
+            question=db.session.query(Question).filter_by(id=answer).first()
+            note+=question.bareme
     return (note)
 
 def get_Bareme(id_qcm):
@@ -56,13 +57,13 @@ def get_qcm_choix_eleve(Qcmeleve):
         note=question.bareme
         if not(question.ouverte):
             for choix in question.choix:
+                Listchoix[choix.id]={'intitule':choix.intitule,'estCorrect':choix.estcorrect,'estChoisi':False}
                 reponsEleve=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve)
                 for repons in reponsEleve:
                     ch=repons.choix
                     Listchoix[ch.id]={'intitule':ch.intitule,'estCorrect':ch.estcorrect,'estChoisi':True}
                     if(ch.estcorrect==0):
                         note=0
-                Listchoix[choix.id]={'intitule':choix.intitule,'estCorrect':choix.estcorrect,'estChoisi':False}
             listequestion.append({'intitule':question.intitule,'bareme':question.bareme,'note':note,'estOuverte':False,'reponseOuverte':"",'choix':Listchoix})
         else :
             rep=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve).first()

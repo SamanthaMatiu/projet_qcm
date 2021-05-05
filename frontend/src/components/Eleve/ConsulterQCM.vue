@@ -29,7 +29,7 @@
                 <br>
                 <div v-if = !question.ouverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                        <div v-if = "choix.choix === question.reponses.choix">
+                        <div v-if = "choix.choix === question.reponses[0].choix">
                             <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.choix }}</b-form-checkbox>
                         </div>
                         <div v-else>
