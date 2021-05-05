@@ -71,5 +71,5 @@ def get_qcm_choix_eleve(Qcmeleve):
             listequestion.append({'id_question':question.id,'intitule':question.intitule,'bareme':question.bareme,'note':note,'estOuverte':False,'reponseOuverte':"",'choix':Lstchoix})
         else :
             rep=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve).first()
-            listequestion.append({'id_question':question.id,'intitule':question.intitule,'bareme':question.bareme,'note':rep.note,'estOuverte':True,'reponseOuverte':rep.reponseouverte,'choix':""})
+            listequestion.append({'id_question':question.id,'intitule':question.intitule,'bareme':question.bareme,'note':note,'estOuverte':True,'reponseOuverte':rep.reponseouverte,'choix':""})
     return(listequestion)

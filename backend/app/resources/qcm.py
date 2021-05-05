@@ -66,9 +66,9 @@ class QCMRessourcesById(Resource):
                     db.session.query(Choix).filter_by(id=choi.id).delete()
                     ## puis on delete la question
                     db.session.query(Question).filter_by(id=question.id).delete()
-                ## enfin on delete le QCM
-                db.session.query(Qcm).filter_by(id=id_qcm).delete()
-                db.session.commit()
+            ## enfin on delete le QCM
+            db.session.query(Qcm).filter_by(id=id_qcm).delete()
+            db.session.commit()
             return {'status':200,'message':'Le qcm a bien été supprimé.'}
         except :
             abort (400)
