@@ -279,6 +279,17 @@ class GestionQuestionById(Resource):
             db.session.commit()
             abort(400)
 
+class RetraitDroitQCM(Resource):
+    @token_verif
+    def delete(user,self,id_qcm):
+        datas=request.get_json()
+        try:
+            id_eleve=datas["id_eleve"]
+            rep=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).delete()
+            return ("Qcm supprimée")
+        except:
+            abort(400)
+
 def exist_qcm(titre,debut,fin,id_prof):
     exist=db.session.query(Qcm).filter_by(titre=titre,date_debut=debut,date_fin=fin,id_professeur=id_prof).first()
     return exist
@@ -325,7 +336,7 @@ def get_qcm(qcm):
     date_fin=qcm.date_fin.strftime('%Y-%m-%d %H:%M')
     Listusers=[]
     for eleve in qcm.eleve:
-        Listusers.append({'id':eleve.utilisateurs.id,'prenom':eleve.utilisateurs.prenom,'nom':eleve.utilisateurs.nom,'groupe':eleve.utilisateurs.groupe})
+        Listusers.append({'id':eleve.utilisateurs.id,'prenom':eleve.utilisateurs.prenom,'nom':eleve.utilisateurs.nom,'groupe':eleve.utilisateurs.groupe.nom,'id_groupe':eleve.utilisateurs.groupe.id})
     jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleves':Listusers,'id_prof':qcm.id_professeur,'questions':questions}
     return jsonqcm
 
