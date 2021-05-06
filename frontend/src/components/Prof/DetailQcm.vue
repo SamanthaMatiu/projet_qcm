@@ -399,7 +399,7 @@
               Suppression d'un élève pour ce QCM
             </template>
             <div class="text-center-modal">
-              Une fois supprimé, cet élève ne pourra pas effectuer ce QCM.
+              Une fois supprimé, cet élève n'aurra plus accès à ce QCM.
             </div>
             <div class="supprDroit">
               <b-button variant="danger" @click="supprimerDroit()">Supprimer</b-button>
@@ -477,7 +477,7 @@ export default {
         estBonneReponse: ""
       },
       idQuestion: "",
-      idDroit: "",
+      idDroit: -1,
       droit: {
           groupes: [],
           utilisateur: [],
@@ -496,8 +496,6 @@ export default {
           this.affichage.date = res.data.date_debut.slice(0,10)
           this.affichage.time.debut = res.data.date_debut.slice(11,16)
           this.affichage.time.fin = res.data.date_fin.slice(11,16)
-          console.log(this.data.id_eleves)
-          console.log(res)
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -521,7 +519,6 @@ export default {
         // eslint-disable-next-line no-unused-vars
         .then((res) => {
           this.droit.utilisateur = res.data.data
-          console.log(this.droit.utilisateur)
         })
         .catch((error) => {
           console.log(error);
@@ -588,20 +585,12 @@ export default {
         choix: ""
       }
 
-console.log(q)
-console.log(JSON.stringify(q))
-console.log(JSON.parse(JSON.stringify(q)))
-
-console.log(this.modifQcm.droit)
-console.log(JSON.stringify(this.modifQcm.droit))
-console.log(JSON.parse(JSON.stringify(this.modifQcm.droit)))
-
-
       const path = `http://localhost:5000/api/qcm`;
       axios.patch(path, q)
         .then((res) => {
           console.log(res)
           this.$bvModal.hide('modal-modif-qcm')
+          this.$router.go(0);
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -647,9 +636,8 @@ console.log(JSON.parse(JSON.stringify(this.modifQcm.droit)))
      this.modifierQuestion(q)
     },
     creerQuestion(data) {
-      //const path = `http://localhost:5000/api/creationQuestions`;
-      console.log(data)
-        /*axios.post(path, data)
+      const path = `http://localhost:5000/api/creationQuestions`;
+        axios.post(path, data)
           // eslint-disable-next-line no-unused-vars
           .then((res) => {
             this.$router.go(0);
@@ -658,7 +646,7 @@ console.log(JSON.parse(JSON.stringify(this.modifQcm.droit)))
           })
           .catch((error) => {
             console.log(error);
-          });*/
+          });
     },
     creerQuestOuverte(){
       const q = {
@@ -730,12 +718,8 @@ console.log(q)
         });
     },
     supprimerDroit(){
-      const data = {
-        id_eleve: this.idDroit
-      }
-
-      const path = `http://localhost:5000/api/retraitDroits/${this.data.id}`;
-      axios.delete(path, data)
+      const path = `http://localhost:5000/api/retraitDroits/${this.data.id}/${this.idDroit}`;
+      axios.delete(path)
         .then((res) => {
           this.initSupprDroit()
           this.$router.go(0)
@@ -793,7 +777,7 @@ console.log(q)
       this.$bvModal.hide('modal-creer-choix')
     },
     initSupprDroit(){
-      this.idDroit = ""
+      this.idDroit = -1
       this.$bvModal.hide('modal-suppr-droit')
     },
     annuleModifQcm(){

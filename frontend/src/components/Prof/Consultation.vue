@@ -18,10 +18,13 @@
                 <td>{{ qcm.titre }}</td>
                 <td>{{ qcm.date_debut }}</td>
                 <td>{{ qcm.statut }}</td>
-                <td>
+                <td v-if="qcm.statut == 'A faire'">
                   <router-link :to="{ name: 'DetailQcm', params: { id: qcm.id }}">
                     <i class="fas fa-pen"></i>
                   </router-link>
+                </td>
+                <td v-if="qcm.statut != 'A faire'">
+                  <i class="dis fas fa-pen"></i>
                 </td>
               </tr>
 
@@ -62,6 +65,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+  .dis {
+    color: #cacaca;
+  }
 
   .center-tab {
     max-width: 70%;

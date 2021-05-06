@@ -280,11 +280,11 @@ class GestionQuestionById(Resource):
 
 class RetraitDroitQCM(Resource):
     @token_verif
-    def delete(user,self,id_qcm):
+    def delete(user,self,id_qcm, id_eleve):
         datas=request.get_json()
         try:
-            id_eleve=datas["id_eleve"]
             rep=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).delete()
+            db.session.commit()
             return ("Qcm supprimée")
         except:
             abort(400)
