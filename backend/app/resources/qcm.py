@@ -325,7 +325,7 @@ def get_qcm(qcm):
     date_fin=qcm.date_fin.strftime('%Y-%m-%d %H:%M')
     Listusers=[]
     for eleve in qcm.eleve:
-        Listusers.append({'id':eleve.utilisateurs.id,'prenom':eleve.utilisateurs.prenom,'nom':eleve.utilisateurs.nom})
+        Listusers.append({'id':eleve.utilisateurs.id,'prenom':eleve.utilisateurs.prenom,'nom':eleve.utilisateurs.nom,'groupe':eleve.utilisateurs.groupe})
     jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleves':Listusers,'id_prof':qcm.id_professeur,'questions':questions}
     return jsonqcm
 

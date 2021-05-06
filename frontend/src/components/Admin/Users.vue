@@ -5,7 +5,7 @@
       <div class="col-sm-10">
         <h3>Elèves</h3>
         <hr><br><br>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.select-modal>Modifier groupe de la sélection</button>
+        <button type="button" class="btn btn-primary btn-sm" v-b-modal.select-modal>Modifier groupe de la sélection</button>
         <table class="table table-hover">
           <thead>
             <tr>

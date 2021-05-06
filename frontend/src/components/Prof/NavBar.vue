@@ -57,7 +57,9 @@
         router.push({ name: "Connexion", params: {}});
       }
       if (!(localStorage.getItem('statut')==="Professeur")){
-        router.push({ name: "Eleve", params: {}});
+        localStorage.removeItem('token');
+        localStorage.removeItem('statut');
+        router.push({ name: "Connexion", params: {}});
       }
     },
 

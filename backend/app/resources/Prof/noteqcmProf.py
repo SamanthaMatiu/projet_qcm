@@ -23,6 +23,46 @@ class NoteQCMProf(Resource):
             db.session.commit()
             abort(400)
 
+class ListQCMCorrigeProf(Resource):
+    @token_verif
+    def get(user,self):
+        try:
+            ListeQcmEleve=[]
+            for qcm in user.qcm:
+                for qcmeEleve in qcm.eleve :
+                    if(qcmeEleve.statut == "Corrigé"):
+                        eleve=qcmeleve.utilisateurs
+                        noteglobale=get_Note(qcmeleve)
+                        baremeTotal=get_Bareme(id_qcm)
+                        noteFinale=(20/baremeTotal)*noteglobale
+                        ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'noteFinale':noteFinale})
+            return ListeQcmEleve
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+class ListQCMCorrigeParExam(Resource):
+    @token_verif
+    def get(user,self,id_qcm):
+        try:
+            ListeQcmEleve=[]
+            qcm=db.session.query(Qcm).filter_by(id = id_qcm).first()
+            for qcmeleve in qcm.eleve:
+                if(qcmeleve.statut == "Corrigé"):
+                    eleve=qcmeleve.utilisateurs
+                    noteglobale=get_Note(qcmeleve)
+                    baremeTotal=get_Bareme(id_qcm)
+                    noteFinale=(20/baremeTotal)*noteglobale
+                    ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'noteFinale':noteFinale})
+            return ListeQcmEleve
+        except :
+            db.session.rollback()
+            db.session.commit()
+            abort(400)
+
+
+
 def get_Note(Qcmeleve):
     id_qcm=Qcmeleve.qcm.id
     id_eleve=Qcmeleve.utilisateurs
@@ -58,13 +98,15 @@ def get_qcm_choix_eleve(Qcmeleve):
         note=question.bareme
         if not(question.ouverte):
             for choix in question.choix:
+                Listchoix[choix.id]={'intitule':choix.intitule,'estCorrect':choix.estcorrect,'estChoisi':False}
                 reponsEleve=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve)
                 for repons in reponsEleve:
                     ch=repons.choix
+                    print(ch.id)
                     Listchoix[ch.id]={'intitule':ch.intitule,'estCorrect':ch.estcorrect,'estChoisi':True}
                     if(ch.estcorrect==0):
                         note=0
-                Listchoix[choix.id]={'intitule':choix.intitule,'estCorrect':choix.estcorrect,'estChoisi':False}
+                
                 Lstchoix=[]
             for choiix in Listchoix:
                 Lstchoix.append(Listchoix[choiix])
