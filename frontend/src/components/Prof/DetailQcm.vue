@@ -89,51 +89,26 @@
 
               <!-- Droit -->
               <b-tab title="Droit">
-                <div class="row" >
-                  <div class="col-6">
-                    <!-- Groupe -->
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th scope="col">Groupe</th>
-                          <th width="35px" scope="col">#</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="question in data.questions" :key="question.id">
-                          <template v-if="!question.ouverte">
-                            <td>{{ question.bareme }}</td>                       
-                            <td>
-                              <i v-on:click="prepSupprimer(question.id)" class="fas fa-trash"></i>
-                            </td>
-                          </template>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div class="col-6">
-                    <!-- User -->
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th scope="col">User</th>
-                          <th width="35px" scope="col">#</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="eleve in data.id_eleves" :key="eleve.id">
-                          <template>
-                            <td>{{ eleve.nom }} {{ eleve.prenom }}</td>                       
-                            <td>
-                              <i class="fas fa-trash"></i>
-                            </td>
-                          </template>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Elève</th>
+                      <th scope="col">Groupe</th>
+                      <th width="35px" scope="col">#</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="eleve in data.id_eleves" :key="eleve.id">
+                      <template>
+                        <td>{{ eleve.nom }} {{ eleve.prenom }}</td>                       
+                        <td>{{ eleve.groupe }}</td>  
+                        <td>
+                          <i class="fas fa-trash" @click="prepSuprDroit(eleve.id)"></i>
+                        </td>
+                      </template>
+                    </tr>
+                  </tbody>
+                </table>
               </b-tab>
             </b-tabs>
           </div>
@@ -402,6 +377,20 @@
             </div>
           </b-modal>
 
+          <!-- Pop up supprimer droit -->
+          <b-modal id="modal-suppr-droit" hide-footer>
+            <template #modal-title>
+              Suppression d'un élève pour ce QCM
+            </template>
+            <div class="text-center-modal">
+              Une fois supprimé, cet élève ne pourra pas effectuer ce QCM.
+            </div>
+            <div class="supprDroit">
+              <b-button variant="danger" @click="supprimerDroit()">Supprimer</b-button>
+              <b-button variant="primary" @click="initSupprDroit()">Annuler</b-button>
+            </div>
+          </b-modal>
+
         </div>
       </div>  
     </div>
@@ -465,7 +454,8 @@ export default {
         choix: "",
         estBonneReponse: ""
       },
-      idQuestion: ""
+      idQuestion: "",
+      idDroit: ""
     }
   },
   methods: {
@@ -727,6 +717,10 @@ console.log(q)
 
       this.$bvModal.show('modal-modif-mult')
     },
+    prepSuprDroit(id){
+      this.idDroit = id
+      this.$bvModal.show('modal-suppr-droit')
+    },
     getDateDebut(){
       let date = this.modifQcm.date + " " + this.modifQcm.time.debut + ":00"
       return date
@@ -793,6 +787,11 @@ console.log(q)
   .suppr {
     position: relative;
     left: 250px;
+  }
+
+  .supprDroit {
+    position: relative;
+    left: 180px;
   }
 
   .text-center-modal{
