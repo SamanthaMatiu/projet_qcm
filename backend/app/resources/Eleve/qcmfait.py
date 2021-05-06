@@ -52,9 +52,8 @@ class QCMFaitQuestionsResources(Resource):
     def get(user,self,id_qcm_fait):
         try:
             if(check_qcm_fait_exists(id_qcm_fait)):
-        
-                qcm_fait=Qcm.query.filter(Qcm.id == id_qcm_fait).first()
-                res = get_qcm_fait(qcm_fait,user.id)
+                qcmeEleve=db.session.query(QcmEleve).filter_by(id_eleve=user.id,id_qcm=id_qcm_fait).first()
+                res = get_qcm_fait(qcmeEleve)
     
                 return res
             else:
@@ -101,31 +100,25 @@ def get_qcm_fait_titre(qcm,id_eleve):
     jsonqcm_fait = {'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleve':id_eleve,'id_prof':qcm.id_professeur}
     return jsonqcm_fait
 
-def get_qcm_fait(qcm,id_eleve):
-    questions=[]
-    Listreponse=[]
-    for question in qcm.questions:
-        Listchoix=[]
-        for choix in question.choix:
-            Listchoix.append({'id':choix.id,'choix':choix.intitule,'true':choix.estcorrect})
-        
-        reponse = db.session.query(ReponseEleve).filter(ReponseEleve.id_question == question.id, ReponseEleve.id_eleve == id_eleve)
-        if (reponse != None):
-            r=[]
-            for rep in reponse:
-                if (rep.id_choix != None):
-                    choix_reponse = db.session.query(Choix).filter(Choix.id == rep.id_choix).first()
-                    choix = choix_reponse.intitule
-                else:
-                    choix = ""
-                r.append({'id':rep.id,'id_choix':rep.id_choix,'choix':choix,'reponseouverte':rep.reponseouverte,'question':rep.id_question})
-        else : 
-            r={'id':"",'id_choix':"",'choix':"",'reponseouverte':"",'question':""}
-        print(r)
-        temp={'id': question.id ,'titre':question.intitule,'ouverte':question.ouverte,'choix':Listchoix,'reponses':r}
-        questions.append(temp)
-    
+def get_qcm_fait(Qcmeleve):
+    qcm=Qcmeleve.qcm
+    questions=qcm.questions
+    id_eleve=Qcmeleve.utilisateurs.id
+    listequestion=[]
+    for question in questions:
+        Listchoix={}
+        if not(question.ouverte):
+            for choix in question.choix:
+                Listchoix[choix.id]={'intitule':choix.intitule,'estCorrect':choix.estcorrect,'estChoisi':False}
+                reponsEleve=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve)
+                for repons in reponsEleve:
+                    ch=repons.choix
+                    Listchoix[ch.id]={'intitule':ch.intitule,'estCorrect':ch.estcorrect,'estChoisi':True}
+            listequestion.append({'intitule':question.intitule,'bareme':question.bareme,'estOuverte':False,'reponseOuverte':"",'choix':Listchoix})
+        else :
+            rep=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve).first()
+            listequestion.append({'intitule':question.intitule,'bareme':question.bareme,'estOuverte':True,'reponseOuverte':rep.reponseouverte,'choix':""})    
     date_debut=qcm.date_debut.strftime('%d/%m/%Y %H:%M')
     date_fin=qcm.date_fin.strftime('%d/%m/%Y %H:%M')
-    jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleve':id_eleve,'id_prof':qcm.id_professeur,'questions':questions}
+    jsonqcm={'id':qcm.id,'titre':qcm.titre,'date_debut':date_debut,'date_fin':date_fin,'id_eleve':id_eleve,'id_prof':qcm.id_professeur,'questions':listequestion}
     return jsonqcm

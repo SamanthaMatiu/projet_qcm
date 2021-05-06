@@ -12,7 +12,17 @@ class QCMProf(Resource):
             Listeqcm=[]
             qcms=db.session.query(Qcm).filter_by(id_professeur=user.id)
             for qcm in qcms:
-                Listeqcm.append({'id':qcm.id,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M')})
+                statut=""
+                for qcmeeleve in qcm.eleve:
+                    if(statut==""):
+                        statut = qcmeeleve.statut
+                    if(statut=="A faire"):
+                        if (qcmeeleve.statut=="Fait" or qcmeeleve.statut=="Corrigé"):
+                            statut = qcmeeleve.statut
+                    if(statut=="A faire" or statut=="A faire"):
+                        if (qcmeeleve.statut=="Corrigé"):
+                            statut = qcmeeleve.statut
+                Listeqcm.append({'id':qcm.id,'titre':qcm.titre,'statut':statut,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M')})
             return Listeqcm
         except:
             db.session.rollback()
