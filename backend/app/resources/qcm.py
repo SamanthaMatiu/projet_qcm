@@ -279,6 +279,17 @@ class GestionQuestionById(Resource):
             db.session.commit()
             abort(400)
 
+class RetraitDroitQCM(Resource):
+    @token_verif
+    def delete(user,self,id_qcm):
+        datas=request.get_json()
+        try:
+            id_eleve=datas["id_eleve"]
+            rep=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).delete()
+            return ("Qcm supprimée")
+        except:
+            abort(400)
+
 def exist_qcm(titre,debut,fin,id_prof):
     exist=db.session.query(Qcm).filter_by(titre=titre,date_debut=debut,date_fin=fin,id_professeur=id_prof).first()
     return exist
