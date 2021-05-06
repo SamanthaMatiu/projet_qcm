@@ -576,17 +576,26 @@ export default {
 
       this.modifQcm.droit.groupe = this.getDroit(this.droit.valueGroupe)
       this.modifQcm.droit.utilisateur = this.getDroit(this.droit.valueUser)
-      const d = JSON.parse(JSON.stringify(this.modifQcm.droit))
+     // const d = JSON.parse(JSON.stringify(this.modifQcm.droit))
 
       const q = {
         id: this.data.id,
         titre: this.modifQcm.titre,
         date_debut: this.getDateDebut(),
         date_fin: this.getDateFin(),
-        droit: d,
+        droit: JSON.parse(JSON.stringify(this.modifQcm.droit)),
         questions: "",
         choix: ""
       }
+
+console.log(q)
+console.log(JSON.stringify(q))
+console.log(JSON.parse(JSON.stringify(q)))
+
+console.log(this.modifQcm.droit)
+console.log(JSON.stringify(this.modifQcm.droit))
+console.log(JSON.parse(JSON.stringify(this.modifQcm.droit)))
+
 
       const path = `http://localhost:5000/api/qcm`;
       axios.patch(path, q)
@@ -725,7 +734,7 @@ console.log(q)
         id_eleve: this.idDroit
       }
 
-      const path = `http://localhost:5000/api/retraitDroit/${this.data.id}`;
+      const path = `http://localhost:5000/api/retraitDroits/${this.data.id}`;
       axios.delete(path, data)
         .then((res) => {
           this.initSupprDroit()
