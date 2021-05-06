@@ -100,7 +100,7 @@ class QCMRessources(Resource):
             questions=datas['questions']
             choix=datas['choix']
             qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
-                
+
             ## changement du titre
             if titre != "":
                 qcm.titre=titre
@@ -115,13 +115,12 @@ class QCMRessources(Resource):
                 ## changement du groupe 
             if groupe_id != "":
                 for groupe in groupe_id:
-                    db.session.query(QcmEleve).filter_by(id_qcm=qcm.id).delete()
+                    print(groupe)
                     add_groupe_to_qcm(groupe['id'],qcm)
 
             ## changement de l'élève concerné par le QCM
             if eleve_id != "":
                 for eleves in eleve_id:
-                    db.session.query(QcmEleve).filter_by(id_qcm=qcm.id).delete()
                     eleve=db.session.query(Utilisateurs).filter_by(id=eleves['id']).first()
                     add_eleve_to_qcm(eleve,qcm)
 
@@ -281,11 +280,11 @@ class GestionQuestionById(Resource):
 
 class RetraitDroitQCM(Resource):
     @token_verif
-    def delete(user,self,id_qcm):
+    def delete(user,self,id_qcm, id_eleve):
         datas=request.get_json()
         try:
-            id_eleve=datas["id_eleve"]
             rep=db.session.query(QcmEleve).filter_by(id_eleve=id_eleve,id_qcm=id_qcm).delete()
+            db.session.commit()
             return ("Qcm supprimée")
         except:
             abort(400)
@@ -341,9 +340,10 @@ def get_qcm(qcm):
     return jsonqcm
 
 def add_eleve_to_qcm(eleve,QCM):
-    qcmEleve=QcmEleve(statut='A faire',utilisateurs=eleve,qcm=QCM)
-    db.session.add(qcmEleve)
-    db.session.commit()
+    if not(db.session.query(QcmEleve).filter_by(id_eleve=eleve.id,id_qcm=QCM.id).first()):
+        qcmEleve=QcmEleve(statut='A faire',utilisateurs=eleve,qcm=QCM)
+        db.session.add(qcmEleve)
+        db.session.commit()
 
 def add_groupe_to_qcm(groupe_id,QCM):
     groupe=db.session.query(Groupe).filter_by(id=groupe_id).first()

@@ -57,7 +57,7 @@
     <mdb-row>
       <mdb-col sm="5" xl="4">
         <mdb-view hover class="rounded z-depth-1-half mb-lg-0 mb-4">
-          <img class="img-fluid" src="https://image.freepik.com/vecteurs-libre/personnages-crayon-mignons-qui-ont-idees-confusion_161751-270.jpg" alt="Sample image" />
+          <img class="img-fluid" src="https://us.123rf.com/450wm/sabelskaya/sabelskaya1707/sabelskaya170700971/82924635-ensemble-de-crayons-%C3%A0-dessins-anim%C3%A9s-vectoriels-avec-des-bras-et-des-%C3%A9motions-face-en-gardant-le-livre-dan.jpg?ver=6" alt="Sample image" />
           <a @click="goToNotes()">
             <mdb-mask overlay="white-slight" waves/>
           </a>

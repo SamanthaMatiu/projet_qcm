@@ -34,7 +34,7 @@ api.add_resource(ListQCMCorrigeParExam,'/api/qcmCorriges/<int:id_qcm>')
 ##modif questions qcms 
 api.add_resource(GestionQuestion,'/api/creationQuestions') ## post creer un question pour le qcm x 
 api.add_resource(GestionQuestionById,'/api/ModifQuestions/<int:id_question>') ## patch modifie les question du qcm x / delete supprime la question
-api.add_resource(RetraitDroitQCM,'/api/retraitDroits/<int:id_qcm>')
+api.add_resource(RetraitDroitQCM,'/api/retraitDroits/<int:id_qcm>/<int:id_eleve>')
 # Create an account
 api.add_resource(RegisterResource,'/api/register')
 
