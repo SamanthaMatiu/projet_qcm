@@ -53,6 +53,24 @@
         <mdb-btn color="primary" size="md" @click="goToCorrection()">Je veux faire une correction</mdb-btn>
       </mdb-col>
     </mdb-row>
+    <hr class="my-5" />
+    <mdb-row>
+      <mdb-col sm="5" xl="4">
+        <mdb-view hover class="rounded z-depth-1-half mb-lg-0 mb-4">
+          <img class="img-fluid" src="https://image.freepik.com/vecteurs-libre/personnages-crayon-mignons-qui-ont-idees-confusion_161751-270.jpg" alt="Sample image" />
+          <a @click="goToNotes()">
+            <mdb-mask overlay="white-slight" waves/>
+          </a>
+        </mdb-view>
+      </mdb-col>
+      <mdb-col sm="7" xl="8">
+        <h3 class="font-weight-bold mb-3 p-0">
+          <strong>QCMs corrigés</strong>
+        </h3>
+        <p class="dark-grey-text">Pour consulter les notes de tes élèves c'est par ici !</p>
+        <mdb-btn color="primary" size="md" @click="goToNotes()">Je veux voir les QCMs corrigés</mdb-btn>
+      </mdb-col>
+    </mdb-row>
   </mdb-container>
 </template>
 
@@ -85,6 +103,9 @@ export default {
       },
       goToCorrection(){
         this.$router.push({ name: 'Correction' });
+      },
+      goToNotes(){
+        this.$router.push({ name: 'ConsulterNotes' });
       }
     }
 }
