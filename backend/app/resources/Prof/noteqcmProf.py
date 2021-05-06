@@ -13,8 +13,7 @@ class NoteQCMProf(Resource):
             noteglobale=get_Note(qcmeEleve)
             questions=get_qcm_choix_eleve(qcmeEleve)
             baremeTotal=get_Bareme(id_qcm)
-            print(baremeTotal,noteglobale)
-            noteFinale=(20/baremeTotal)*noteglobale
+            noteFinale=round((20/baremeTotal)*noteglobale,2)
             eleve= db.session.query(Utilisateurs).filter_by(id=id_eleve).first()
             jsonqcm={'titre':qcmeEleve.qcm.titre,'Prenom':eleve.prenom,'Nom':eleve.nom,'id_qcm':id_qcm,'note':noteFinale,'questions':questions}
             return(jsonqcm)
@@ -35,7 +34,7 @@ class ListQCMCorrigeProf(Resource):
                         eleve=qcmeEleve.utilisateurs
                         noteglobale=get_Note(qcmeEleve)
                         baremeTotal=get_Bareme(qcm.id)
-                        noteFinale=(20/baremeTotal)*noteglobale
+                        noteFinale=round((20/baremeTotal)*noteglobale,2)
                         ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'noteFinale':noteFinale})
             return ListeQcmEleve
         except :
@@ -54,7 +53,7 @@ class ListQCMCorrigeParExam(Resource):
                     eleve=qcmeleve.utilisateurs
                     noteglobale=get_Note(qcmeleve)
                     baremeTotal=get_Bareme(id_qcm)
-                    noteFinale=(20/baremeTotal)*noteglobale
+                    noteFinale=round((20/baremeTotal)*noteglobale,2)
                     ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'noteFinale':noteFinale})
             return ListeQcmEleve
         except :
@@ -104,7 +103,6 @@ def get_qcm_choix_eleve(Qcmeleve):
                 reponsEleve=db.session.query(ReponseEleve).filter_by(id_question=question.id,id_eleve=id_eleve)
                 for repons in reponsEleve:
                     ch=repons.choix
-                    print(ch.id)
                     Listchoix[ch.id]={'intitule':ch.intitule,'estCorrect':ch.estcorrect,'estChoisi':True}
                     if(ch.estcorrect==0):
                         note=0
