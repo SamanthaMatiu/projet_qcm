@@ -8,6 +8,7 @@
             <tr>
               <th scope="col">Titre</th>
               <th scope="col">Date</th>
+              <th scope="col">Satut</th>
               <th scope="col">#</th>
             </tr>
           </thead>
@@ -16,6 +17,7 @@
               <tr v-for="qcm in data" :key="qcm.id">
                 <td>{{ qcm.titre }}</td>
                 <td>{{ qcm.date_debut }}</td>
+                <td>{{ qcm.statut }}</td>
                 <td>
                   <router-link :to="{ name: 'DetailQcm', params: { id: qcm.id }}">
                     <i class="fas fa-pen"></i>
@@ -46,7 +48,6 @@ export default {
       axios.get(path)
         .then((res) => {
           this.data = res.data
-          console.log(this.data)
         })
         .catch((error) => {
           // eslint-disable-next-line
