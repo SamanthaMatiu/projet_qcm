@@ -239,7 +239,9 @@
                 </div>
               </div>
               
-              <div class="row date">
+
+              <label for="date-time">Date et Horaire</label>
+              <div id="date-time" class="row date">
                 <div classe="col-6">
                   <input label="" type="date" v-model="affichage.date" required/>
                 </div>
@@ -253,6 +255,20 @@
                       <vue-timepicker placeholder="Heure fin" :minute-interval="5" hide-disabled-hours :hour-range="[[8, 20]]" input-width="102px" v-model="affichage.time.fin"></vue-timepicker>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <label class="label-drop" for="dropdown">Ajouter un groupe ou un élève ?</label> 
+              <div id="dropdown" class="row dropdown"> 
+                <div class="col">
+                  <multiselect v-model="droit.valueGroupe" :options="droit.groupes" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="groupe(s)" label="nom" track-by="nom" :preselect-first="false">
+                    <template slot="selection" slot-scope="{ values, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} groupe(s) selectionné</span></template>
+                  </multiselect>
+                </div>
+                <div class="col">
+                  <multiselect v-model="droit.valueUser" :options="droit.utilisateur" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="élève(s)" label="nom" track-by="nom" :preselect-first="false">
+                    <template slot="selection" slot-scope="{ values, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} élève(s) selectionné</span></template>
+                  </multiselect>
                 </div>
               </div>
 
@@ -400,6 +416,7 @@
 <script>
   import axios from 'axios';
   import { mdbRow, mdbCol } from 'mdbvue';
+  import Multiselect from 'vue-multiselect'
   import VueTimepicker from 'vue2-timepicker/dist/VueTimepicker.common.js'
 
 export default {
@@ -407,7 +424,8 @@ export default {
   components: {
     mdbRow,
     mdbCol,
-    VueTimepicker
+    VueTimepicker,
+    Multiselect
   },
   data() {
     return {
@@ -430,6 +448,10 @@ export default {
         time: {
           debut: "",
           fin: ""
+        },
+        droit: {
+          groupe: "",
+          utilisateur: ""
         }
       },
       modifOuverte: {
@@ -455,7 +477,13 @@ export default {
         estBonneReponse: ""
       },
       idQuestion: "",
-      idDroit: ""
+      idDroit: "",
+      droit: {
+          groupes: [],
+          utilisateur: [],
+          valueGroupe: [],
+          valueUser: []
+        },
     }
   },
   methods: {
@@ -476,6 +504,57 @@ export default {
           console.error(error);
         });
     },
+    getGroupe(){
+      const path = `http://localhost:5000/api/groupes`;
+      axios.get(path)
+        // eslint-disable-next-line no-unused-vars
+        .then((res) => {
+          this.droit.groupes = res.data.data
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getUser(){
+      const path = `http://localhost:5000/api/elevesvalides`;
+      axios.get(path)
+        // eslint-disable-next-line no-unused-vars
+        .then((res) => {
+          this.droit.utilisateur = res.data.data
+          console.log(this.droit.utilisateur)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getDroit(list){
+        let droit
+        
+        if (list.length <= 0){
+          droit = ""
+        } else {
+          droit = []
+          for(let i=0 ; i<=list.length-1 ; i++){
+
+            if(list[i].id_utilisateur){
+              const item = {
+                id: list[i].id_utilisateur
+              }
+              droit.push(item)
+            }
+
+            if(list[i].id_groupe){
+              const item = {
+                id: list[i].id_groupe
+              }
+              droit.push(item)
+            }
+            
+          }
+        }
+        
+        return droit
+      },
     modifierQcm(){
       if(this.affichage.titre != this.modifQcm.titre){
         this.modifQcm.titre = this.affichage.titre
@@ -495,15 +574,16 @@ export default {
         this.modifQcm.time.fin = this.affichage.time.fin
       }
 
+      this.modifQcm.droit.groupe = this.getDroit(this.droit.valueGroupe)
+      this.modifQcm.droit.utilisateur = this.getDroit(this.droit.valueUser)
+      const d = JSON.parse(JSON.stringify(this.modifQcm.droit))
+
       const q = {
         id: this.data.id,
-        titre: this.affichage.titre,
+        titre: this.modifQcm.titre,
         date_debut: this.getDateDebut(),
         date_fin: this.getDateFin(),
-        droit: {
-          groupe: "",
-          utilisateur: ""
-        },
+        droit: d,
         questions: "",
         choix: ""
       }
@@ -640,6 +720,23 @@ console.log(q)
           console.error(error);
         });
     },
+    supprimerDroit(){
+      const data = {
+        id_eleve: this.idDroit
+      }
+
+      const path = `http://localhost:5000/api/retraitDroit/${this.data.id}`;
+      axios.delete(path, data)
+        .then((res) => {
+          this.initSupprDroit()
+          this.$router.go(0)
+          console.log(res)
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
     initSupprQuest(){
       this.idQuestion = ""
       this.$bvModal.hide('modal-suppr-quest')
@@ -649,6 +746,9 @@ console.log(q)
       this.modifQcm.date = ""
       this.modifQcm.time.debut = ""
       this.modifQcm.time.fin = ""
+
+      this.droit.valueGroupe = []
+      this.droit.valueUser = []
 
       this.$bvModal.hide('modal-modif-qcm')
     },
@@ -682,6 +782,10 @@ console.log(q)
       this.creerChoix.estBonneReponse = ""
 
       this.$bvModal.hide('modal-creer-choix')
+    },
+    initSupprDroit(){
+      this.idDroit = ""
+      this.$bvModal.hide('modal-suppr-droit')
     },
     annuleModifQcm(){
       this.affichage.titre = this.modifQcm.titre 
@@ -732,13 +836,20 @@ console.log(q)
   },
   created() {
     this.getQcm()
+    this.getGroupe()
+    this.getUser()
   }
 }
 </script>
 
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style src="vue2-timepicker/dist/VueTimepicker.css"></style>
 
 <style scoped lang="scss">
+
+  .label-drop {
+    margin-top: 20px;
+  }
 
   .ajout-choix {
     text-align: center;
