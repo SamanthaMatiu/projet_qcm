@@ -99,12 +99,11 @@
 
 <script>
 import axios from 'axios';
-//import router from '../router';
+
 
 export default {
   data() {
     return {
-      //selected: [],
       profs: [],
       eleves: [],
       groupes: [],
@@ -128,7 +127,6 @@ export default {
       axios.get(path)
         .then((res) => {
           this.eleves = res.data['data'];
-          console.log(res.data['message']);
         })
         .catch((error) => {
           console.error(error);
@@ -139,7 +137,6 @@ export default {
       axios.get(path)
         .then((res) => {
           this.profs = res.data['data'];
-          console.log(res.data['message']);
         })
         .catch((error) => {
           console.error(error);
@@ -215,9 +212,6 @@ export default {
     }
   },
   created() {
-    //if (!(localStorage.getItem('token'))){
-    //  router.push({ name: "Connexion", params: {}});
-    //}
     this.getEleves();
     this.getProfs();
     this.getGroups();

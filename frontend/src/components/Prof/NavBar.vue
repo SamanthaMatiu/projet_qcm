@@ -8,6 +8,7 @@
           <mdb-nav-item to="/dashboardProf/creation" waves-fixed>Création</mdb-nav-item>
           <mdb-nav-item to="/dashboardProf/consultation" waves-fixed>Mes QCMs</mdb-nav-item>
           <mdb-nav-item to="/dashboardProf/correction" waves-fixed>Correction</mdb-nav-item>
+          <mdb-nav-item to="/dashboardProf/notes" waves-fixed>Notes</mdb-nav-item>
         </mdb-navbar-nav>
         <mdb-form-inline>
         <mdb-btn outline="success" type="button" @click="logout()">Déconnexion</mdb-btn>

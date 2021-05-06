@@ -64,6 +64,11 @@ const routes = [
         path: 'correction/:id_qcm/:id_eleve',
         name: 'CorrigerQCM',
         component : () => import('../components/Prof/CorrigerQcm.vue')
+      },
+      {
+        path: 'notes',
+        name: 'ConsulterNotes',
+        component : () => import('../components/Prof/ConsulterNotes.vue')
       }
       
     ]

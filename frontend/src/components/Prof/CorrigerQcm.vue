@@ -14,9 +14,13 @@
                 <div v-for="(question,id) in data.questions" :key="id">
                 <h4> {{question.intitule}} </h4>
                 <div v-if = question.estOuverte>
-                <mdb-input v-model="question.reponseOuverte" disabled/>                
-                <button type="button" class="btn btn-success btn-sm" @click="onSubmitReponseTrue(question.id_question)">Ok</button>
-                <button type="button" class="btn btn-danger btn-sm" @click="onSubmitReponseFalse(question.id_question)">Non</button>
+                <mdb-input v-model="question.reponseOuverte" disabled/> 
+                <div v-if="(!(question.note===null))&&(question.note>0)"><i>Correction enregistrée : <b>Correct</b>
+                  <br> Mais vous pouvez encore modifier votre correction :</i></div>
+                <div v-if="(!(question.note===null))&&(question.note===0)"><i>Correction enregistrée : <b>Incorrect</b>
+                  <br> Mais vous pouvez encore modifier votre correction :</i></div>               
+                <button type="button" class="btn btn-success btn-sm" @click="onSubmitReponseTrue(question.id_question)">Correct</button>
+                <button type="button" class="btn btn-danger btn-sm" @click="onSubmitReponseFalse(question.id_question)">Incorrect</button>
                 </div>
                 <br>
                 <div v-if = !question.estOuverte >
@@ -89,7 +93,15 @@ export default {
       const path = `http://localhost:5000/api/correctionQuestionOuverte/`+this.id_eleve+`/${id_question}`;
       axios.post(path, payload)
         .then(() => {
-          console.log('Question corrigée')
+          this.$bvModal.msgBoxOk('Correction enregistrée !', {
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'success',
+          headerClass: 'p-2 border-bottom-0',
+          footerClass: 'p-2 border-top-0',
+          centered: true
+        })
+          this.getData();
         })
         .catch((error) => {
           console.error(error);
