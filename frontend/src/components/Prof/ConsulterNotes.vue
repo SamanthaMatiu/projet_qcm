@@ -30,7 +30,7 @@
               <tr v-for="qcm in data" :key="qcm.id">
                 <td>{{ qcm.titre }}</td>
                 <td>{{ qcm.Nom }} {{ qcm.Prenom }}</td>
-                <td>{{ qcm.noteFinale }}</td>
+                <td>{{ qcm.noteFinale }}/20</td>
               </tr>
           </tbody>
         </table>
