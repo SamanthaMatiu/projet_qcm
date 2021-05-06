@@ -100,7 +100,7 @@ class QCMRessources(Resource):
             questions=datas['questions']
             choix=datas['choix']
             qcm=db.session.query(Qcm).filter_by(id=id_qcm).first()
-                
+
             ## changement du titre
             if titre != "":
                 qcm.titre=titre
@@ -115,6 +115,7 @@ class QCMRessources(Resource):
                 ## changement du groupe 
             if groupe_id != "":
                 for groupe in groupe_id:
+                    print(groupe)
                     add_groupe_to_qcm(groupe['id'],qcm)
 
             ## changement de l'élève concerné par le QCM
@@ -339,7 +340,7 @@ def get_qcm(qcm):
     return jsonqcm
 
 def add_eleve_to_qcm(eleve,QCM):
-    if not(db.session.query(QcmEleve).filter_by(id_eleve=eleve.id,id_qcm=QCM.id).exist()):
+    if not(db.session.query(QcmEleve).filter_by(id_eleve=eleve.id,id_qcm=QCM.id).first()):
         qcmEleve=QcmEleve(statut='A faire',utilisateurs=eleve,qcm=QCM)
         db.session.add(qcmEleve)
         db.session.commit()
