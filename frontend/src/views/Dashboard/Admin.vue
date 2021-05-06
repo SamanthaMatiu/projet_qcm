@@ -50,6 +50,16 @@ export default {
         router.push({ name: "Connexion", params: {}});
       },
     },
+    created() {
+      if (!(localStorage.getItem('token'))){
+        router.push({ name: "Connexion", params: {}});
+      }
+      if (!(localStorage.getItem('statut')==="Administrateur")){
+        localStorage.removeItem('token');
+        localStorage.removeItem('statut');
+        router.push({ name: "Connexion", params: {}});
+      }
+    },
 }
 </script>
 

@@ -53,7 +53,6 @@
 
 <script>
 import axios from 'axios';
-//import router from '../router';
 
 export default {
   data() {
@@ -129,9 +128,6 @@ export default {
     },
   },
   created() {
-    //if (!(localStorage.getItem('token'))){
-    //  router.push({ name: "Connexion", params: {}});
-    //}
     this.getUsers();
     this.getGroups();
   },
