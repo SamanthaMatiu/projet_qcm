@@ -67,7 +67,6 @@
 
 <script>
 import axios from 'axios';
-//import router from '../router';
 
 export default {
   data() {
@@ -106,9 +105,7 @@ export default {
           this.getGroups();
         })
         .catch((error) => {
-          // eslint-disable-next-line
           console.log(error);
-          this.getBooks();
         });
     },
     removeGroup(group_id) {
@@ -145,12 +142,10 @@ export default {
         nom_groupe: this.infosGroupe.nom,
       };
       this.setNomGroupe(groupe, this.infosGroupe.id_groupe);
+      window.location.reload();
     }
   },
   created() {
-    //if (!(localStorage.getItem('token'))){
-    //  router.push({ name: "Connexion", params: {}});
-    //}
     this.getGroups();
   },
 };
