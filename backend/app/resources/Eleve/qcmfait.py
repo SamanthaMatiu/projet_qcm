@@ -81,11 +81,6 @@ class ListQCMCorrige(Resource):
             db.session.commit()
             abort(400)
 
-
-
-
-
-
 def check_user_exists(id_user: str):
     already_exists = db.session.query(db.exists().where(Utilisateurs.id == id_user)).scalar()
     return already_exists
