@@ -21,18 +21,18 @@
                     <div v-for="(choix,index) in question.choix" :key="index" class="justify-content-start">
                         <div v-if = choix.estChoisi>
                           <div v-if = choix.estCorrect  v-bind:class="{'checkCorrect': checkCorrect}">
-                            <mdb-input type="checkbox" id="choix" v-model="checkCorrect" disabled/> <label  for="choix">{{ choix.intitule }} <span><i style="color: #66CC33;" class=" ml-5 fas fa-check-circle"></i></span></label>
+                            <b-form-checkbox id="choix" v-model="checkCorrect" disabled> {{ choix.intitule }} <span><i style="color: #66CC33;" class=" ml-5 fas fa-check-circle"></i></span></b-form-checkbox>
                           </div>
                           <div v-else >
-                            <mdb-input   type="checkbox" id="choix" v-model="checkIncorrect" disabled/> <label  for="choix">{{ choix.intitule }} <span><i  style=" color: Tomato;" class="ml-5 fas fa-times-circle"></i></span></label>
+                            <b-form-checkbox id="choix" v-model="checkIncorrect" disabled> {{ choix.intitule }} <span><i  style=" color: Tomato;" class="ml-5 fas fa-times-circle"></i></span></b-form-checkbox>
                           </div>
                         </div>
                         <div v-else>
                           <div v-if = choix.estCorrect>
-                            <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.intitule }} <span><i style="color: Blue;" class="ml-5 fas fa-check-double"></i></span></label>
+                            <b-form-checkbox id="choix" disabled> {{ choix.intitule }} <span><i style="color: Blue;" class="ml-5 fas fa-check-double"></i></span></b-form-checkbox>
                           </div>
                           <div v-else>
-                            <mdb-input type="checkbox" id="choix" disabled/> <label  for="choix">{{ choix.intitule }} <span><i style="color: White;" class=" ml-5 fas fa-arrow-alt-left"></i></span></label>
+                            <b-form-checkbox id="choix" disabled> {{ choix.intitule }} <span><i style="color: White;" class=" ml-5 fas fa-arrow-alt-left"></i></span></b-form-checkbox>
                           </div>
 
                         </div>

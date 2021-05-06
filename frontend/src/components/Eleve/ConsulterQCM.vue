@@ -24,17 +24,17 @@
            <br>
             <form v-on:submit.prevent="onSubmit">
                 <div v-for="(question,id) in qcm.questions" :key="id">
-                <h3> {{question.titre}} </h3>
-                <mdb-input v-if = question.ouverte v-model="question.reponses.reponseouverte" v-bind:key = question.choix.id disabled/>
+                <h3> {{question.intitule}} </h3><h5> {{question.note}}/{{question.bareme}} </h5>
+                <mdb-input v-if = question.estOuverte v-model="question.reponseOuverte" disabled/>
                 <br>
                 <div v-if = !question.ouverte >
                     <div v-for="(choix,id_choix) in question.choix" :key="id_choix" class="justify-content-start">
-                        <div v-if = "choix.choix === question.reponses[0].choix">
-                            <b-form-checkbox id="choix" v-model="checkOk" disabled>{{ choix.choix }}</b-form-checkbox>
-                        </div>
-                        <div v-else>
-                            <b-form-checkbox id="choix" disabled>{{ choix.choix }}</b-form-checkbox>
-                        </div>
+                      <div v-if = choix.estChoisi>
+                        <b-form-checkbox  id="choix" v-model="checkCorrect" disabled>{{ choix.intitule }}</b-form-checkbox>
+                      </div>
+                      <div v-else>
+                        <b-form-checkbox type="checkbox" id="choix" disabled>{{ choix.intitule }}</b-form-checkbox>
+                      </div>
                     </div>
                     <br>
                     
@@ -70,6 +70,8 @@
     data() {
       return {
         checkOk: true,
+        checkCorrect: true,
+        checkIncorrect: true, 
         qcm: {},
         id_qcm: this.$route.params.id,
       };
