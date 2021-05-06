@@ -1,5 +1,5 @@
 <template>
-  <section class="form-simple">
+  <section class="creer-qcm form-simple">
         <mdb-card>
           <div class="header pt-3 grey lighten-2">
             <mdb-row class="d-flex justify-content-start">
@@ -579,7 +579,7 @@
     left: 0;
   }
 
-  p {
+  .creer-qcm > p {
     color: red;
   }
 

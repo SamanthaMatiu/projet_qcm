@@ -10,7 +10,7 @@
         <div class="card-header">{{affichage.titre}}</div>
         <div class="card-body">
           
-          <mdb-row class="time">
+          <mdb-row class="">
             <mdb-col col="4">
               <p>Date : {{this.affichage.date}}</p> 
             </mdb-col>
