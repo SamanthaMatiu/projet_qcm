@@ -3,7 +3,7 @@ from app.resources.Authentification.login import LoginResource
 from app.resources.Authentification.register import RegisterResource
 from app.resources.Admin.validationadmin import ValidationAdminResource, ValidationAdminResourceById
 from app.resources.Admin.gestiongroupe import GestionGroupeResource,GestionGroupeById, GestionGroupeByEleveId, ElevesValidesResource, ProfesseursValidesResource, GestionGroupeManyEleves
-from app.resources.qcm import QCMRessources,QCMRessourcesById,GestionQuestion,GestionQuestionById
+from app.resources.qcm import QCMRessources,QCMRessourcesById,GestionQuestion,GestionQuestionById,RetraitDroitQCM
 from app.resources.Prof.gestionqcmprof import QCMProf,ListDesQCMS,CorrectionDunQCM,CorrectionQuestionOuverte,ListQCMFait,ListQCMFaitParExam
 from app.resources.Eleve.qcmafaire import QCMaFaireResources, QMCaFaireQuestionsResources
 from app.resources.Eleve.qcmfait import QCMFaitResources, QCMFaitQuestionsResources,ListQCMCorrige
@@ -34,7 +34,7 @@ api.add_resource(ListQCMCorrigeParExam,'/api/qcmCorriges/<int:id_qcm>')
 ##modif questions qcms 
 api.add_resource(GestionQuestion,'/api/creationQuestions') ## post creer un question pour le qcm x 
 api.add_resource(GestionQuestionById,'/api/ModifQuestions/<int:id_question>') ## patch modifie les question du qcm x / delete supprime la question
-
+api.add_resource(RetraitDroitQCM,'/api/retraitDroits/<int:id_qcm>')
 # Create an account
 api.add_resource(RegisterResource,'/api/register')
 

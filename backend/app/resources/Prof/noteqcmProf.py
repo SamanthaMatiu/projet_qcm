@@ -31,8 +31,11 @@ class ListQCMCorrigeProf(Resource):
             for qcm in user.qcm:
                 for qcmeEleve in qcm.eleve :
                     if(qcmeEleve.statut == "Corrigé"):
-                        eleve=qcmeEleve.utilisateurs
-                        ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M')})
+                        eleve=qcmeleve.utilisateurs
+                        noteglobale=get_Note(qcmeleve)
+                        baremeTotal=get_Bareme(id_qcm)
+                        noteFinale=(20/baremeTotal)*noteglobale
+                        ListeQcmEleve.append({'id_qcm':qcm.id,'id_eleve':eleve.id,'Prenom':eleve.prenom,'Nom':eleve.nom,'titre':qcm.titre,'date_debut':qcm.date_debut.strftime('%d/%m/%Y %H:%M'),'date_fin':qcm.date_fin.strftime('%d/%m/%Y %H:%M'),'noteFinale':noteFinale})
             return ListeQcmEleve
         except :
             db.session.rollback()
