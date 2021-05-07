@@ -17,15 +17,20 @@
               <tr v-for="qcm in data" :key="qcm.id">
                 <td>{{ qcm.titre }}</td>
                 <td>{{ qcm.date_debut }}</td>
-                <td>{{ qcm.statut }}</td>
-                <td v-if="qcm.statut == 'A faire'">
-                  <router-link :to="{ name: 'DetailQcm', params: { id: qcm.id }}">
-                    <i class="fas fa-pen"></i>
-                  </router-link>
-                </td>
-                <td v-if="qcm.statut != 'A faire'">
-                  <i class="dis fas fa-pen"></i>
-                </td>
+                <template v-if="qcm.statut == 'A faire'">
+                  <td>A faire</td>
+                  <td>
+                    <router-link :to="{ name: 'DetailQcm', params: { id: qcm.id }}">
+                      <i class="fas fa-pen"></i>
+                    </router-link>
+                  </td>
+                </template>
+                <template v-if="qcm.statut != 'A faire'">
+                  <td>Fait</td>
+                  <td>
+                    <i class="dis fas fa-pen"></i>
+                  </td>
+                </template>
               </tr>
 
           </tbody>
