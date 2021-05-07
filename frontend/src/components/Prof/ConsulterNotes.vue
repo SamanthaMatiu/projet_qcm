@@ -1,6 +1,6 @@
 <template>
   <div class="center-tab card text-center">
-    <div class="card-header"><h3>QCMs à corriger</h3></div>
+    <div class="card-header"><h3>QCMs corriger</h3></div>
     <div class="card-body">
       <div class="col-sm table-responsive">
         <div>
