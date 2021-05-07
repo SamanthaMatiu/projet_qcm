@@ -1,0 +1,10 @@
+Une fois le projet clone, ouvrez un terminale au sous dossier Backend et faites les commandes suivantes :
+$ pip install -r requirements.txt
+$ source env/bin/activate
+$ python api.py
+
+Puis ouvrez un terminale au sous dossier Frontend et faites les commandes suivantes : 
+$ npm install
+$ npm run serve
+
+Vous pouvez dorénavant aller sur http://localhost:8080/
