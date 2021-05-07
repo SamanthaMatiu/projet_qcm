@@ -2,9 +2,15 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_sqlalchemy import SQLAlchemy
 
 # Declare the flask app and wrap it in Api
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY']="jesuisunecletressecrete"
+db = SQLAlchemy(app)
+
 api = Api(app)
 
 from app import config
